@@ -1,5 +1,5 @@
 ---
-title: "catbird-analytics"
+title: "Catbird Analytics"
 listing:
   contents: posts
   sort: "date desc"
