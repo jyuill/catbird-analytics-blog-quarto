@@ -4,5 +4,12 @@
 # (see https://quarto.org/docs/projects/code-execution.html#freeze)
 freeze: true
 
-# Enable banner style title blocks
-title-block-banner: true
+# Set banner style title blocks
+# - default is true
+title-block-banner: false
+
+# custom
+author: 'John Yuill'
+page-layout: article
+toc: true
+toc-depth: 2

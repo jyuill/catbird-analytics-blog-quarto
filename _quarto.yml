@@ -12,6 +12,9 @@ website:
         href: https://github.com/jyuill
       - icon: twitter
         href: https://twitter.com/johnyuill
+  open-graph: true
+  google-analytics: "G-5XF0SHH0KW"
+  cookie-consent: true
 format:
   html:
     theme: cosmo

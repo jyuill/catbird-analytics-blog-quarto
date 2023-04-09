@@ -1,13 +1,36 @@
 ---
-title: "Post With Code"
-author: "Harlow Malloc"
+title: "Post With Image & Code Specified"
 date: "2023-04-08"
 categories: [news, code, analysis]
 image: "image.jpg"
+echo: true
+error: false
+warning: false
 ---
+
+```{r}
+library(tidyverse)
+```
+
+## Code that Executes
 
 This is a post with executable code.
 
 ```{r}
 1 + 1
+```
+
+## More Code
+
+### Get data
+
+```{r}
+mtc <- mtcars
+summary(mtc)
+```
+
+### Explore Data
+
+```{r}
+mtc %>% ggplot(aes(x=hp, y=mpg))+geom_point()
 ```

@@ -1,12 +1,18 @@
 ---
 title: "Welcome To My Blog"
-author: "Tristan O'Malley"
+description: "the welcome post to make you feel welcome. and at home"
 date: "2023-04-05"
 categories: [news]
 ---
 
+## Welcome!
+
+### Intro
+
 This is the first post in a Quarto blog. Welcome!
 
-![](thumbnail.jpg)
+![](retirement-burndown.png)
+
+## Image
 
 Since this post doesn't specify an explicit `image`, the first image in the post will be used in the listing page of posts.
