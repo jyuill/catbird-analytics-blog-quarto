@@ -1,1 +1,11 @@
 /* css styles */
+
+.quarto-title-block .quarto-title-banner {
+  /* trying to get header image - this works in principal but needs work (resizing etc) */
+  /* background-image: url(catbird-analytics-blog.png); */
+  background-size: 800px;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding-left: 10px;
+  background-origin: content-box;
+}
