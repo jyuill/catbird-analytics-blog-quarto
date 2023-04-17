@@ -3,6 +3,7 @@ title: "Welcome To My Blog"
 description: "the welcome post to make you feel welcome. and at home"
 date: "2023-04-05"
 categories: [news]
+draft: true
 ---
 
 ## Welcome!

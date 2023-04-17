@@ -2,9 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/post-with-code/index.html",
-      "/posts/welcome/index.html",
-      "/posts/r-time-series-vs-data-frame/index.html"
+      "/posts/r-time-series-vs-data-frame/index.html",
+      "/posts/google-trends-r-gtrends-for-power-analytics/index.html"
     ]
   }
 ]

@@ -3,6 +3,7 @@ title: "Post With Image & Code Specified"
 date: "2023-04-08"
 categories: [news, code, analysis]
 image: "image.jpg"
+draft: true
 echo: true
 error: false
 warning: false
