@@ -1,0 +1,82 @@
+---
+title: "Crypto Currency (BTC) PRices: Any Tradeable Daily Patterns?"
+author: John Yuill
+date: '2022-05-28'
+categories: [R, analysis, crpto-currency]
+description-meta: Analysis of recent Bitcoin price history to see if there are predictable
+  patterns in prices based on day of week that can be leveraged for trading.
+draft: true
+image: img/
+toc: true
+toc-depth: 4
+toc-location: left
+date-modified: '2023-04-23'
+fig-height: 6
+fig-width: 9
+execute:
+  echo: true
+  error: false
+  warning: false
+---
+
+```{r}
+#| echo: false
+options(scipen = 99)
+options(digits=3)
+
+## load packages
+library(quantmod)
+library(tidyverse)
+library(lubridate)
+library(here)
+library(PerformanceAnalytics)
+library(plotly)
+library(scales)
+library(gridExtra)
+library(DT)
+library(quantmod)
+library(dygraphs)
+library(glue)
+
+## set ggplot theme
+theme_set(theme_classic())
+## chart variables
+fill_color <- 'steelblue3'
+
+```
+
+### Intro
+
+I've come across discussion on day-of-week patterns in Bitcoin in various circles, with the most common suggestion being that Bitcoin tends to be higher during the weekdays than on weekend days. Just because somebody says so, doesn't make it so today, even if it may have been true in the past. 
+
+So do any patterns really exist? And, more importantly: if they do exist, are there profitable trades to be made on a reliable basis?
+
+### tl;dr
+
+Surprise...\*\*no.\*\* At least as far as I can tell. ;)
+
+
+Read on for the details! Of course, there may be flaws in my analysis. Use at your own risk - this is merely for infotainment purposes and is not at all intended as any sort of financial or trading advice. :)
+
+
+### Get Data
+
+-   Focus on recent years, due to long-term volatility and evolution of the market focus.
+
+-   Looking at \*\*Bitcoin\*\* as the apex crypto currency. Other coins may have entirely different patterns.
+
+-   Using \*\*BTC-CAD\*\* because...well, I'm Canadian.
+
+```{r}
+## get data
+symb <- c('BTC-CAD')
+date_st <- '2020-05-01'
+## using auto.assign = FALSE and setting object name to avoid issues with default 'BTC-CAD' name
+BTC_CAD <- getSymbols(Symbols=symb, from=date_st, to=Sys.Date()-1, auto.assign = FALSE)
+```
+
+### Initial Look at Data
+
+```{r}
+dygraph(BTC_CAD[,"BTC-CAD.Close"])
+```
