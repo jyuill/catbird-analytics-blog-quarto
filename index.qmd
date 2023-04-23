@@ -1,5 +1,6 @@
 ---
 title: "Catbird Analytics"
+subtitle: "Analytics for the Catbird Seat"
 listing:
   contents: posts
   sort: "date desc"

@@ -1,9 +1,16 @@
 /* css styles */
 
+.navbar-dark {
+  background-color: #1E53FA;
+}
+
+.quarto-title {
+  color: black;
+}
 .quarto-title-block .quarto-title-banner {
   /* trying to get header image - this works in principal but needs work (resizing etc) */
-  /* background-image: url(/catbird-analytics-blog.png); */
-  background-size: 800px;
+  /* background-image: url(/banner-barcharts-noise-1080-440.png); */
+  /*background-size: 1200px; */
   background-position: center;
   background-repeat: no-repeat;
   padding-left: 10px;
