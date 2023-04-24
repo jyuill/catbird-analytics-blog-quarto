@@ -123,9 +123,11 @@ str(btc_rec_df)
 Take a look at daily comparisons for this period:
 
 ```{r}
+#| fig-width: 5
+#| fig-height: 4
 btc_rec_df %>% ggplot(aes(x=day, y=BTC.CAD.Close))+geom_boxplot(fill=fill_color)+
   scale_y_continuous(labels=dollar_format())+
-  labs(title="Distribution of BTC-CAD Closing Price by Day of Week", y='BTC-CAD Close', x="")
+  labs(title="Distrib. of BTC-CAD Closing Price by Day", y='BTC-CAD Close', x="")
 ```
 
 No strong, obvious pattern over the period.  
@@ -162,7 +164,7 @@ btc_rec_d_df <- btc_rec_df %>% filter(day==day_01 | day==day_02)
 dd_plot <- btc_rec_d_df %>% ggplot(aes(x=day, y=BTC.CAD.Close, color=as.factor(week_of), group=week_of))+geom_line()+
   scale_y_continuous(labels=dollar_format())+
   scale_x_discrete(expand=c(0,0))+
-  labs(title="BTC-CAD Closing Price by Day by Week",x="",y="BTC-CAD Close")+
+  labs(title="BTC-CAD Price by Day",x="",y="BTC-CAD Close")+
   theme(legend.position = 'none')
 ggplotly(dd_plot)
 ```
@@ -176,6 +178,8 @@ Pretty hard to pick out any obvious/consistent pattern. Let's take a closer look
 ##### Histogram
 
 ```{r}
+#| fig-width: 6
+#| fig-height: 4
 ## may need to remove first row if starts with the day later in the week
 btc_rec_d_df <- btc_rec_d_df[-1,]
 
@@ -215,9 +219,10 @@ Basically a wash:
 
 ```{r}
 #| fig-width: 3
-#| fig-height: 2.5
+#| fig-height: 4
 ## check boxplot
-btc_rec_d_df %>% ggplot(aes(x=day, y=BTC.CAD.Close))+geom_boxplot(fill=fill_color)
+btc_rec_d_df %>% ggplot(aes(x=day, y=BTC.CAD.Close))+geom_boxplot(fill=fill_color)+
+  labs("Compare Price by Day", x="")
 ```
 
 Similar conclusion to previous: looks like there might be some difference, not conclusive.
