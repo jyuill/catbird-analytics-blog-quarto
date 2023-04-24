@@ -5,14 +5,14 @@ date: '2022-05-28'
 categories: [R, analysis, crpto-currency]
 description-meta: Analysis of recent Bitcoin price history to see if there are predictable
   patterns in prices based on day of week that can be leveraged for trading.
-draft: true
+draft: false
 image: img/
 toc: true
 toc-depth: 4
 toc-location: left
 date-modified: '2023-04-23'
-fig-height: 6
-fig-width: 9
+fig-height: 4
+fig-width: 6
 execute:
   echo: true
   error: false
@@ -156,8 +156,6 @@ Look at some individual day of week comparisons
 ##### Slope chart
 
 ```{r}
-#| fig-width: 1
-#| fig-height: 2
 day_01 <- 'Tue'
 day_02 <- 'Sat'
 btc_rec_d_df <- btc_rec_df %>% filter(day==day_01 | day==day_02)
@@ -276,4 +274,9 @@ Nevertheless...we've come this far, might as well check on statistical significa
 t.test(data=btc_rec_d_df, BTC.CAD.Close ~ day, paired = TRUE)
 ```
 
-Looks like we do not have statistical significance at all. So if this info was to be used for investment advice - which it definitely is not - the advice would be: **do not try this at home**. ;(
+Looks like we do not have statistical significance at all:
+
+* high p-value
+* wide confidence interval straddling 0`
+
+So if this info was to be used for investment advice - which it definitely is not - the advice would be: **do not try this at home**. ;(
