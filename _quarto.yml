@@ -2,7 +2,7 @@ project:
   type: website
 
 website:
-  title: "CBA Home"
+  title: "Home"
   navbar:
     right:
       - about.qmd

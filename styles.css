@@ -1,11 +1,15 @@
 /* css styles */
 
+/* original colors from bootstrap theme */
+/* top nav background-color: */
+
 .navbar-dark {
-  background-color: #1E53FA;
+  /* background-color: #1E53FA; */
+  background-color: navy; 
 }
 
 .quarto-title {
-  color: black;
+  /* color: white; */
 }
 .quarto-title-block .quarto-title-banner {
   /* trying to get header image - this works in principal but needs work (resizing etc) */
@@ -15,4 +19,6 @@
   background-repeat: no-repeat;
   padding-left: 10px;
   background-origin: content-box;
+  /*background-color: navy; */
+  border-bottom: solid 3px navy;
 }
