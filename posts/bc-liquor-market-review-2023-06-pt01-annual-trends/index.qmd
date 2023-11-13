@@ -1,0 +1,505 @@
+---
+title: "BC Liquor Sales Analysis: Annual Trends 2016-2022"
+author: John Yuill
+date: '2023-11-05'
+categories: [lmr, reporting, analysis]
+description-meta: Analysis of BC Liquor Market Review covering period to June 2023, with trends and observations.
+draft: true
+#image: 
+toc: true
+toc-depth: 4
+toc-location: left
+date-modified: '`r Sys.Date()`'
+fig-height: 4
+fig-width: 6
+code-fold: true
+execute:
+  echo: true
+  error: false
+  warning: false
+---
+
+```{r}
+#| echo: FALSE
+#| warning: FALSE
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(glue)
+library(ggrepel)
+library(readr) ## for easy conversion of $ characters to numeric
+library(RMariaDB) ## best way to access MySQL from R
+library(RColorBrewer)
+library(here)
+library(plotly)
+# set default theme
+theme_set(theme_classic())
+
+# chart parameters
+# check rcolorbrewer palette
+#display.brewer.pal(n=8, name='Set2')
+#display.brewer.pal(n=8, name='Dark2')
+##display.brewer.pal(n=9, name='YlOrRd')
+#display.brewer.pal(n=9, name='YlGnBu')
+bar_col <- brewer.pal(n=9, name='YlGnBu')[9]
+# set colors for major category types
+#bpal <- brewer.pal(n=8, name='Dark2')
+#cat_type_color <- c("Beer"=bpal[6], "Refresh Bev"=bpal[5], "Spirits"=bpal[7], "Wine"=bpal[4])
+bpal <- brewer.pal(n=9, name="YlOrRd")
+cat_type_color <- c("Beer"=bpal[6], "Refresh Bev"=bpal[3], "Spirits"=bpal[4], "Wine"=bpal[8])
+
+```
+
+```{r get_process_data}
+#| echo: FALSE
+# if no data available - fetch
+# temp fix for qmd render ->
+if(exists('lmr_data', envir = globalenv())){
+  lmr_data <- lmr_data
+} else { # get from MySQL database on AWS
+  ## TEMP FIX FOR QMD RENDER -> doesn't recognize availability of lmr_data
+  ## - db connection doesn't work from home -> probably IP issue
+  lmr_data <- read_csv(here('data','lmr-data.csv'))
+  ## REGULAR PROCESS
+    # source(here('credo.R'))
+    # # local server
+    # #con <- dbConnect(RMariaDB::MariaDB(), user='root', password=mypwd, dbname='bcbg')
+    # # aws
+    # con_aws <- dbConnect(RMariaDB::MariaDB(),
+    #                    host=endpt,
+    #                    user='admin',
+    #                    password=apwd,
+    #                    port=aport)
+    # lmr_data <- dbGetQuery(con_aws, "SELECT * FROM bcbg.tblLDB_lmr lmr
+    #                        LEFT JOIN bcbg.tblLDB_quarter qtr ON lmr.fy_qtr=qtr.fy_qtr;")
+    # dbDisconnect(con_aws)
+    # clean-up
+    # lmr_data <- lmr_data %>% select(-fy_qtr..8)
+    # lmr_data <- lmr_data %>% mutate(
+    #   cat_type = ifelse(cat_type=='Refreshment Beverages','Refresh Bev',cat_type)
+    # )
+    # lmr_data <- lmr_data %>% mutate(
+    #   start_qtr_dt =floor_date(end_qtr_dt, unit="months")
+    # )
+    # lmr_data$netsales <- as.numeric(lmr_data$netsales)
+    # lmr_data$litres <- as.numeric(lmr_data$litres)
+}
+```
+
+**British Columbia Liquor Distribution Board** releases its '[**Liquor Market Review**](https://www.bcldb.com/publications/liquor-market-review)' on a quarterly basis, covering dollar and litre sales across major categories of **beer**, **wine**, **spirits**, and **'refreshment beverages'** (ciders, coolers).
+
+This is a combined look using reports going back to 2015, when the current format was started.
+
+**Note:** *my expertise is in data analysis, not the liquor industry, so the emphasis is on looking at what the data can tell us. Industry-insider context may be lacking. In the interest of promoting data analysis, I am sharing most of the R code used to process the data - hence the expandable 'Code' options.*
+
+## ANNUAL TREND OVERVIEW
+
+### Annual: All Categories
+
+#### \$ Sales
+
+There has been general upward drift in net sales dollars in recent years: (Based on most recent full yr avail.)
+
+```{r, calc_YoY}
+# get full years for comparison
+drop_yr <- c(2015,2023) ## drop partial yrs for simplicity
+trend_yr <- lmr_data %>% filter(cyr>drop_yr[1] & cyr<drop_yr[2]) %>% 
+  group_by(cyr) %>% summarize(netsales=sum(netsales),
+                              litres=sum(litres))
+
+# add % chg YoY, $/l
+trend_yr <- trend_yr %>% mutate(
+  pc_chg_sales=netsales/lag(netsales)-1,
+  pc_chg_litres=litres/lag(litres)-1,
+  dollar_per_litre=netsales/litres,
+  pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre)-1
+)
+
+```
+
+```{r}
+ch_title <- "Net Sales $ Trends - All Categories"
+trend_yr %>% ggplot(aes(x=as.factor(cyr), y=netsales, group=1))+
+  geom_line(color=bar_col, linewidth=2)+
+  geom_point(aes(y=netsales), color=bar_col, size=3)+
+  scale_y_continuous(labels=comma_format(prefix="$", scale=1e-9,suffix="B"), expand=expansion(mult=c(0,0.1)), limits=c(0,max(trend_yr$netsales)))+
+  labs(title=ch_title,y="",x="")+
+  theme_classic()+
+  theme(axis.ticks.x = element_blank()) 
+```
+
+**Year-over-Year % Change: (\$ Sales)**
+
+There is an **out-sized year-over-year % increase in 2020**, first year of the covid-19 pandemic:
+
+```{r}
+# chart % chg sales YoY
+ch_title <- "Net Sales: Year-over-Year % change"
+trend_yr %>% filter(cyr!=min(cyr)) %>% 
+  ggplot(aes(x=as.factor(cyr), y=pc_chg_sales))+
+  geom_col(fill=bar_col)+
+  geom_hline(yintercept=mean(trend_yr$pc_chg_sales, na.rm=TRUE), linetype='dotted')+
+  scale_y_continuous(labels=percent_format(), expand=expansion(mult=c(0,0.1)))+
+  labs(title=ch_title,y="",x="")+
+   theme(axis.ticks.x = element_blank()) 
+    
+```
+
+The biggest YoY change was 2020: pandemic time! Prior to 2020, annual increases were slowing down (while total still increasing).
+
+#### Volume (Litres)
+
+Sales in litres have been essentially flat in recent years:
+
+```{r}
+ch_title <- "Litre Volume Trends - All Categories"
+trend_yr %>% 
+  ggplot(aes(x=as.factor(cyr), y=litres, group=1))+
+  #geom_col(fill=bar_col)+
+  geom_line(color=bar_col, size=2)+
+  geom_point(aes(y=litres), color=bar_col, size=3)+
+  geom_hline(yintercept=mean(trend_yr$litres), linetype='dotted')+
+  scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M"), expand=expansion(mult=c(0,0.1)), limits=c(0,max(trend_yr$litres)))+
+  labs(title=ch_title,y="",x="")+
+  theme_classic()+
+  theme(axis.ticks.x = element_blank()) 
+```
+
+Litre volume has remained relatively steady, with a peak during the 2020 pandemic. Volumes are slowing down, although 2022 still above 2019.
+
+**Year-over-Year % Change: Volume (Litres)**
+
+Biggest year-over-year jump of \~4% in 2020, with declines accelerating from 2021 to 2022.
+
+```{r}
+# chart % chg liters YoY
+ch_title <- "Litre Vol.: Year-over-Year % change"
+trend_yr %>% filter(cyr!=min(cyr)) %>% 
+  ggplot(aes(x=as.factor(cyr), y=pc_chg_litres))+
+  geom_col(fill=bar_col)+
+  geom_hline(yintercept=mean(trend_yr$pc_chg_litres, na.rm=TRUE), linetype='dotted')+
+  scale_y_continuous(labels=percent_format(), expand=expansion(mult=c(0.1,0.1)))+
+  geom_hline(yintercept=0)+
+  labs(title=ch_title,y="",x="")+
+   theme(axis.ticks.x = element_blank()) 
+```
+
+2022 saw by far the **largest decrease in volume consumption in 6 years**.
+
+#### \$/Litre
+
+Looking at trends in **\$/litre gives us a sense of how overall prices have changed over time**. *(see footnote for caveats.)* Not surprisingly, **steadily upward**, increasing with inflation:
+
+```{r}
+# chart $/ltr
+ch_title <- "$/Litre Trends - All Categories"
+trend_yr %>% 
+  ggplot(aes(x=as.factor(cyr), y=dollar_per_litre, group=1))+
+  #geom_col(fill=bar_col)+
+  geom_line(color=bar_col, size=2)+
+  geom_point(aes(y=dollar_per_litre), color=bar_col, size=3)+
+  scale_y_continuous(labels=label_comma(prefix="$", accuracy=0.01), expand=expansion(mult=c(0,0.1)), limits=c(0, max(trend_yr$dollar_per_litre)))+
+  labs(title=ch_title,y="",x="")+
+  theme_classic()+
+  theme(axis.ticks.x = element_blank()) 
+```
+
+**Year-over-Year % Change: \$/Litre**
+
+With relatively flat litre volume sales, the increase in dollar volume is driven by increase in \$ of revenue per litre. Dollar per litre increases have been fairly steady, around 2%, until 2021. This **corresponds with overall increase in inflation, accelerating through 2021 and 2022**:
+
+```{r}
+# chart % chg $/liters YoY
+ch_title <- "$/Litre: Year-over-Year % change"
+trend_yr %>% filter(cyr!=min(cyr)) %>% 
+  ggplot(aes(x=as.factor(cyr), y=pc_chg_d_per_l))+
+  geom_col(fill=bar_col)+
+  geom_hline(yintercept = mean(trend_yr$pc_chg_d_per_l, na.rm=TRUE), linetype='dotted')+
+  scale_y_continuous(labels=percent_format(), expand=expansion(mult=c(0,0.1)))+
+  labs(title=ch_title,y="",x="")+
+   theme(axis.ticks.x = element_blank()) 
+```
+
+\$/litre increases look exponential from here, but will hopefully level off as inflation slows down.
+
+### Annual: By Major Category
+
+As noted, the BC LMR provides a breakdown of sales by four major categories: **beer, refreshment beverages, spirits, wine.**
+
+#### Category \$ Sales
+
+```{r, calc_yr_category}
+# annual data by category
+drop_yr <- c(2015,2023) ## drop partial yrs for simplicity
+trend_yr_cat <- lmr_data %>% filter(cyr>drop_yr[1] & cyr<drop_yr[2]) %>% group_by(cyr, cat_type) %>% summarize(
+  netsales=sum(as.numeric(netsales)),
+  litres=sum(as.numeric(litres))
+) 
+trend_yr_cat <- trend_yr_cat %>% ungroup() %>% mutate(
+  dollar_per_litre=netsales/litres,
+  pc_chg_sales=netsales/lag(netsales, n=4)-1, # yoy change by category
+  pc_chg_litre=litres/lag(litres, n=4)-1,
+  pc_chg_dollar_per_l=dollar_per_litre/lag(dollar_per_litre, n=4)-1
+)
+```
+
+For \$ sales, wine and beer are the largest categories, followed by spirits, with refreshment beverages as distant fourth:
+
+```{r}
+# annual sales by category (stack)
+ch_title <- "Net $ Sales by Category"
+# order cat_type by netsales for chart
+trend_yr_cat$cat_type <- fct_reorder(trend_yr_cat$cat_type, trend_yr_cat$netsales)
+
+p_nsc <- trend_yr_cat %>% ggplot(aes(x=as.factor(cyr), y=netsales, fill=cat_type))+
+  geom_col()+
+  scale_y_continuous(labels=label_comma(prefix="$", scale=1e-9,suffix="B"), expand=expansion(mult = c(0,0.1)))+
+  scale_fill_manual(values=cat_type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank())
+ggplotly(p_nsc)
+```
+
+**Category % Breakdown: \$ Sales**
+
+Looking at the overall % breakdown, we can more easily spot changes in composition over time:
+
+```{r}
+ch_title <- "Net $ Sales by Category, % of Total"
+p1 <- trend_yr_cat %>% ggplot(aes(x=as.factor(cyr), y=netsales, fill=cat_type))+
+  geom_col(position='fill')+
+  scale_y_continuous(labels=percent_format(), expand=expansion(mult = c(0,0.1)))+
+  scale_fill_manual(values=cat_type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank())
+ggplotly(p1)
+```
+
+Percentage breakdown shows wine and beer with bulk of market share, BUT...**beer particularly fading in favour of spirits and refreshment beverages**, with the latter showing strongest relative growth. Beer has gone from xx% in 2016 to xx% in 2022.
+
+**Category Year-over-Year % Change: \$ Sales**
+
+Refreshment Beverages had dolllar sales growth of **over 20% for 3 years in a row**:
+
+```{r}
+ch_title <- "% Chg in Net $ Sales, Year-over-Year by Category"
+trend_yr_cat %>% filter(cyr!=min(cyr)) %>%
+  ggplot(aes(x=as.factor(cyr), y=pc_chg_sales))+
+  geom_col(fill=bar_col)+
+  geom_hline(yintercept = 0)+
+  facet_grid(.~cat_type)+
+  scale_y_continuous(labels=percent_format())+
+  theme(strip.background = element_rect(fill = bar_col)) +
+  theme(strip.text=element_text(color='white'))+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.text.x=element_text(hjust=0, vjust=0.5, angle=90),
+        axis.ticks.x = element_blank()
+        ,panel.border = element_rect(fill=NA)
+        ) 
+```
+
+During the pandemic in 2020, **Refreshment Beverages had a surge in growth**, on top of already strong trend in previous years. Spirits also had a significant increase - around 10% year-over-year growth.
+
+**Beer** is the only category with **negative growth** during the period, through 2019-2021, although recovered in 2022.
+
+#### Category Volume (Litres)
+
+Looking at litre sales confirms growth of Refreshment Beverages:
+
+```{r}
+# annual litres by category (stack)
+ch_title <- "Volume (Litres) by Category"
+# order cat_type by netsales for chart
+trend_yr_cat$cat_type <- fct_reorder(trend_yr_cat$cat_type, trend_yr_cat$litres)
+
+trend_yr_cat %>% ggplot(aes(x=as.factor(cyr), y=litres, fill=cat_type))+
+  geom_col()+
+  scale_y_continuous(labels=label_comma(scale=1e-6,suffix="M"), expand=expansion(mult = c(0,0.1)))+
+  scale_fill_manual(values=cat_type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank())
+```
+
+**Beer constitutes the largest volume** by far (no surprise), although has been shrinking, with **growth in Refreshment Beverage** volume.
+
+Percentage breakdown highlights even further the **decline in beer share of volume** (still well over 50%), mostly due to increase in **Refreshment Beverages** sales.
+
+```{r}
+# annual litres by category (stack)
+ch_title <- "Volume (Litres) by Category"
+# order cat_type by netsales for chart
+trend_yr_cat$cat_type <- fct_reorder(trend_yr_cat$cat_type, trend_yr_cat$litres)
+
+trend_yr_cat %>% ggplot(aes(x=as.factor(cyr), y=litres, fill=cat_type))+
+  geom_col(position='fill')+
+  scale_y_continuous(labels=percent_format(), expand=expansion(mult = c(0,0.1)))+
+  scale_fill_manual(values=cat_type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank())
+```
+
+**Category Year-over-Year % Change: \$ Sales**
+
+Refreshment Beverage growth in litres is lower than growth in dollar sales, but still impressive, peaking at over 30% year-over-year.
+
+```{r}
+ch_title <- "% Chg in Volume (Litres), Year-over-Year by Category"
+trend_yr_cat %>% filter(cyr!=min(cyr)) %>%
+  ggplot(aes(x=as.factor(cyr), y=pc_chg_litre))+
+  geom_col(fill=bar_col)+
+  geom_hline(yintercept = 0)+
+  facet_grid(.~cat_type)+
+  scale_y_continuous(labels=percent_format())+
+  theme(strip.background = element_rect(fill = bar_col)) +
+  theme(strip.text=element_text(color='white'))+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.text.x=element_text(hjust=0, vjust=0.5, angle=90),
+        axis.ticks.x = element_blank()
+        ,panel.border = element_rect(fill=NA)
+        ) 
+```
+
+**Beer had declining volume in the most recent 5 years**, although may be stabilizing. Other categories all had strongest volume growth in 2020 during the pandemic. Refreshment beverages saw decline in growth rate in 2022 after 5 years of strong growth.
+
+Interestingly, **Beer** was the only category that **did not experience growth during the first year of covid-19 pandemic** - maybe due to relatively high consumption of beer consumed in bars and restaurants? That could explain why declining growth decreased as pandemic restrictions faded.
+
+#### Category \$/Litre
+
+Breaking out \$/litre by category shows that not all increase at the same rate, and even \$/litre ***decreases*** **are possible**.
+
+```{r}
+ch_title <- "$/Litre by Category"
+trend_yr_cat %>% ggplot(aes(x=cyr, y=dollar_per_litre, color=cat_type, group=cat_type))+
+  geom_line(size=1)+
+  geom_point(aes(y=dollar_per_litre), size=2)+
+  scale_y_continuous(labels=label_comma(prefix="$"))+
+  scale_x_continuous(breaks=trend_yr_cat$cyr)+
+  scale_color_manual(values=cat_type_color)+
+  labs(title=ch_title, x="", y="")
+```
+
+**Category Year-over-Year % Change: \$/Litre**
+
+Wide range of price categories obscures the changes at high level - % change year-over-year makes trends more visible.
+
+**Refreshment Beverage** growth in both \$ sales and litre volume comes through in **strongest growth in \$/litre of any category**:
+
+```{r}
+ch_title <- "% Chg in $/Litres, Year-over-Year by Category"
+trend_yr_cat %>% filter(cyr!=min(cyr)) %>%
+  ggplot(aes(x=as.factor(cyr), y=pc_chg_dollar_per_l))+
+  geom_col(fill=bar_col)+
+  geom_hline(yintercept = 0)+
+  facet_grid(.~cat_type)+
+  scale_y_continuous(labels=percent_format())+
+  theme(strip.background = element_rect(fill = bar_col)) +
+  theme(strip.text=element_text(color='white'))+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.text.x=element_text(hjust=0, vjust=0.5, angle=90),
+        axis.ticks.x = element_blank()
+        ,panel.border = element_rect(fill=NA)
+        ) 
+```
+
+**Wine** is an interesting case of **decrease in \$/litre in 2020** - under 2.5%, but a decrease nevertheless. It's possible this *may* have been influenced by the [changes to LDB pricing model for hospitality industry in 2020](https://news.gov.bc.ca/releases/2021PSSG0014-000308) during the pandemic, which allowed restaurants and pubs to purchase alcohol at wholesale prices.
+
+#### Category \$/Litre vs Volume and \$ Sales
+
+Notes on two charts below:
+
+-   y-axis is adjusted for each category to match the data for that category, so please take that into account.
+-   red dotted lines are the 0 axis, both vertically and horizontally.
+
+**Changes in \$/Litre vs Changes in Volume**
+
+For changes in \$/litre vs volume, in general, we would expect dots to be in the top left (price decrease, volume increase) or bottom right (price increase, volume decrease).
+
+In other words: less is more (and vice versa).
+
+```{r}
+#| fig-width: 5
+#| fig-height: 6
+ch_title <- "Relationship Between Changes in $/litre and volume"
+trend_yr_cat %>% ggplot(aes(x=pc_chg_dollar_per_l, y=pc_chg_litre, color=cyr, label=cyr))+
+  geom_point()+
+  ## options for labelling - too cluttered
+  #geom_text(vjust=0.2, hjust=-0.2, size=3)+
+  #geom_text_repel(size=3)+
+  scale_color_gradient(low = "lightblue", high = "darkblue") +
+  facet_grid(cat_type~., scales='free_y')+
+  scale_x_continuous(labels=percent_format())+
+  scale_y_continuous(labels=percent_format())+
+  geom_hline(yintercept=0, linetype='dotted', color='red')+
+  geom_vline(xintercept = 0, linetype='dotted', color='red')+
+  labs(title=ch_title, x="% Chg in $/litre", y="% Chg in Litres - scale varies")+
+  theme(panel.border = element_rect(fill=NA))
+```
+
+Different categories have different relationships between revenue per litre - our proxy for 'price' - and volume sales:
+
+-   **Wine is the clearest case** in this dataset, where an average **price decrease in wine of around 2.5% was associated with \~6% volume growth** (top left of Wine panel), price increases around \~1.5%-3% had little apparent effect, and **price increases of 6+%** were associated with **\~3% decline** in sales volume.
+-   **Beer** looks like a counter-intuitive relationship where the **smallest price increases** actually tended to be associatedwith **largest decreases in volume**. Depending on the timing, price decreases may have been in response to softening demand, and may have prevented further decreases in volume. In any case, price changes were relatively modest, and there are probably other factors involved.
+-   Refreshment beverages don't appear to have a consistent relationship between price increase and changes in volume during this period of growth, although most recently a \~6% increase in price is associated with a reversal in the growth trend and a small decrease in volume.
+
+Clearly, though, there are a variety of factors at work here and **not enough data to make any solid conclusions** with regard to effect of changes in net sales per litre and litre volumes sold.
+
+**Changes in \$/Litre vs Changes in Volume**
+
+How does this play out in terms of sales dollars generated along with price and volume changes?
+
+If it plays out well:
+
+-   Unit price (\$/litre) increases may dampen volume sales but result in growth in overall net \$ sales. This outcome would land dots in the top right quadrant.
+-   Likewise, unit price decreases (or smaller increases) will hopefully lead to higher volume sales that will more than offset the decrease in unit price and, again, deliver growth in overall net \$ sales. Dots would be in the top left.
+
+If it *doesn't* play out as hoped:
+
+-   Either price increases will dampen demand so much or price decreases will not lift volume sales high enough, and overall net \$ sales decreases. This will result in dots in lower right for the former case, or lower left for the latter.
+
+Additional notes on chart below:
+
+-   As with chart above, y-axis is adjusted for each category, red dotted lines are the 0 axes.
+-   \% chg in volume is indicated by size of the dot. Makes for a busy chart but the intention is to highlight the points that represent the biggest (or smallest) changes in % volume as additional reference.
+
+Good news for the industry is that the **positive scenarios held up in *almost* all cases**:
+
+```{r}
+#| fig-width: 5
+#| fig-height: 6
+ch_title <- "Relationship Between Changes in $/Litre and Net $ Sales"
+trend_yr_cat %>% ggplot(aes(x=pc_chg_dollar_per_l, y=pc_chg_sales, size=pc_chg_litre, color=cyr, label=cyr))+
+  geom_point()+
+  guides(size='none')+
+  scale_color_gradient(low = "lightblue", high = "darkblue") +
+  facet_grid(cat_type~., scales='free_y')+
+  scale_x_continuous(labels=percent_format())+
+  scale_y_continuous(labels=percent_format())+
+  geom_hline(yintercept=0, linetype='dotted', color='red')+
+  geom_vline(xintercept = 0, linetype='dotted', color='red')+
+  labs(title=ch_title, x="% Chg in $/litre", y="% Chg in Net $ Sales - scale varies")+
+  theme(panel.border = element_rect(fill=NA))
+```
+
+**Beer category was the only one where changes in \$/litre did not always have the hoped for effect** of leading to overall higher total net \$ sales: the smaller price changes, associated with declines in volume (small dots), resulted in overall decreasing net \$ sales. On the plus side, the largest year-over-year increase in \$/litre for beer did result in overall increase in net \$ sales, even though associated with decrease in litre volume.
+
+### Part 1 Wrap-up & Next-up
+
+That concludes our look at annual trends in the BC Liquor Market Review.
+
+#### Next-up:
+
+1.  **Quarterly patterns:** exploration of the seasonal patterns in the BC liquor market by delving into data at the quarterly level, again going back to 2015.
+2.  **Category trends and patterns:** closer look at each of the major beverage categories, exploring sub-categories within them, as reported in the Liquor Market Review.
+
+Coming soon!
+
+### Footnotes
+
+Notes on 'net \$ sales' and '\$ per litre':
+
+-   the report says "**Net dollar value is based on the price paid by the customer** and excludes any applicable taxes."
+-   calculating average **net dollar value per litre for beverage categories gives unrealistically low numbers** compared to retail prices in BC liquor stores. (*Beer at average \$4/litre? Not even the cheapest beer on the [BC Liquor Stores](https://www.bcliquorstores.com/product-catalogue?category=beer&sort=currentPrice:desc&page=1) website.*)
+-   there is likely additional factors related to BC LDB pricing structure, wholesaling, etc.
+-   best to **consider average net dollar value per litre referred to above as relative indicator**.
+
+## 
