@@ -11,7 +11,9 @@
 }
 
 .quarto-title {
-  /* color: white; */
+  /*color: #f58422; */
+  color: navy;
+  font-size: 1.5em;
 }
 .quarto-title-block .quarto-title-banner {
   /* trying to get header image - this works in principal but needs work (resizing etc) */
