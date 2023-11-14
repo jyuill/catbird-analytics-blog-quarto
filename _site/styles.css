@@ -6,6 +6,8 @@
 .navbar-dark {
   /* background-color: #1E53FA; */
   background-color: navy; 
+  height: 40px;
+  padding-top: 5px;
 }
 
 .quarto-title {
@@ -13,12 +15,17 @@
 }
 .quarto-title-block .quarto-title-banner {
   /* trying to get header image - this works in principal but needs work (resizing etc) */
-  /* background-image: url(banner-barcharts-noise-1080-440.png); */
+  /*background-image: url(banner-barcharts-noise-1080-440.png); */
   /*background-size: 1200px; */
   background-position: center;
   background-repeat: no-repeat;
+  padding-top: 16px;
   padding-left: 10px;
+  /*padding-bottom: 40px;*/ /* does nothing */
+  /*margin-bottom: 4px; */ /* does nothing */
   background-origin: content-box;
   /*background-color: navy; */
   border-bottom: solid 3px navy;
+  /* prefer tighter heading */
+  height: 120px;
 }
