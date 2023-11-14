@@ -1,8 +1,9 @@
 ---
 title: "About"
-image: avatar.jpg
+image: avatar_sm.png
 about:
   template: trestles
+  image-width: 10em
   links:
     - icon: linkedin
       text: LinkedIn
