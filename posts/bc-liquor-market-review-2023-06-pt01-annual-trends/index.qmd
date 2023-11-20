@@ -3,7 +3,7 @@ title: "BC Liquor Sales Analysis: Annual Trends 2016-2022"
 author: John Yuill
 date: '2023-11-05'
 categories: [liquor stats, reporting, analysis, R]
-description-meta: Exploration and analysis of BC Liquor Market Review data covering the years 2016 to 2023, with trends and observations.
+description-meta: BC Liquor Market Review data exploration and analysis covering the years 2016 to 2023, with trends and observations.
 draft: false
 image: bc-lmr-yoy-vol-chg.png
 toc: true
@@ -47,7 +47,7 @@ type_color <- c("Beer"=bpal[6], "Refresh Bev"=bpal[3], "Spirits"=bpal[4], "Wine"
 ```{r get_process_data}
 #| echo: FALSE
 # if no data available - fetch
-# temp fix for qmd render ->
+# temp fix for qmd render -> doesn't recognize lmr_data
 if(exists('lmr_data', envir = globalenv())){
   lmr_data <- lmr_data
 } else { # get from MySQL database on AWS
@@ -86,7 +86,7 @@ if(exists('lmr_data', envir = globalenv())){
 
 **British Columbia Liquor Distribution Board** releases its '[**Liquor Market Review**](https://www.bcldb.com/publications/liquor-market-review)' on a quarterly basis, covering dollar and litre sales across major alcoholic beverage types of **beer**, **wine**, **spirits**, and **'refreshment beverages'** (ciders, coolers).
 
-This is a combined look using reports going back to 2015, when the current format was started.
+This is a combined look using reports going back to 2016, when the current format was started.
 
 **Note:** *my expertise is in data analysis, not the liquor industry, so the emphasis is on exploring what the data can tell us. Industry-insider context may be lacking. In the interest of promoting data analysis, I am sharing most of the R code used to process the data - hence the expandable 'Code' options.*
 
