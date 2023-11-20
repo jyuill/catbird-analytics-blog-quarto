@@ -4,8 +4,8 @@ author: John Yuill
 date: '2023-11-19'
 categories: [liquor statas, reporting, analysis]
 description-meta: BC Liquor Market Review data exploration and analysis covering the years 2016 to 2023, focusing on quarter-level trends, patterns and observations.
-draft: true
-#image: 
+draft: false
+image: bc-lmr-quarter-pattern.png 
 toc: true
 toc-depth: 4
 toc-location: left
@@ -31,6 +31,7 @@ library(readr) ## for easy conversion of $ characters to numeric
 library(RMariaDB) ## best way to access MySQL from R
 library(RColorBrewer)
 library(here)
+library(plotly)
 # set default theme
 theme_set(theme_classic())
 
@@ -136,7 +137,7 @@ plot <- trend_ttl_qtr %>% ggplot(aes(x=qtr, y=netsales, color=factor(fyr), group
   geom_line()+
   geom_point()+
   geom_line(data=trend_qtrs, aes(x=qtr, y=avgsales, group=1), color='black', size=1.5)+
-  scale_y_continuous(labels=label_comma(scale=1e-6, suffix="M"), expand=expansion(add=c(0,0.1)), limits=c(0,max(trend_ttl_qtr$netsales)))+
+  scale_y_continuous(labels=label_comma(scale=1e-6, prefix="$", suffix="M"), expand=expansion(add=c(0,0.1)), limits=c(0,max(trend_ttl_qtr$netsales)))+
   labs(title=ch_title, x="", y="Net $ Sales", color='fiscal yr')
 ggplotly(plot)
   
@@ -184,9 +185,9 @@ ggplotly(plot)
 
 \\\\\* BC LDB fiscal yr runs Apr - Mar.
 
-The different pattern compared to \$ sales represents the shift in drinking habits with the seasons:
+The different pattern compared to \$ sales likely represents the shift in drinking habits with the seasons:
 
--   peak volume is in Q2 - beer season.
+-   peak volume is in Q2 - beer season, and beer, along with refreshment beverages, are consumer in higher volumes than the other types.
 -   Q3, which is usually even with Q2 in \$ sales, has a consistent drop in volume compared to Q2, due to shift away from beer/refreshments beverages toward wine and spirits.
 
 Patters by beverage type are looked at more below.
@@ -208,13 +209,9 @@ ggplotly(plot)
 -   Q3 (Oct-Nov-Dec) big drop around 15% range compared to Q2.
 -   Q4 (Jan-Feb-Mar) usually another \~15% from Q3 to Q4.
 
-### By Major Category
+### By Major Beverage Type
 
-What are the quarterly trends by major category in recent years?
-
-which categories peak in which quarters?
-
-#### Volume (Litres)
+Let's look at beverage types to see what is going on below the surface of overall trends.
 
 ```{r}
 # quarters at cat_type level
@@ -233,7 +230,55 @@ trend_qtrs_cat <- trend_qtr_cat %>% group_by(qtr, type) %>%
 trend_qtrs_cat$type <- as.factor(trend_qtrs_cat$type)
 ```
 
+#### \$ Sales
+
+Looking at quarter sales by beverage type reveals patterns we suspected earlier:
+
+-   **Beer and refreshment beverages tend to peak in Q2** and decline in Q3 and Q4.
+-   **Wine and, especially, spirits peak in Q3** and offset the decline in beer and refreshment beverages.
+
 ```{r}
+#| fig-cap: "black line = average"
+#| fig-width: 5
+#| fig-height: 6
+#| fig-align: center
+ch_title <- "Comparison of Qtrly $ Sales by Beverage Type"
+trend_qtr_cat %>% ggplot(aes(x=qtr, y=netsales, color=factor(fyr), group=fyr))+
+  geom_line()+
+  geom_point()+
+  geom_line(data=trend_qtrs_cat, aes(x=qtr, y=avg_netsales), color='black', group=1, size=1.2)+
+  facet_grid(type~., scales='free_y')+
+  scale_y_continuous(labels=label_comma(scale=1e-6, prefix="$", suffix="M"), 
+                     limits=c(0,NA))+
+  labs(title=ch_title, x="", color="fiscal yr", y="$ Sales (upper limit varies)")+theme(panel.border = element_rect(fill=NA))
+```
+
+Stacked chart highlights the shifts between Q2 and Q3:
+
+-   decline in \$ sales of Beer and Refreshment Beverages in Q3 almost completely offset by increase in wine and spirits.
+
+```{r}
+trend_qtrs_cat$type <- fct_reorder(trend_qtrs_cat$type, trend_qtrs_cat$avg_netsales)
+
+ch_title <- "Breakdown in $ Sales per Qtr by Category"
+plot <- trend_qtrs_cat %>% ggplot(aes(x=qtr, y=avg_netsales, fill=type))+
+  #geom_col(position='fill')+
+  geom_col()+
+  scale_y_continuous(labels=label_comma(scale=1e-6, prefix="$", suffix="M"), expand=expansion(add=c(0,0.1)))+
+  scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="Average Net Sales in Qtr (2015-2023)")+
+  theme(axis.ticks.x = element_blank())
+ggplotly(plot)
+```
+
+#### Litres
+
+Similar quarter-over-quarter patterns can be seen when looking at litres sold, although the overall differences from one quarter to the next - especially Q2 to Q3 - are larger when measured in litres, since Beer and Refreshment Beverages are consumed in larger quantities than Wine and Spirits.
+
+```{r}
+#| fig-width: 5
+#| fig-height: 6
+#| fig-align: center
 ch_title <- "Comparison of Qtrly volume by Category"
 trend_qtr_cat %>% ggplot(aes(x=qtr, y=litres, color=factor(fyr), group=fyr))+
   geom_line()+
@@ -245,8 +290,10 @@ trend_qtr_cat %>% ggplot(aes(x=qtr, y=litres, color=factor(fyr), group=fyr))+
   #+ theme(panel.border = element_line())
 ```
 
--   Beer and - even more-so - refreshment beverages drop from Q1-Q2 (Apr-Sep) to Q3-Q4 (Oct-Mar).
+-   Beer and, even more-so, refreshment beverages drop from Q1-Q2 (Apr-Sep) to Q3-Q4 (Oct-Mar).
 -   Wine, Spirits have small peak in Q3 (Oct-Dec) - holiday season.
+
+This pattern shows up clearly when looking at the average % breakdown in litres by beverage type:
 
 ```{r}
 trend_qtrs_cat$type <- fct_reorder(trend_qtrs_cat$type, trend_qtrs_cat$avg_litres)
@@ -256,13 +303,20 @@ trend_qtrs_cat %>% ggplot(aes(x=qtr, y=avg_litres, fill=type))+
   geom_col(position='fill')+
   scale_y_continuous(labels=percent_format(), expand=expansion(mult = c(0,0.1)))+
   scale_fill_manual(values=type_color)+
-  labs(title=ch_title, x="",y="")+
+  labs(title=ch_title, x="",y="Average % Breakdown by Quarter (2015-2023")+
   theme(axis.ticks.x = element_blank())
 ```
 
-Reinforcing the shifts in category by quarters - showing the bulge in % share for wine and spirits in Q3-Q4 (Sep-Mar).
+The bulge in % share for Wine and Spirits in Q3 (Sep-Dec), at the expense of Beer and Refreshment Beverages, is apparent.
 
-## 
+### Part 2 Wrap-up and Next Up
+
+This concludes our look at quarter patterns, including quarters from mid-2015 to mid-2023.
+
+#### Next-up:
+
+1.  **Category trends and patterns:** closer look at each of the major beverage types, exploring categories and sub-categories within them, as reported in the Liquor Market Review.
+2.  **Category 1: Beer:** start with beer, because...beer. ;)
 
 ### Footnotes
 

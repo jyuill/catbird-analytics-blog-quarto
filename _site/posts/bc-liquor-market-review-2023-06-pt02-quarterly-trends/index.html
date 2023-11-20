@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="John Yuill">
-<meta name="dcterms.date" content="2023-11-05">
-<meta name="description" content="Analysis of BC Liquor Market Review covering period to June 2023, with trends and observations.">
+<meta name="dcterms.date" content="2023-11-19">
+<meta name="description" content="BC Liquor Market Review data exploration and analysis covering the years 2016 to 2023, focusing on quarter-level trends, patterns and observations.">
 
 <title>Catbird Analytics - BC Liquor Sales Analysis: Quarter-of-Year Patterns 2015-2023</title>
 <style>
@@ -151,11 +151,20 @@ cookieconsent.run({
 });
 </script> 
   
+<script src="../../site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="../../site_libs/plotly-binding-4.10.1/plotly.js"></script>
+<script src="../../site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="../../site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="../../site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet">
+<script src="../../site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="../../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="../../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Catbird Analytics - BC Liquor Sales Analysis: Quarter-of-Year Patterns 2015-2023">
-<meta property="og:description" content="British Columbia Liquor Distribution Board releases its ‘Liquor Market Review’ on a quarterly basis, covering dollar and litre sales across major categories of beer, wine, spirits, and ‘refreshment…">
+<meta property="og:description" content="This is a continuation of a previous analysis of annual liquor sales in British Columbia, based on data from British Columbia Liquor Distribution Board ‘Liquor Market Review’.">
+<meta property="og:image" content="bc-lmr-quarter-pattern.png">
 <meta property="og:site-name" content="Catbird Analytics">
 </head>
 
@@ -214,35 +223,25 @@ cookieconsent.run({
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#annual-trend-overview" id="toc-annual-trend-overview" class="nav-link active" data-scroll-target="#annual-trend-overview">ANNUAL TREND OVERVIEW</a>
+  <li><a href="#stats-by-quarter-of-the-year" id="toc-stats-by-quarter-of-the-year" class="nav-link active" data-scroll-target="#stats-by-quarter-of-the-year">Stats by Quarter of the Year</a>
   <ul>
-  <li><a href="#annual-all-categories" id="toc-annual-all-categories" class="nav-link" data-scroll-target="#annual-all-categories">Annual: All Categories</a>
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a>
   <ul class="collapse">
   <li><a href="#sales" id="toc-sales" class="nav-link" data-scroll-target="#sales">$ Sales</a></li>
-  <li><a href="#volume-litres" id="toc-volume-litres" class="nav-link" data-scroll-target="#volume-litres">Volume (Litres)</a></li>
-  <li><a href="#litre" id="toc-litre" class="nav-link" data-scroll-target="#litre">$/Litre</a></li>
+  <li><a href="#litres" id="toc-litres" class="nav-link" data-scroll-target="#litres">Litres</a></li>
   </ul></li>
-  <li><a href="#annual-by-major-category" id="toc-annual-by-major-category" class="nav-link" data-scroll-target="#annual-by-major-category">Annual: By Major Category</a>
+  <li><a href="#by-major-beverage-type" id="toc-by-major-beverage-type" class="nav-link" data-scroll-target="#by-major-beverage-type">By Major Beverage Type</a>
   <ul class="collapse">
-  <li><a href="#category-sales" id="toc-category-sales" class="nav-link" data-scroll-target="#category-sales">Category $ Sales</a></li>
-  <li><a href="#category-volume-litres" id="toc-category-volume-litres" class="nav-link" data-scroll-target="#category-volume-litres">Category Volume (Litres)</a></li>
-  <li><a href="#category-litre" id="toc-category-litre" class="nav-link" data-scroll-target="#category-litre">Category $/Litre</a></li>
-  <li><a href="#category-litre-vs-volume-and-sales" id="toc-category-litre-vs-volume-and-sales" class="nav-link" data-scroll-target="#category-litre-vs-volume-and-sales">Category $/Litre vs Volume and $ S<strong>ales</strong></a></li>
+  <li><a href="#sales-1" id="toc-sales-1" class="nav-link" data-scroll-target="#sales-1">$ Sales</a></li>
+  <li><a href="#litres-1" id="toc-litres-1" class="nav-link" data-scroll-target="#litres-1">Litres</a></li>
   </ul></li>
-  </ul></li>
-  <li><a href="#pt-ii-quarterly" id="toc-pt-ii-quarterly" class="nav-link" data-scroll-target="#pt-ii-quarterly">[pt II] Quarterly</a>
-  <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#by-major-category" id="toc-by-major-category" class="nav-link" data-scroll-target="#by-major-category">By Major Category</a>
+  <li><a href="#part-2-wrap-up-and-next-up" id="toc-part-2-wrap-up-and-next-up" class="nav-link" data-scroll-target="#part-2-wrap-up-and-next-up">Part 2 Wrap-up and Next Up</a>
   <ul class="collapse">
-  <li><a href="#volume-litres-1" id="toc-volume-litres-1" class="nav-link" data-scroll-target="#volume-litres-1">Volume (Litres)</a></li>
+  <li><a href="#next-up" id="toc-next-up" class="nav-link" data-scroll-target="#next-up">Next-up:</a></li>
   </ul></li>
-  </ul></li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a>
-  <ul>
   <li><a href="#footnotes" id="toc-footnotes" class="nav-link" data-scroll-target="#footnotes">Footnotes</a></li>
   </ul></li>
-  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"></a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
   </ul>
 </nav>
 </nav>
@@ -254,9 +253,9 @@ cookieconsent.run({
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">BC Liquor Sales Analysis - Jun 2023 edition</h1>
+<h1 class="title">BC Liquor Sales Analysis: Quarter-of-Year Patterns 2015-2023</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">lmr</div>
+    <div class="quarto-category">liquor statas</div>
     <div class="quarto-category">reporting</div>
     <div class="quarto-category">analysis</div>
   </div>
@@ -276,14 +275,14 @@ cookieconsent.run({
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 5, 2023</p>
+      <p class="date">November 19, 2023</p>
     </div>
   </div>
   
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 13, 2023</p>
+      <p class="date-modified">November 19, 2023</p>
     </div>
   </div>
     
@@ -298,433 +297,96 @@ cookieconsent.run({
 <div class="cell">
 
 </div>
-<p><strong>British Columbia Liquor Distribution Board</strong> releases its ‘<a href="https://www.bcldb.com/publications/liquor-market-review"><strong>Liquor Market Review</strong></a>’ on a quarterly basis, covering dollar and litre sales across major categories of <strong>beer</strong>, <strong>wine</strong>, <strong>spirits</strong>, and <strong>‘refreshment beverages’</strong> (ciders, coolers).</p>
-<p>This is a combined look at quarterly data going back as long as the current format has been published - back to 2015.</p>
-<section id="annual-trend-overview" class="level2">
-<h2 class="anchored" data-anchor-id="annual-trend-overview">ANNUAL TREND OVERVIEW</h2>
-<section id="annual-all-categories" class="level3">
-<h3 class="anchored" data-anchor-id="annual-all-categories">Annual: All Categories</h3>
-<section id="sales" class="level4">
-<h4 class="anchored" data-anchor-id="sales">$ Sales</h4>
-<p>There has been general upward drift in net sales dollars in recent years: (Based on most recent full yr avail.)</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get full years for comparison</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>drop_yr <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2015</span>,<span class="dv">2023</span>) <span class="do">## drop partial yrs for simplicity</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>trend_yr <span class="ot">&lt;-</span> lmr_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(cyr<span class="sc">&gt;</span>drop_yr[<span class="dv">1</span>] <span class="sc">&amp;</span> cyr<span class="sc">&lt;</span>drop_yr[<span class="dv">2</span>]) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cyr) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">netsales=</span><span class="fu">sum</span>(netsales),</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                              <span class="at">litres=</span><span class="fu">sum</span>(litres))</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># add % chg YoY, $/l</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>trend_yr <span class="ot">&lt;-</span> trend_yr <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">pc_chg_sales=</span>netsales<span class="sc">/</span><span class="fu">lag</span>(netsales)<span class="sc">-</span><span class="dv">1</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">pc_chg_litres=</span>litres<span class="sc">/</span><span class="fu">lag</span>(litres)<span class="sc">-</span><span class="dv">1</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">dollar_per_litre=</span>netsales<span class="sc">/</span>litres,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">pc_chg_d_per_l=</span>dollar_per_litre<span class="sc">/</span><span class="fu">lag</span>(dollar_per_litre)<span class="sc">-</span><span class="dv">1</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Net Sales $ Trends - All Categories"</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>trend_yr <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>netsales, <span class="at">group=</span><span class="dv">1</span>))<span class="sc">+</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color=</span>bar_col, <span class="at">linewidth=</span><span class="dv">2</span>)<span class="sc">+</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y=</span>netsales), <span class="at">color=</span>bar_col, <span class="at">size=</span><span class="dv">3</span>)<span class="sc">+</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">comma_format</span>(<span class="at">prefix=</span><span class="st">"$"</span>, <span class="at">scale=</span><span class="fl">1e-9</span>,<span class="at">suffix=</span><span class="st">"B"</span>), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)), <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">max</span>(trend_yr<span class="sc">$</span>netsales)))<span class="sc">+</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title,<span class="at">y=</span><span class="st">""</span>,<span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()<span class="sc">+</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-<p><strong>Year-over-Year % Change: ($ Sales)</strong></p>
-<p>Out-sized year-over-year % increase in first year of the covid-19 pandemic:</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># chart % chg sales YoY</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Net Sales: Year-over-Year % change"</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>trend_yr <span class="sc">%&gt;%</span> <span class="fu">filter</span>(cyr<span class="sc">!=</span><span class="fu">min</span>(cyr)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>pc_chg_sales))<span class="sc">+</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill=</span>bar_col)<span class="sc">+</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="fu">mean</span>(trend_yr<span class="sc">$</span>pc_chg_sales, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">linetype=</span><span class="st">'dotted'</span>)<span class="sc">+</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>(), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)))<span class="sc">+</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title,<span class="at">y=</span><span class="st">""</span>,<span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-<p>The biggest YoY change was 2020: pandemic time! Prior to 2020, annual increases were slowing down (while total still increasing).</p>
-</section>
-<section id="volume-litres" class="level4">
-<h4 class="anchored" data-anchor-id="volume-litres">Volume (Litres)</h4>
-<p>Sales in litres have been essentially flat in recent years:</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Litre Volume Trends - All Categories"</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>trend_yr <span class="sc">%&gt;%</span> </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>litres, <span class="at">group=</span><span class="dv">1</span>))<span class="sc">+</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#geom_col(fill=bar_col)+</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color=</span>bar_col, <span class="at">size=</span><span class="dv">2</span>)<span class="sc">+</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y=</span>litres), <span class="at">color=</span>bar_col, <span class="at">size=</span><span class="dv">3</span>)<span class="sc">+</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="fu">mean</span>(trend_yr<span class="sc">$</span>litres), <span class="at">linetype=</span><span class="st">'dotted'</span>)<span class="sc">+</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">comma_format</span>(<span class="at">scale=</span><span class="fl">1e-6</span>,<span class="at">suffix=</span><span class="st">"M"</span>), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)), <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">max</span>(trend_yr<span class="sc">$</span>litres)))<span class="sc">+</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title,<span class="at">y=</span><span class="st">""</span>,<span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()<span class="sc">+</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-<p>Litre volume has remained relatively steady, with a peak during the 2020 pandemic. Volumes are slowing down, although 2022 still above 2019.</p>
-<p><strong>Year-over-Year % Change: Volume (Litres)</strong></p>
-<p>Biggest year-over-year jump of ~4% in 2020, with declines accelerating from 2021 to 2022.</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># chart % chg liters YoY</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Litre Vol.: Year-over-Year % change"</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>trend_yr <span class="sc">%&gt;%</span> <span class="fu">filter</span>(cyr<span class="sc">!=</span><span class="fu">min</span>(cyr)) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>pc_chg_litres))<span class="sc">+</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill=</span>bar_col)<span class="sc">+</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="fu">mean</span>(trend_yr<span class="sc">$</span>pc_chg_litres, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">linetype=</span><span class="st">'dotted'</span>)<span class="sc">+</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>(), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.1</span>)))<span class="sc">+</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>)<span class="sc">+</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title,<span class="at">y=</span><span class="st">""</span>,<span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-</section>
-<section id="litre" class="level4">
-<h4 class="anchored" data-anchor-id="litre">$/Litre</h4>
-<p>Looking at trends in $/litre gives us a sense of how overall prices have changed over time. Not surprisingly, steadily upward, increasing with inflation:</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># chart $/ltr</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"$/Litre Trends - All Categories"</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>trend_yr <span class="sc">%&gt;%</span> </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>dollar_per_litre, <span class="at">group=</span><span class="dv">1</span>))<span class="sc">+</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#geom_col(fill=bar_col)+</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color=</span>bar_col, <span class="at">size=</span><span class="dv">2</span>)<span class="sc">+</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y=</span>dollar_per_litre), <span class="at">color=</span>bar_col, <span class="at">size=</span><span class="dv">3</span>)<span class="sc">+</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">label_comma</span>(<span class="at">prefix=</span><span class="st">"$"</span>, <span class="at">accuracy=</span><span class="fl">0.01</span>), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)), <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(trend_yr<span class="sc">$</span>dollar_per_litre)))<span class="sc">+</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title,<span class="at">y=</span><span class="st">""</span>,<span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()<span class="sc">+</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-<p><strong>Year-over-Year % Change: $/Litre</strong></p>
-<p>With relatively flat litre volume sales, the increase in dollar volume is driven by increase in $ of revenue per litre. Dollar per litre increases have been fairly steady, around 2%, until 2021. This corresponds with overall increase in inflation, accelerating through 2021 and 2022:</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># chart % chg $/liters YoY</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"$/Litre: Year-over-Year % change"</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>trend_yr <span class="sc">%&gt;%</span> <span class="fu">filter</span>(cyr<span class="sc">!=</span><span class="fu">min</span>(cyr)) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>pc_chg_d_per_l))<span class="sc">+</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill=</span>bar_col)<span class="sc">+</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">mean</span>(trend_yr<span class="sc">$</span>pc_chg_d_per_l, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">linetype=</span><span class="st">'dotted'</span>)<span class="sc">+</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>(), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)))<span class="sc">+</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title,<span class="at">y=</span><span class="st">""</span>,<span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-</section>
-</section>
-<section id="annual-by-major-category" class="level3">
-<h3 class="anchored" data-anchor-id="annual-by-major-category">Annual: By Major Category</h3>
-<p>As noted, the BC LMR provides a breakdown of sales by four major categories.</p>
-<section id="category-sales" class="level4">
-<h4 class="anchored" data-anchor-id="category-sales">Category $ Sales</h4>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># annual data by category</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>drop_yr <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2015</span>,<span class="dv">2023</span>) <span class="do">## drop partial yrs for simplicity</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>trend_yr_cat <span class="ot">&lt;-</span> lmr_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(cyr<span class="sc">&gt;</span>drop_yr[<span class="dv">1</span>] <span class="sc">&amp;</span> cyr<span class="sc">&lt;</span>drop_yr[<span class="dv">2</span>]) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cyr, cat_type) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">netsales=</span><span class="fu">sum</span>(<span class="fu">as.numeric</span>(netsales)),</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">litres=</span><span class="fu">sum</span>(<span class="fu">as.numeric</span>(litres))</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>) </span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>trend_yr_cat <span class="ot">&lt;-</span> trend_yr_cat <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">dollar_per_litre=</span>netsales<span class="sc">/</span>litres,</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">pc_chg_sales=</span>netsales<span class="sc">/</span><span class="fu">lag</span>(netsales, <span class="at">n=</span><span class="dv">4</span>)<span class="sc">-</span><span class="dv">1</span>, <span class="co"># yoy change by category</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">pc_chg_litre=</span>litres<span class="sc">/</span><span class="fu">lag</span>(litres, <span class="at">n=</span><span class="dv">4</span>)<span class="sc">-</span><span class="dv">1</span>,</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">pc_chg_dollar_per_l=</span>dollar_per_litre<span class="sc">/</span><span class="fu">lag</span>(dollar_per_litre, <span class="at">n=</span><span class="dv">4</span>)<span class="sc">-</span><span class="dv">1</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<p>For $ sales, wine and beer are the largest categories, followed by spirits, with refreshment beverages as distant fourth:</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># annual sales by category (stack)</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Net $ Sales by Category"</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># order cat_type by netsales for chart</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>trend_yr_cat<span class="sc">$</span>cat_type <span class="ot">&lt;-</span> <span class="fu">fct_reorder</span>(trend_yr_cat<span class="sc">$</span>cat_type, trend_yr_cat<span class="sc">$</span>netsales)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>trend_yr_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>netsales, <span class="at">fill=</span>cat_type))<span class="sc">+</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>()<span class="sc">+</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">label_comma</span>(<span class="at">prefix=</span><span class="st">"$"</span>, <span class="at">scale=</span><span class="fl">1e-9</span>,<span class="at">suffix=</span><span class="st">"B"</span>), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)))<span class="sc">+</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>cat_type_color)<span class="sc">+</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-<p><strong>Category % Breakdown: $ Sales</strong></p>
-<p>Looking at the overall % breakdown, we can more easily spot changes in composition over time:</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Net $ Sales by Category, % of Total"</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>trend_yr_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>netsales, <span class="at">fill=</span>cat_type))<span class="sc">+</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position=</span><span class="st">'fill'</span>)<span class="sc">+</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>(), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)))<span class="sc">+</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>cat_type_color)<span class="sc">+</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-<p>Percentage breakdown shows wine and beer with bulk of market share, BUT…beer particularly fading in favour of spirits and refreshment beverages, with the latter showing strongest relative growth.</p>
-<p><strong>Category Year-over-Year % Change: $ Sales</strong></p>
-<p>Refreshment Beverages had dolllar sales growth of <strong>over 20% for 3 years in a row</strong>:</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"% Chg in Net $ Sales, Year-over-Year by Category"</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>trend_yr_cat <span class="sc">%&gt;%</span> <span class="fu">filter</span>(cyr<span class="sc">!=</span><span class="fu">min</span>(cyr)) <span class="sc">%&gt;%</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>pc_chg_sales))<span class="sc">+</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill=</span>bar_col)<span class="sc">+</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)<span class="sc">+</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(.<span class="sc">~</span>cat_type)<span class="sc">+</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>())<span class="sc">+</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> bar_col)) <span class="sc">+</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">strip.text=</span><span class="fu">element_text</span>(<span class="at">color=</span><span class="st">'white'</span>))<span class="sc">+</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="dv">0</span>, <span class="at">vjust=</span><span class="fl">0.5</span>, <span class="at">angle=</span><span class="dv">90</span>),</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        ,<span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="cn">NA</span>)</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-<p>During the pandemic in 2020, <strong>Refreshment Beverages had a surge in growth</strong>, on top of already strong trend in previous years. Spirits also had a significant increase - around 10% year-over-year growth.</p>
-<p><strong>Beer</strong> is the only category with <strong>negative growth</strong> during the period, through 2019-2021, although recovered in 2022.</p>
-</section>
-<section id="category-volume-litres" class="level4">
-<h4 class="anchored" data-anchor-id="category-volume-litres">Category Volume (Litres)</h4>
-<p>Looking at litre sales confirms growth of Refreshment Beverages:</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># annual litres by category (stack)</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Volume (Litres) by Category"</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># order cat_type by netsales for chart</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>trend_yr_cat<span class="sc">$</span>cat_type <span class="ot">&lt;-</span> <span class="fu">fct_reorder</span>(trend_yr_cat<span class="sc">$</span>cat_type, trend_yr_cat<span class="sc">$</span>litres)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>trend_yr_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>litres, <span class="at">fill=</span>cat_type))<span class="sc">+</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>()<span class="sc">+</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">label_comma</span>(<span class="at">scale=</span><span class="fl">1e-6</span>,<span class="at">suffix=</span><span class="st">"M"</span>), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)))<span class="sc">+</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>cat_type_color)<span class="sc">+</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-<p><strong>Beer constitutes the largest volume</strong> by far (no surprise), although has been shrinking, with <strong>growth in Refreshment Beverage</strong> volume.</p>
-<p>Percentage breakdown highlights even further the <strong>decline in beer share of volume</strong> (still well over 50%), mostly due to increase in <strong>Refreshment Beverages</strong> sales.</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># annual litres by category (stack)</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Volume (Litres) by Category"</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># order cat_type by netsales for chart</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>trend_yr_cat<span class="sc">$</span>cat_type <span class="ot">&lt;-</span> <span class="fu">fct_reorder</span>(trend_yr_cat<span class="sc">$</span>cat_type, trend_yr_cat<span class="sc">$</span>litres)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>trend_yr_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>litres, <span class="at">fill=</span>cat_type))<span class="sc">+</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position=</span><span class="st">'fill'</span>)<span class="sc">+</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>(), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)))<span class="sc">+</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>cat_type_color)<span class="sc">+</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-<p><strong>Category Year-over-Year % Change: $ Sales</strong></p>
-<p>Refreshment Beverage growth in litres is lower than growth in dollar sales, but still impressive, peaking at over 30% year-over-year.</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"% Chg in Volume (Litres), Year-over-Year by Category"</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>trend_yr_cat <span class="sc">%&gt;%</span> <span class="fu">filter</span>(cyr<span class="sc">!=</span><span class="fu">min</span>(cyr)) <span class="sc">%&gt;%</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>pc_chg_litre))<span class="sc">+</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill=</span>bar_col)<span class="sc">+</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)<span class="sc">+</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(.<span class="sc">~</span>cat_type)<span class="sc">+</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>())<span class="sc">+</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> bar_col)) <span class="sc">+</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">strip.text=</span><span class="fu">element_text</span>(<span class="at">color=</span><span class="st">'white'</span>))<span class="sc">+</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="dv">0</span>, <span class="at">vjust=</span><span class="fl">0.5</span>, <span class="at">angle=</span><span class="dv">90</span>),</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        ,<span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="cn">NA</span>)</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>        ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-<p><strong>Beer had declining volume in the most recent 5 years</strong>, although may be stabilizing. Other categories all had strongest volume growth in 2020 during the pandemic. Refreshment beverages saw decline in growth rate in 2022 after 5 years of strong growth.</p>
-<p>Interestingly, <strong>Beer</strong> was the only category that <strong>did not experience growth during the first year of covid-19 pandemic</strong> - maybe due to relatively high consumption of beer consumed in bars and restaurants? That could explain why declining growth decreased as pandemic restrictions faded.</p>
-</section>
-<section id="category-litre" class="level4">
-<h4 class="anchored" data-anchor-id="category-litre">Category $/Litre</h4>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"$/Litre by Category"</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>trend_yr_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>cyr, <span class="at">y=</span>dollar_per_litre, <span class="at">color=</span>cat_type, <span class="at">group=</span>cat_type))<span class="sc">+</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size=</span><span class="dv">1</span>)<span class="sc">+</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y=</span>dollar_per_litre), <span class="at">size=</span><span class="dv">2</span>)<span class="sc">+</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">label_comma</span>(<span class="at">prefix=</span><span class="st">"$"</span>))<span class="sc">+</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span>cat_type_color)<span class="sc">+</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>, <span class="at">y=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"% Chg in $/Litres, Year-over-Year by Category"</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>trend_yr_cat <span class="sc">%&gt;%</span> <span class="fu">filter</span>(cyr<span class="sc">!=</span><span class="fu">min</span>(cyr)) <span class="sc">%&gt;%</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">as.factor</span>(cyr), <span class="at">y=</span>pc_chg_dollar_per_l))<span class="sc">+</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill=</span>bar_col)<span class="sc">+</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)<span class="sc">+</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(.<span class="sc">~</span>cat_type)<span class="sc">+</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>())<span class="sc">+</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> bar_col)) <span class="sc">+</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">strip.text=</span><span class="fu">element_text</span>(<span class="at">color=</span><span class="st">'white'</span>))<span class="sc">+</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="dv">0</span>, <span class="at">vjust=</span><span class="fl">0.5</span>, <span class="at">angle=</span><span class="dv">90</span>),</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>        ,<span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="cn">NA</span>)</span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>        ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="576"></p>
-</div>
-</div>
-</section>
-<section id="category-litre-vs-volume-and-sales" class="level4">
-<h4 class="anchored" data-anchor-id="category-litre-vs-volume-and-sales">Category $/Litre vs Volume and $ S<strong>ales</strong></h4>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Relationship Between Changes in $/litre and volume"</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>trend_yr_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>pc_chg_dollar_per_l, <span class="at">y=</span>pc_chg_litre, <span class="at">color=</span>cyr, <span class="at">label=</span>cyr))<span class="sc">+</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="do">## options for labelling - too cluttered</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#geom_text(vjust=0.2, hjust=-0.2, size=3)+</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#geom_text_repel(size=3)+</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_gradient</span>(<span class="at">low =</span> <span class="st">"lightblue"</span>, <span class="at">high =</span> <span class="st">"darkblue"</span>) <span class="sc">+</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(cat_type<span class="sc">~</span>., <span class="at">scales=</span><span class="st">'free_y'</span>)<span class="sc">+</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>())<span class="sc">+</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>())<span class="sc">+</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">"% Chg in $/litre"</span>, <span class="at">y=</span><span class="st">"% Chg in Litres - scale varies"</span>)<span class="sc">+</span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="cn">NA</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="480"></p>
-</div>
-</div>
-<p>Different categories have different relationships between revenue per litre (a proxy for price*) and volume sales:</p>
-<ul>
-<li><strong>Beer looks like a counter-intuitive relationship where the biggest price increases are actually associated with increases, or at least smallest decreases, in volume</strong>. Price changes have been modest, so there are probably other factors involved.</li>
-<li>Refreshment beverages don’t appear to have a strong relationship between price increase and changes in volume during this period of growth, although most recently a ~6% increase in price is associated with a reversal in the growth trend and a small decrease in volume.</li>
-<li>Wine is the clearest case, in terms of different scenarios, where an average <strong>price decrease in wine of around 2.5% was associated with ~6% volume growth</strong> (top left of Wine panel) and price increases of 6+% werre associated with ~3% decline in sales volume.</li>
-</ul>
-<p>Clearly, though, there are a variety of factors at work here and not enough data to make any solid conclusions with regard to effect of changes in net sales per litre and litre volumes sold.</p>
-</section>
-</section>
-</section>
-<section id="pt-ii-quarterly" class="level2">
-<h2 class="anchored" data-anchor-id="pt-ii-quarterly">[pt II] Quarterly</h2>
+<p>This is a continuation of a previous analysis of <a href="posts/bc-liquor-market-review-2023-06-pt01-annual-trends">annual liquor sales in British Columbia</a>, based on data from <strong>British Columbia Liquor Distribution Board</strong> ‘<a href="https://www.bcldb.com/publications/liquor-market-review"><strong>Liquor Market Review</strong></a>’. The Liquor Market Review is released on a quarterly basis, covering dollar and litre sales across major categories of <strong>beer</strong>, <strong>wine</strong>, <strong>spirits</strong>, and <strong>‘refreshment beverages’</strong> (ciders, coolers).</p>
+<p>While the previous analysis compared year-over-year data, the focus here is on <strong>patterns in data based on quarter of year</strong>, such as typical <strong>peaks and valleys throughout the year</strong>, including differences by major beverage type.</p>
+<p>Data goes back to 2015 (BC LDB Fiscal Year 2016, since fiscal yr ends in March).</p>
+<p><strong>As mentioned in previous article:</strong> <em>my expertise is in data analysis, not the liquor industry, so the emphasis is on exploring what the data can tell us. Industry-insider context may be lacking. In the interest of promoting data analysis and learning, I am sharing most of the R code used to process the data - hence the expandable ‘Code’ options.</em></p>
+<section id="stats-by-quarter-of-the-year" class="level2">
+<h2 class="anchored" data-anchor-id="stats-by-quarter-of-the-year">Stats by Quarter of the Year</h2>
 <section id="overview" class="level3">
 <h3 class="anchored" data-anchor-id="overview">Overview</h3>
+<p>We’ll start with an overview across all beverage types and then look at trends for beverage types further down below.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># roll-up categories by qtr</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>trend_ttl_qtr <span class="ot">&lt;-</span> lmr_data <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cyr, fyr, fy_qtr, qtr) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">netsales=</span><span class="fu">sum</span>(netsales),</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">litres=</span><span class="fu">sum</span>(litres)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate quarterly info</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>trend_qtr <span class="ot">&lt;-</span> lmr_data <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(fy_qtr, start_qtr_dt, qtr) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">netsales=</span><span class="fu">sum</span>(netsales),</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">litres=</span><span class="fu">sum</span>(litres)</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>trend_qtr <span class="ot">&lt;-</span> trend_qtr <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">pc_chg_sales=</span>netsales<span class="sc">/</span><span class="fu">lag</span>(netsales)<span class="sc">-</span><span class="dv">1</span>,</span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">pc_chg_litres=</span>litres<span class="sc">/</span><span class="fu">lag</span>(litres)<span class="sc">-</span><span class="dv">1</span>,</span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">pc_chg_sales_qtr=</span>netsales<span class="sc">/</span><span class="fu">lag</span>(netsales, <span class="at">n=</span><span class="dv">4</span>),</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">pc_chg_litres_qtr=</span>litres<span class="sc">/</span><span class="fu">lag</span>(litres, <span class="at">n=</span><span class="dv">4</span>)</span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="co"># averages</span></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>trend_qtrs <span class="ot">&lt;-</span> trend_qtr <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(qtr) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">avglitres=</span><span class="fu">mean</span>(litres),</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">avg_sales_pc_chg=</span><span class="fu">mean</span>(pc_chg_sales, <span class="at">na.rm=</span><span class="cn">TRUE</span>),</span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">avg_litres_pc_chg=</span><span class="fu">mean</span>(pc_chg_litres, <span class="at">na.rm=</span><span class="cn">TRUE</span>)</span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># roll-up categories by qtr</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>trend_ttl_qtr <span class="ot">&lt;-</span> lmr_data <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(year, fyr, fy_qtr, qtr) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">netsales=</span><span class="fu">sum</span>(netsales),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">litres=</span><span class="fu">sum</span>(litres)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate quarterly info</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>trend_qtr <span class="ot">&lt;-</span> lmr_data <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(fy_qtr, start_qtr_dt, qtr) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">netsales=</span><span class="fu">sum</span>(netsales),</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">litres=</span><span class="fu">sum</span>(litres)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>trend_qtr <span class="ot">&lt;-</span> trend_qtr <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">pc_chg_sales=</span>netsales<span class="sc">/</span><span class="fu">lag</span>(netsales)<span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">pc_chg_litres=</span>litres<span class="sc">/</span><span class="fu">lag</span>(litres)<span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">pc_chg_sales_qtr=</span>netsales<span class="sc">/</span><span class="fu">lag</span>(netsales, <span class="at">n=</span><span class="dv">4</span>),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">pc_chg_litres_qtr=</span>litres<span class="sc">/</span><span class="fu">lag</span>(litres, <span class="at">n=</span><span class="dv">4</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># averages</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>trend_qtrs <span class="ot">&lt;-</span> trend_qtr <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(qtr) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">avgsales=</span><span class="fu">mean</span>(netsales),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">avglitres=</span><span class="fu">mean</span>(litres),</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">avg_sales_pc_chg=</span><span class="fu">mean</span>(pc_chg_sales, <span class="at">na.rm=</span><span class="cn">TRUE</span>),</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">avg_litres_pc_chg=</span><span class="fu">mean</span>(pc_chg_litres, <span class="at">na.rm=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<section id="sales" class="level4">
+<h4 class="anchored" data-anchor-id="sales">$ Sales</h4>
+<p>Overlay of $ sales data for quarter of each year to see overall trends:</p>
+<ul>
+<li>sales are mostly even in Q2 (Jul-Aug-Sep) and Q3 (Oct-Nov-Dec), covering most of the summer and the Christmas holiday season.</li>
+<li>Q4 (Jan-Feb-Mar) by far the slowest period.</li>
+</ul>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Litres Comparison by Quarter (fiscal yr*)"</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>trend_ttl_qtr <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>litres, <span class="at">color=</span><span class="fu">factor</span>(fyr), <span class="at">group=</span>fyr))<span class="sc">+</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">label_comma</span>(<span class="at">scale=</span><span class="fl">1e-6</span>, <span class="at">suffix=</span><span class="st">"M"</span>), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)), <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">max</span>(trend_ttl_qtr<span class="sc">$</span>litres)))<span class="sc">+</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>, <span class="at">y=</span><span class="st">"litres"</span>, <span class="at">color=</span><span class="st">'fiscal yr'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"$ Sales Comparison by Quarter (fiscal yr*)"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> trend_ttl_qtr <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>netsales, <span class="at">color=</span><span class="fu">factor</span>(fyr), <span class="at">group=</span>fyr))<span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data=</span>trend_qtrs, <span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>avgsales, <span class="at">group=</span><span class="dv">1</span>), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">label_comma</span>(<span class="at">scale=</span><span class="fl">1e-6</span>, <span class="at">prefix=</span><span class="st">"$"</span>, <span class="at">suffix=</span><span class="st">"M"</span>), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)), <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">max</span>(trend_ttl_qtr<span class="sc">$</span>netsales)))<span class="sc">+</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>, <span class="at">y=</span><span class="st">"Net $ Sales"</span>, <span class="at">color=</span><span class="st">'fiscal yr'</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="576"></p>
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-0aaa3b3f010ba64e14c8" style="width:100%;height:433px;"></div>
+<script type="application/json" data-for="htmlwidget-0aaa3b3f010ba64e14c8">{"x":{"data":[{"x":[1,2,3,4],"y":[722543527,789483277,821641539,602306105],"text":["qtr: Q1<br />netsales:  722543527<br />factor(fyr): 2016<br />fyr: 2016","qtr: Q2<br />netsales:  789483277<br />factor(fyr): 2016<br />fyr: 2016","qtr: Q3<br />netsales:  821641539<br />factor(fyr): 2016<br />fyr: 2016","qtr: Q4<br />netsales:  602306105<br />factor(fyr): 2016<br />fyr: 2016"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(248,118,109,1)","dash":"solid"},"hoveron":"points","name":"2016","legendgroup":"2016","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(248,118,109,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(248,118,109,1)"}},"frame":null},{"x":[1,2,3,4],"y":[790311014,830304909,807542120,610458421],"text":["qtr: Q1<br />netsales:  790311014<br />factor(fyr): 2017<br />fyr: 2017","qtr: Q2<br />netsales:  830304909<br />factor(fyr): 2017<br />fyr: 2017","qtr: Q3<br />netsales:  807542120<br />factor(fyr): 2017<br />fyr: 2017","qtr: Q4<br />netsales:  610458421<br />factor(fyr): 2017<br />fyr: 2017"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(211,146,0,1)","dash":"solid"},"hoveron":"points","name":"2017","legendgroup":"2017","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(211,146,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(211,146,0,1)"}},"frame":null},{"x":[1,2,3,4],"y":[821536511,857487503,855440897,659021254],"text":["qtr: Q1<br />netsales:  821536511<br />factor(fyr): 2018<br />fyr: 2018","qtr: Q2<br />netsales:  857487503<br />factor(fyr): 2018<br />fyr: 2018","qtr: Q3<br />netsales:  855440897<br />factor(fyr): 2018<br />fyr: 2018","qtr: Q4<br />netsales:  659021254<br />factor(fyr): 2018<br />fyr: 2018"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(147,170,0,1)","dash":"solid"},"hoveron":"points","name":"2018","legendgroup":"2018","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(147,170,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(147,170,0,1)"}},"frame":null},{"x":[1,2,3,4],"y":[831589014,878518183,863465054,662271027],"text":["qtr: Q1<br />netsales:  831589014<br />factor(fyr): 2019<br />fyr: 2019","qtr: Q2<br />netsales:  878518183<br />factor(fyr): 2019<br />fyr: 2019","qtr: Q3<br />netsales:  863465054<br />factor(fyr): 2019<br />fyr: 2019","qtr: Q4<br />netsales:  662271027<br />factor(fyr): 2019<br />fyr: 2019"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(0,186,56,1)","dash":"solid"},"hoveron":"points","name":"2019","legendgroup":"2019","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(0,186,56,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,186,56,1)"}},"frame":null},{"x":[1,2,3,4],"y":[856375765,897884031,875843148,716178796],"text":["qtr: Q1<br />netsales:  856375765<br />factor(fyr): 2020<br />fyr: 2020","qtr: Q2<br />netsales:  897884031<br />factor(fyr): 2020<br />fyr: 2020","qtr: Q3<br />netsales:  875843148<br />factor(fyr): 2020<br />fyr: 2020","qtr: Q4<br />netsales:  716178796<br />factor(fyr): 2020<br />fyr: 2020"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(0,193,159,1)","dash":"solid"},"hoveron":"points","name":"2020","legendgroup":"2020","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(0,193,159,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,193,159,1)"}},"frame":null},{"x":[1,2,3,4],"y":[899558456,970876974,899030605,708747138],"text":["qtr: Q1<br />netsales:  899558456<br />factor(fyr): 2021<br />fyr: 2021","qtr: Q2<br />netsales:  970876974<br />factor(fyr): 2021<br />fyr: 2021","qtr: Q3<br />netsales:  899030605<br />factor(fyr): 2021<br />fyr: 2021","qtr: Q4<br />netsales:  708747138<br />factor(fyr): 2021<br />fyr: 2021"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(0,185,227,1)","dash":"solid"},"hoveron":"points","name":"2021","legendgroup":"2021","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(0,185,227,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,185,227,1)"}},"frame":null},{"x":[1,2,3,4],"y":[932898217,977129309,954175645,728303302],"text":["qtr: Q1<br />netsales:  932898217<br />factor(fyr): 2022<br />fyr: 2022","qtr: Q2<br />netsales:  977129309<br />factor(fyr): 2022<br />fyr: 2022","qtr: Q3<br />netsales:  954175645<br />factor(fyr): 2022<br />fyr: 2022","qtr: Q4<br />netsales:  728303302<br />factor(fyr): 2022<br />fyr: 2022"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(97,156,255,1)","dash":"solid"},"hoveron":"points","name":"2022","legendgroup":"2022","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(97,156,255,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(97,156,255,1)"}},"frame":null},{"x":[1,2,3,4],"y":[973734178,961666633,1003904889,759276295],"text":["qtr: Q1<br />netsales:  973734178<br />factor(fyr): 2023<br />fyr: 2023","qtr: Q2<br />netsales:  961666633<br />factor(fyr): 2023<br />fyr: 2023","qtr: Q3<br />netsales: 1003904889<br />factor(fyr): 2023<br />fyr: 2023","qtr: Q4<br />netsales:  759276295<br />factor(fyr): 2023<br />fyr: 2023"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(219,114,251,1)","dash":"solid"},"hoveron":"points","name":"2023","legendgroup":"2023","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(219,114,251,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(219,114,251,1)"}},"frame":null},{"x":[1],"y":[960674744],"text":"qtr: Q1<br />netsales:  960674744<br />factor(fyr): 2024<br />fyr: 2024","type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(255,97,195,1)","dash":"solid"},"hoveron":"points","name":"2024","legendgroup":"2024","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(255,97,195,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(255,97,195,1)"}},"frame":null},{"x":[1,2,3,4],"y":[865469047.333333,895418852.375,885130487.125,680820292.25],"text":["qtr: Q1<br />avgsales: 865469047<br />factor(fyr): black","qtr: Q2<br />avgsales: 895418852<br />factor(fyr): black","qtr: Q3<br />avgsales: 885130487<br />factor(fyr): black","qtr: Q4<br />avgsales: 680820292<br />factor(fyr): black"],"type":"scatter","mode":"lines","line":{"width":5.66929133858268,"color":"rgba(0,0,0,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":44.4931506849315,"r":7.30593607305936,"b":26.3013698630137,"l":66.4840182648402},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"$ Sales Comparison by Quarter (fiscal yr*)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,4.6],"tickmode":"array","ticktext":["Q1","Q2","Q3","Q4"],"tickvals":[1,2,3,4],"categoryorder":"array","categoryarray":["Q1","Q2","Q3","Q4"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0,1003904889.1],"tickmode":"array","ticktext":["$0M","$250M","$500M","$750M","$1,000M"],"tickvals":[0,250000000,500000000,750000000,1000000000],"categoryorder":"array","categoryarray":["$0M","$250M","$500M","$750M","$1,000M"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"Net $ Sales","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"title":{"text":"fiscal yr","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"14e4c4df3b4b7":{"x":{},"y":{},"colour":{},"type":"scatter"},"14e4c3add825c":{"x":{},"y":{},"colour":{}},"14e4c24998435":{"x":{},"y":{},"colour":{}}},"cur_data":"14e4c4df3b4b7","visdat":{"14e4c4df3b4b7":["function (y) ","x"],"14e4c3add825c":["function (y) ","x"],"14e4c24998435":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
-<p>\\* BC LDB fiscal yr runs Apr - Mar, so Q1=Apr-May-Jun, and so on.</p>
+<p>\\* BC LDB fiscal yr runs Apr - Mar, so Q1=Apr-May-Jun, and so on; black line = average.</p>
+<p>The drop from Q3 to Q4 is the only consistent pattern across the years looked at. Relative level of sales between Q1, Q2, and Q3 can vary from year to year.</p>
+<p>Looking at patterns in % change between quarters confirms that either ends of the fiscal yr have the biggest changes:</p>
+<ul>
+<li>Q4 has a consistently large drop from previous quarter and Q1 has consistently big increase from previous quarter.</li>
+<li>Q2 tends to show positive growth over Q1, but not always. Q3 straddles 0% change from previous.</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Distribution of % Change in $ Sales Between Quarters"</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> trend_qtr <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y=</span>pc_chg_sales, <span class="at">x=</span>qtr))<span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill=</span>bar_col)<span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>())<span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype=</span><span class="st">'dotted'</span>)<span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">"% chg from prev quarter"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-a3f0cf265d708b4d129c" style="width:100%;height:433px;"></div>
+<script type="application/json" data-for="htmlwidget-a3f0cf265d708b4d129c">{"x":{"data":[{"x":[1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4],"y":[null,0.312141795408167,0.345769806327235,0.261854619942197,0.293089581284068,0.256052903303214,0.316263822429714,0.336989926210715,0.265250542294357,0.0926445916385603,0.0506052608296308,0.0437606746853396,0.0564331276747723,0.0484696878361568,0.0792816937290843,0.0474125592631505,-0.0123930588785393,0.0407333035883926,-0.0274149758158301,-0.00238674732032795,-0.0171346812067065,-0.0245475832502026,-0.074001517106739,-0.0234909175158106,0.0439219315203172,-0.266947839890067,-0.244053770223156,-0.229612172727346,-0.233007724016124,-0.182297883319172,-0.211654048195612,-0.236719878759848,-0.243677062120573],"hoverinfo":"y","type":"box","fillcolor":"rgba(8,29,88,1)","marker":{"opacity":null,"outliercolor":"rgba(0,0,0,1)","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"},"size":5.66929133858268},"line":{"color":"rgba(51,51,51,1)","width":1.88976377952756},"showlegend":false,"xaxis":"x","yaxis":"y","frame":null},{"x":[0.4,4.6],"y":[0,0],"text":"yintercept: 0","type":"scatter","mode":"lines","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)","dash":"dot"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":44.4931506849315,"r":7.30593607305936,"b":26.3013698630137,"l":48.9497716894977},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Distribution of % Change in $ Sales Between Quarters","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,4.6],"tickmode":"array","ticktext":["Q1","Q2","Q3","Q4"],"tickvals":[1,2,3,4],"categoryorder":"array","categoryarray":["Q1","Q2","Q3","Q4"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.297583722200932,0.376405688638101],"tickmode":"array","ticktext":["-20%","0%","20%"],"tickvals":[-0.2,0,0.2],"categoryorder":"array","categoryarray":["-20%","0%","20%"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"% chg from prev quarter","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"14e4c491bcb63":{"x":{},"y":{},"type":"box"},"14e4c3fc5f614":{"yintercept":{}}},"cur_data":"14e4c491bcb63","visdat":{"14e4c491bcb63":["function (y) ","x"],"14e4c3fc5f614":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>The middle black line represents median for each quarter, with the colored area representing the range from 25% of the time to 75% of the time (1-3 quartiles).</p>
+</section>
+<section id="litres" class="level4">
+<h4 class="anchored" data-anchor-id="litres">Litres</h4>
+<p>Overlaying litres sold by quarter for each year shows volume changes throughout the year:</p>
 <ul>
 <li>Q2 (Jul-Aug-Sep) has highest sales, edging out Q1 (Apr-May-Jun)</li>
 <li>Q3 (Oct-Nov-Dec) sees drop, even with holidays, and then lower again for Q4 (Jan-Feb-Mar)</li>
@@ -732,97 +394,191 @@ cookieconsent.run({
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Distribution of % Change Between Quarters"</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>trend_qtr <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y=</span>pc_chg_sales, <span class="at">x=</span>qtr))<span class="sc">+</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill=</span>bar_col)<span class="sc">+</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>())<span class="sc">+</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype=</span><span class="st">'dotted'</span>)<span class="sc">+</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">"% chg from prev quarter"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Litres Comparison by Quarter (fiscal yr*)"</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> trend_ttl_qtr <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>litres, <span class="at">color=</span><span class="fu">factor</span>(fyr), <span class="at">group=</span>fyr))<span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data=</span>trend_qtrs, <span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>avglitres, <span class="at">group=</span><span class="dv">1</span>), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">size=</span><span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">label_comma</span>(<span class="at">scale=</span><span class="fl">1e-6</span>, <span class="at">suffix=</span><span class="st">"M"</span>), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)), <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">max</span>(trend_ttl_qtr<span class="sc">$</span>litres)))<span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>, <span class="at">y=</span><span class="st">"litres"</span>, <span class="at">color=</span><span class="st">'fiscal yr'</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="576"></p>
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-941a3c1f1a8e52da0e2e" style="width:100%;height:433px;"></div>
+<script type="application/json" data-for="htmlwidget-941a3c1f1a8e52da0e2e">{"x":{"data":[{"x":[1,2,3,4],"y":[117644525,121516243,110665918,89270144],"text":["qtr: Q1<br />litres: 117644525<br />factor(fyr): 2016<br />fyr: 2016","qtr: Q2<br />litres: 121516243<br />factor(fyr): 2016<br />fyr: 2016","qtr: Q3<br />litres: 110665918<br />factor(fyr): 2016<br />fyr: 2016","qtr: Q4<br />litres:  89270144<br />factor(fyr): 2016<br />fyr: 2016"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(248,118,109,1)","dash":"solid"},"hoveron":"points","name":"2016","legendgroup":"2016","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(248,118,109,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(248,118,109,1)"}},"frame":null},{"x":[1,2,3,4],"y":[122260505,123740050,105562566,88572437],"text":["qtr: Q1<br />litres: 122260505<br />factor(fyr): 2017<br />fyr: 2017","qtr: Q2<br />litres: 123740050<br />factor(fyr): 2017<br />fyr: 2017","qtr: Q3<br />litres: 105562566<br />factor(fyr): 2017<br />fyr: 2017","qtr: Q4<br />litres:  88572437<br />factor(fyr): 2017<br />fyr: 2017"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(211,146,0,1)","dash":"solid"},"hoveron":"points","name":"2017","legendgroup":"2017","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(211,146,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(211,146,0,1)"}},"frame":null},{"x":[1,2,3,4],"y":[123919965,126276879,110670498,93110757],"text":["qtr: Q1<br />litres: 123919965<br />factor(fyr): 2018<br />fyr: 2018","qtr: Q2<br />litres: 126276879<br />factor(fyr): 2018<br />fyr: 2018","qtr: Q3<br />litres: 110670498<br />factor(fyr): 2018<br />fyr: 2018","qtr: Q4<br />litres:  93110757<br />factor(fyr): 2018<br />fyr: 2018"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(147,170,0,1)","dash":"solid"},"hoveron":"points","name":"2018","legendgroup":"2018","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(147,170,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(147,170,0,1)"}},"frame":null},{"x":[1,2,3,4],"y":[124360734,127577710,108842778,92370514],"text":["qtr: Q1<br />litres: 124360734<br />factor(fyr): 2019<br />fyr: 2019","qtr: Q2<br />litres: 127577710<br />factor(fyr): 2019<br />fyr: 2019","qtr: Q3<br />litres: 108842778<br />factor(fyr): 2019<br />fyr: 2019","qtr: Q4<br />litres:  92370514<br />factor(fyr): 2019<br />fyr: 2019"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(0,186,56,1)","dash":"solid"},"hoveron":"points","name":"2019","legendgroup":"2019","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(0,186,56,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,186,56,1)"}},"frame":null},{"x":[1,2,3,4],"y":[126128797,126128744,108463200,98283412],"text":["qtr: Q1<br />litres: 126128797<br />factor(fyr): 2020<br />fyr: 2020","qtr: Q2<br />litres: 126128744<br />factor(fyr): 2020<br />fyr: 2020","qtr: Q3<br />litres: 108463200<br />factor(fyr): 2020<br />fyr: 2020","qtr: Q4<br />litres:  98283412<br />factor(fyr): 2020<br />fyr: 2020"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(0,193,159,1)","dash":"solid"},"hoveron":"points","name":"2020","legendgroup":"2020","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(0,193,159,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,193,159,1)"}},"frame":null},{"x":[1,2,3,4],"y":[130065058,136243994,106679176,96073963],"text":["qtr: Q1<br />litres: 130065058<br />factor(fyr): 2021<br />fyr: 2021","qtr: Q2<br />litres: 136243994<br />factor(fyr): 2021<br />fyr: 2021","qtr: Q3<br />litres: 106679176<br />factor(fyr): 2021<br />fyr: 2021","qtr: Q4<br />litres:  96073963<br />factor(fyr): 2021<br />fyr: 2021"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(0,185,227,1)","dash":"solid"},"hoveron":"points","name":"2021","legendgroup":"2021","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(0,185,227,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,185,227,1)"}},"frame":null},{"x":[1,2,3,4],"y":[131756911,130121728,110533753,94811673],"text":["qtr: Q1<br />litres: 131756911<br />factor(fyr): 2022<br />fyr: 2022","qtr: Q2<br />litres: 130121728<br />factor(fyr): 2022<br />fyr: 2022","qtr: Q3<br />litres: 110533753<br />factor(fyr): 2022<br />fyr: 2022","qtr: Q4<br />litres:  94811673<br />factor(fyr): 2022<br />fyr: 2022"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(97,156,255,1)","dash":"solid"},"hoveron":"points","name":"2022","legendgroup":"2022","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(97,156,255,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(97,156,255,1)"}},"frame":null},{"x":[1,2,3,4],"y":[126095808,128987972,109090648,94569462],"text":["qtr: Q1<br />litres: 126095808<br />factor(fyr): 2023<br />fyr: 2023","qtr: Q2<br />litres: 128987972<br />factor(fyr): 2023<br />fyr: 2023","qtr: Q3<br />litres: 109090648<br />factor(fyr): 2023<br />fyr: 2023","qtr: Q4<br />litres:  94569462<br />factor(fyr): 2023<br />fyr: 2023"],"type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(219,114,251,1)","dash":"solid"},"hoveron":"points","name":"2023","legendgroup":"2023","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(219,114,251,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(219,114,251,1)"}},"frame":null},{"x":[1],"y":[122068906],"text":"qtr: Q1<br />litres: 122068906<br />factor(fyr): 2024<br />fyr: 2024","type":"scatter","mode":"lines+markers","line":{"width":1.88976377952756,"color":"rgba(255,97,195,1)","dash":"solid"},"hoveron":"points","name":"2024","legendgroup":"2024","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(255,97,195,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(255,97,195,1)"}},"frame":null},{"x":[1,2,3,4],"y":[124922356.555556,127574165,108813567.125,93382795.25],"text":["qtr: Q1<br />avglitres: 124922357<br />factor(fyr): black","qtr: Q2<br />avglitres: 127574165<br />factor(fyr): black","qtr: Q3<br />avglitres: 108813567<br />factor(fyr): black","qtr: Q4<br />avglitres:  93382795<br />factor(fyr): black"],"type":"scatter","mode":"lines","line":{"width":5.66929133858268,"color":"rgba(0,0,0,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":44.4931506849315,"r":7.30593607305936,"b":26.3013698630137,"l":48.9497716894977},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Litres Comparison by Quarter (fiscal yr*)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,4.6],"tickmode":"array","ticktext":["Q1","Q2","Q3","Q4"],"tickvals":[1,2,3,4],"categoryorder":"array","categoryarray":["Q1","Q2","Q3","Q4"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0,136243994.1],"tickmode":"array","ticktext":["0M","50M","100M"],"tickvals":[0,50000000,100000000],"categoryorder":"array","categoryarray":["0M","50M","100M"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"litres","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"title":{"text":"fiscal yr","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"14e4c68a3ffbc":{"x":{},"y":{},"colour":{},"type":"scatter"},"14e4c66eac54f":{"x":{},"y":{},"colour":{}},"14e4c3f3ffa52":{"x":{},"y":{},"colour":{}}},"cur_data":"14e4c68a3ffbc","visdat":{"14e4c68a3ffbc":["function (y) ","x"],"14e4c66eac54f":["function (y) ","x"],"14e4c3f3ffa52":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
+<p>\\* BC LDB fiscal yr runs Apr - Mar.</p>
+<p>The different pattern compared to $ sales likely represents the shift in drinking habits with the seasons:</p>
 <ul>
-<li>Q1 (Apr-May-Jun) typically has well over 20% increase over previous Q4</li>
-<li>Q2 (Jul-Aug-Sep) tends to be ~5% higher that Q1.</li>
-<li>Q3 -&gt; doesn’t look right - expect larger drop from Q2, based on other charts</li>
-<li>Q4 (Jan-Feb-Mar) is usually more that 20% drop from Q3</li>
+<li>peak volume is in Q2 - beer season, and beer, along with refreshment beverages, are consumer in higher volumes than the other types.</li>
+<li>Q3, which is usually even with Q2 in $ sales, has a consistent drop in volume compared to Q2, due to shift away from beer/refreshments beverages toward wine and spirits.</li>
 </ul>
-<p>Could be interesting to see how the overall pattern matches categories.</p>
-</section>
-<section id="by-major-category" class="level3">
-<h3 class="anchored" data-anchor-id="by-major-category">By Major Category</h3>
-<p>What are the quarterly trends by major category in recent years?</p>
-<p>which categories peak in which quarters?</p>
-<section id="volume-litres-1" class="level4">
-<h4 class="anchored" data-anchor-id="volume-litres-1">Volume (Litres)</h4>
+<p>Patters by beverage type are looked at more below.</p>
+<p>Percentage changes from one quarter to the next reflect the different quarter-by-quarter patterns for litres.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quarters at cat_type level</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>trend_qtr_cat <span class="ot">&lt;-</span> lmr_data <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cyr, fyr, fy_qtr, start_qtr_dt, qtr, cat_type) <span class="sc">%&gt;%</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">netsales=</span><span class="fu">sum</span>(netsales),</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">litres=</span><span class="fu">sum</span>(litres)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>trend_qtr_cat<span class="sc">$</span>cat_type <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(trend_qtr_cat<span class="sc">$</span>cat_type)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>trend_qtrs_cat <span class="ot">&lt;-</span> trend_qtr_cat <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(qtr, cat_type) <span class="sc">%&gt;%</span> </span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_netsales=</span><span class="fu">mean</span>(netsales),</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_litres=</span><span class="fu">mean</span>(litres),</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_litres=</span><span class="fu">max</span>(litres)</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>trend_qtrs_cat<span class="sc">$</span>cat_type <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(trend_qtrs_cat<span class="sc">$</span>cat_type)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Comparison of Qtrly volume by Category"</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>trend_qtr_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>litres, <span class="at">color=</span><span class="fu">factor</span>(fyr), <span class="at">group=</span>fyr))<span class="sc">+</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(cat_type<span class="sc">~</span>., <span class="at">scales=</span><span class="st">'free_y'</span>)<span class="sc">+</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">label_comma</span>(<span class="at">scale=</span><span class="fl">1e-6</span>, <span class="at">suffix=</span><span class="st">"M"</span>), </span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="cn">NA</span>))<span class="sc">+</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>, <span class="at">color=</span><span class="st">"fiscal yr"</span>, <span class="at">y=</span><span class="st">"litres (upper limit varies)"</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="cn">NA</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Distribution of % Change in Litres Between Quarters"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> trend_qtr <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y=</span>pc_chg_litres, <span class="at">x=</span>qtr))<span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill=</span>bar_col)<span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>())<span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype=</span><span class="st">'dotted'</span>)<span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">"% chg from prev quarter"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="576"></p>
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-4cb462807debe887d1eb" style="width:100%;height:433px;"></div>
+<script type="application/json" data-for="htmlwidget-4cb462807debe887d1eb">{"x":{"data":[{"x":[1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4],"y":[null,0.36955648912138,0.399080449824362,0.335621554446174,0.365466007908108,0.32336734504089,0.371411221997785,0.329960795017297,0.290785666095891,0.0329103118058405,0.012101577692649,0.0190196470762398,0.0258681007784982,-4.2020538737475e-07,0.0475065024766299,-0.0124106051636259,0.0229362422579504,-0.0892911493321926,-0.146900570995405,-0.123588586632712,-0.146851138807869,-0.140059620351091,-0.216999055385884,-0.150535773702606,-0.154257204695024,-0.193336615162764,-0.160948427494648,-0.158666865310392,-0.151339981417968,-0.0938547636433371,-0.0994122133076843,-0.142237819428786,-0.133111190246115],"hoverinfo":"y","type":"box","fillcolor":"rgba(8,29,88,1)","marker":{"opacity":null,"outliercolor":"rgba(0,0,0,1)","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"},"size":5.66929133858268},"line":{"color":"rgba(51,51,51,1)","width":1.88976377952756},"showlegend":false,"xaxis":"x","yaxis":"y","frame":null},{"x":[0.4,4.6],"y":[0,0],"text":"yintercept: 0","type":"scatter","mode":"lines","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)","dash":"dot"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":44.4931506849315,"r":7.30593607305936,"b":26.3013698630137,"l":48.9497716894977},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Distribution of % Change in Litres Between Quarters","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,4.6],"tickmode":"array","ticktext":["Q1","Q2","Q3","Q4"],"tickvals":[1,2,3,4],"categoryorder":"array","categoryarray":["Q1","Q2","Q3","Q4"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.247803030646396,0.429884425084875],"tickmode":"array","ticktext":["-20%","0%","20%","40%"],"tickvals":[-0.2,0,0.2,0.4],"categoryorder":"array","categoryarray":["-20%","0%","20%","40%"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"% chg from prev quarter","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"14e4c2dd249cb":{"x":{},"y":{},"type":"box"},"14e4c48eac5ed":{"yintercept":{}}},"cur_data":"14e4c2dd249cb","visdat":{"14e4c2dd249cb":["function (y) ","x"],"14e4c48eac5ed":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<ul>
+<li>Q1 (Apr-May-Jun) typically has around 35% increase over previous Q4</li>
+<li>Q2 (Jul-Aug-Sep) tends to be even or slight increase over Q1.</li>
+<li>Q3 (Oct-Nov-Dec) big drop around 15% range compared to Q2.</li>
+<li>Q4 (Jan-Feb-Mar) usually another ~15% from Q3 to Q4.</li>
+</ul>
+</section>
+</section>
+<section id="by-major-beverage-type" class="level3">
+<h3 class="anchored" data-anchor-id="by-major-beverage-type">By Major Beverage Type</h3>
+<p>Let’s look at beverage types to see what is going on below the surface of overall trends.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quarters at cat_type level</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>trend_qtr_cat <span class="ot">&lt;-</span> lmr_data <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(year, fyr, fy_qtr, start_qtr_dt, qtr, type) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">netsales=</span><span class="fu">sum</span>(netsales),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">litres=</span><span class="fu">sum</span>(litres)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>trend_qtr_cat<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(trend_qtr_cat<span class="sc">$</span>type)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>trend_qtrs_cat <span class="ot">&lt;-</span> trend_qtr_cat <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(qtr, type) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_netsales=</span><span class="fu">mean</span>(netsales),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_litres=</span><span class="fu">mean</span>(litres),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_litres=</span><span class="fu">max</span>(litres)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>trend_qtrs_cat<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(trend_qtrs_cat<span class="sc">$</span>type)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="sales-1" class="level4">
+<h4 class="anchored" data-anchor-id="sales-1">$ Sales</h4>
+<p>Looking at quarter sales by beverage type reveals patterns we suspected earlier:</p>
+<ul>
+<li><strong>Beer and refreshment beverages tend to peak in Q2</strong> and decline in Q3 and Q4.</li>
+<li><strong>Wine and, especially, spirits peak in Q3</strong> and offset the decline in beer and refreshment beverages.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Comparison of Qtrly $ Sales by Beverage Type"</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>trend_qtr_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>netsales, <span class="at">color=</span><span class="fu">factor</span>(fyr), <span class="at">group=</span>fyr))<span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data=</span>trend_qtrs_cat, <span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>avg_netsales), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">group=</span><span class="dv">1</span>, <span class="at">size=</span><span class="fl">1.2</span>)<span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(type<span class="sc">~</span>., <span class="at">scales=</span><span class="st">'free_y'</span>)<span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">label_comma</span>(<span class="at">scale=</span><span class="fl">1e-6</span>, <span class="at">prefix=</span><span class="st">"$"</span>, <span class="at">suffix=</span><span class="st">"M"</span>), </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="cn">NA</span>))<span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>, <span class="at">color=</span><span class="st">"fiscal yr"</span>, <span class="at">y=</span><span class="st">"$ Sales (upper limit varies)"</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="cn">NA</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="480"></p>
+<p></p><figcaption class="figure-caption">black line = average</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Stacked chart highlights the shifts between Q2 and Q3:</p>
+<ul>
+<li>decline in $ sales of Beer and Refreshment Beverages in Q3 almost completely offset by increase in wine and spirits.</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>trend_qtrs_cat<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">fct_reorder</span>(trend_qtrs_cat<span class="sc">$</span>type, trend_qtrs_cat<span class="sc">$</span>avg_netsales)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Breakdown in $ Sales per Qtr by Category"</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> trend_qtrs_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>avg_netsales, <span class="at">fill=</span>type))<span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#geom_col(position='fill')+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>()<span class="sc">+</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">label_comma</span>(<span class="at">scale=</span><span class="fl">1e-6</span>, <span class="at">prefix=</span><span class="st">"$"</span>, <span class="at">suffix=</span><span class="st">"M"</span>), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)))<span class="sc">+</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>type_color)<span class="sc">+</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">"Average Net Sales in Qtr (2015-2023)"</span>)<span class="sc">+</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-989dff59665ed2ac5a3a" style="width:100%;height:433px;"></div>
+<script type="application/json" data-for="htmlwidget-989dff59665ed2ac5a3a">{"x":{"data":[{"orientation":"v","width":[0.9,0.9,0.9,0.9],"base":[772592909.222222,801483311.5,828858957.25,625458985.5],"x":[1,2,3,4],"y":[92876138.111111,93935540.875,56271529.875,55361306.75],"text":["qtr: Q1<br />avg_netsales:  92876138<br />type: Refresh Bev","qtr: Q2<br />avg_netsales:  93935541<br />type: Refresh Bev","qtr: Q3<br />avg_netsales:  56271530<br />type: Refresh Bev","qtr: Q4<br />avg_netsales:  55361307<br />type: Refresh Bev"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(254,217,118,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Refresh Bev","legendgroup":"Refresh Bev","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.9,0.9,0.9,0.9],"base":[571997815.444444,597684478,569915974.375,453705320.25],"x":[1,2,3,4],"y":[200595093.777778,203798833.5,258942982.875,171753665.25],"text":["qtr: Q1<br />avg_netsales: 200595094<br />type: Spirits","qtr: Q2<br />avg_netsales: 203798834<br />type: Spirits","qtr: Q3<br />avg_netsales: 258942983<br />type: Spirits","qtr: Q4<br />avg_netsales: 171753665<br />type: Spirits"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(254,178,76,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Spirits","legendgroup":"Spirits","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.9,0.9,0.9,0.9],"base":[270975702.555556,294229206.5,317592169.75,226456360.875],"x":[1,2,3,4],"y":[301022112.888889,303455271.5,252323804.625,227248959.375],"text":["qtr: Q1<br />avg_netsales: 301022113<br />type: Beer","qtr: Q2<br />avg_netsales: 303455272<br />type: Beer","qtr: Q3<br />avg_netsales: 252323805<br />type: Beer","qtr: Q4<br />avg_netsales: 227248959<br />type: Beer"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(252,78,42,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Beer","legendgroup":"Beer","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.9,0.9,0.9,0.9],"base":[0,0,0,0],"x":[1,2,3,4],"y":[270975702.555556,294229206.5,317592169.75,226456360.875],"text":["qtr: Q1<br />avg_netsales: 270975703<br />type: Wine","qtr: Q2<br />avg_netsales: 294229206<br />type: Wine","qtr: Q3<br />avg_netsales: 317592170<br />type: Wine","qtr: Q4<br />avg_netsales: 226456361<br />type: Wine"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(189,0,38,1)","line":{"width":1.88976377952756,"color":"transparent"}},"name":"Wine","legendgroup":"Wine","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":44.4931506849315,"r":7.30593607305936,"b":26.3013698630137,"l":54.7945205479452},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Breakdown in $ Sales per Qtr by Category","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,4.6],"tickmode":"array","ticktext":["Q1","Q2","Q3","Q4"],"tickvals":[1,2,3,4],"categoryorder":"array","categoryarray":["Q1","Q2","Q3","Q4"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.65296803652968,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0,895418852.475],"tickmode":"array","ticktext":["$0M","$200M","$400M","$600M","$800M"],"tickvals":[0,200000000,400000000,600000000,800000000],"categoryorder":"array","categoryarray":["$0M","$200M","$400M","$600M","$800M"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"Average Net Sales in Qtr (2015-2023)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"title":{"text":"type","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"14e4c37bb617":{"x":{},"y":{},"fill":{},"type":"bar"}},"cur_data":"14e4c37bb617","visdat":{"14e4c37bb617":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="litres-1" class="level4">
+<h4 class="anchored" data-anchor-id="litres-1">Litres</h4>
+<p>Similar quarter-over-quarter patterns can be seen when looking at litres sold, although the overall differences from one quarter to the next - especially Q2 to Q3 - are larger when measured in litres, since Beer and Refreshment Beverages are consumed in larger quantities than Wine and Spirits.</p>
+<div class="cell" data-layout-align="center">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Comparison of Qtrly volume by Category"</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>trend_qtr_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>litres, <span class="at">color=</span><span class="fu">factor</span>(fyr), <span class="at">group=</span>fyr))<span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(type<span class="sc">~</span>., <span class="at">scales=</span><span class="st">'free_y'</span>)<span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">label_comma</span>(<span class="at">scale=</span><span class="fl">1e-6</span>, <span class="at">suffix=</span><span class="st">"M"</span>), </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="cn">NA</span>))<span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>, <span class="at">color=</span><span class="st">"fiscal yr"</span>, <span class="at">y=</span><span class="st">"litres (upper limit varies)"</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="cn">NA</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#+ theme(panel.border = element_line())</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#+ theme(panel.border = element_line())</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <ul>
-<li>Beer and - even more-so - refreshment beverages drop from Q1-Q2 (Apr-Sep) to Q3-Q4 (Oct-Mar).</li>
+<li>Beer and, even more-so, refreshment beverages drop from Q1-Q2 (Apr-Sep) to Q3-Q4 (Oct-Mar).</li>
 <li>Wine, Spirits have small peak in Q3 (Oct-Dec) - holiday season.</li>
 </ul>
+<p>This pattern shows up clearly when looking at the average % breakdown in litres by beverage type:</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>trend_qtrs_cat<span class="sc">$</span>cat_type <span class="ot">&lt;-</span> <span class="fu">fct_reorder</span>(trend_qtrs_cat<span class="sc">$</span>cat_type, trend_qtrs_cat<span class="sc">$</span>avg_litres)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Breakdown in Avg Litre per Qtr by Category"</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>trend_qtrs_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>avg_litres, <span class="at">fill=</span>cat_type))<span class="sc">+</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position=</span><span class="st">'fill'</span>)<span class="sc">+</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>(), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)))<span class="sc">+</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>cat_type_color)<span class="sc">+</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>trend_qtrs_cat<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">fct_reorder</span>(trend_qtrs_cat<span class="sc">$</span>type, trend_qtrs_cat<span class="sc">$</span>avg_litres)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>ch_title <span class="ot">&lt;-</span> <span class="st">"Breakdown in Avg Litre per Qtr by Category"</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>trend_qtrs_cat <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>qtr, <span class="at">y=</span>avg_litres, <span class="at">fill=</span>type))<span class="sc">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position=</span><span class="st">'fill'</span>)<span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span><span class="fu">percent_format</span>(), <span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.1</span>)))<span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>type_color)<span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span>ch_title, <span class="at">x=</span><span class="st">""</span>,<span class="at">y=</span><span class="st">"Average % Breakdown by Quarter (2015-2023"</span>)<span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="576"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="576"></p>
 </div>
 </div>
-<p>Reinforcing the shifts in category by quarters - showing the bulge in % share for wine and spirits in Q3-Q4 (Sep-Mar).</p>
+<p>The bulge in % share for Wine and Spirits in Q3 (Sep-Dec), at the expense of Beer and Refreshment Beverages, is apparent.</p>
 </section>
 </section>
+<section id="part-2-wrap-up-and-next-up" class="level3">
+<h3 class="anchored" data-anchor-id="part-2-wrap-up-and-next-up">Part 2 Wrap-up and Next Up</h3>
+<p>This concludes our look at quarter patterns, including quarters from mid-2015 to mid-2023.</p>
+<section id="next-up" class="level4">
+<h4 class="anchored" data-anchor-id="next-up">Next-up:</h4>
+<ol type="1">
+<li><strong>Category trends and patterns:</strong> closer look at each of the major beverage types, exploring categories and sub-categories within them, as reported in the Liquor Market Review.</li>
+<li><strong>Category 1: Beer:</strong> start with beer, because…beer. ;)</li>
+</ol>
 </section>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section"></h2>
+</section>
 <section id="footnotes" class="level3">
 <h3 class="anchored" data-anchor-id="footnotes">Footnotes</h3>
 <p>Notes on ‘net $ sales’:</p>
@@ -834,8 +590,8 @@ cookieconsent.run({
 </ul>
 </section>
 </section>
-<section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1"></h2>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section"></h2>
 
 
 </section>
