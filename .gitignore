@@ -3,4 +3,5 @@
 .RData
 .Ruserdata
 credo.R
+.DS_Store
 /.quarto/
