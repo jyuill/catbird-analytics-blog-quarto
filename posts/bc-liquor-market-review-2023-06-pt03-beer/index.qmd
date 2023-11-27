@@ -1,11 +1,11 @@
 ---
-title: "BC Liquor Sales Analysis: Quarter-of-Year Patterns 2015-2023"
+title: "BC Liquor Sales Analysis: Beer 2015-2023"
 author: John Yuill
-date: '2023-11-19'
+date: '2023-11-26'
 categories: [liquor stats, reporting, analysis]
 description-meta: BC Liquor Market Review data exploration and analysis covering the years 2016 to 2023, focusing on quarter-level trends, patterns and observations.
-draft: false
-image: bc-lmr-quarter-pattern.png 
+draft: true
+#image: .png 
 toc: true
 toc-depth: 4
 toc-location: left
@@ -80,22 +80,32 @@ if(exists('lmr_data', envir = globalenv(), inherits=TRUE)){
     ## convert integer64 from database to numeric for ease of use in R
     lmr_data$netsales <- as.numeric(lmr_data$netsales)
     lmr_data$litres <- as.numeric(lmr_data$litres)
+    lmr_data_all <- lmr_data # backup of all data
+    ## filter for BEER - keep lmr_data to minimize need to change references in code
+    lmr_data <- lmr_data %>% filter(type=='Beer')
 }
 ```
 
-This is a continuation of a previous analysis of [annual liquor sales in British Columbia](../bc-liquor-market-review-2023-06-pt01-annual-trends), based on data from **British Columbia Liquor Distribution Board** '[**Liquor Market Review**](https://www.bcldb.com/publications/liquor-market-review)'. The Liquor Market Review is released on a quarterly basis, covering dollar and litre sales across major categories of **beer**, **wine**, **spirits**, and **'refreshment beverages'** (ciders, coolers).
-
-While the previous analysis compared year-over-year data, the focus here is on **patterns in data based on quarter of year**, such as typical **peaks and valleys throughout the year**, including differences by major beverage type.
+This is a continuation of a previous analysis of [annual liquor sales in British Columbia](../bc-liquor-market-review-2023-06-pt01-annual-trends) and [quarter-of-year patterns in BC liquor sales](../bc-liquor-market-review-2023-06-pt02-quarterly-trends), based on data from **British Columbia Liquor Distribution Board** '[**Liquor Market Review**](https://www.bcldb.com/publications/liquor-market-review)'. The Liquor Market Review is released on a quarterly basis, covering dollar and litre sales across major alcoholic beverage categories: here we focus on **BEER**!
 
 Data goes back to 2015 (BC LDB Fiscal Year 2016, since fiscal yr ends in March).
 
-**As mentioned in previous article:** *my expertise is in data analysis, not the liquor industry, so the emphasis is on exploring what the data can tell us. Industry-insider context may be lacking. In the interest of promoting data analysis and learning, I am sharing most of the R code used to process the data - hence the expandable 'Code' options.*
+**As mentioned in previous articles:** *my expertise is in data analysis, not the liquor industry, so the emphasis is on exploring what the data can tell us. Industry-insider context may be lacking. In the interest of promoting data analysis and learning, I am sharing most of the R code used to process the data - hence the expandable 'Code' options.*
 
-## Stats by Quarter of the Year
+## Beer Sales Trends
 
 ### Overview
 
-We'll start with an overview across all beverage types and then look at trends for beverage types further down below.
+We'll start with an annual overview across all categories and then look at trends for individual categories further down below.
+
+```{r, annual}
+trend_yr <- lmr_data %>% group_by(year, fyr) %>% summarize(
+  netsales=sum(netsales),
+  litres=sum(litres)
+)
+
+```
+
 
 ```{r, calc_qtr}
 # roll-up categories by qtr
