@@ -32,6 +32,8 @@ library(RMariaDB) ## best way to access MySQL from R
 library(RColorBrewer)
 library(here)
 library(plotly)
+library(gridExtra)
+library(manipulateWidget)
 # set default theme
 theme_set(theme_classic())
 
@@ -71,8 +73,8 @@ if(exists('lmr_data', envir = globalenv(), inherits=TRUE)){
     lmr_data <- lmr_data %>% mutate(
       ## shorten refreshment beverages for space consideration
       cat_type = ifelse(cat_type=='Refreshment Beverages','Refresh Bev',cat_type),
-      ## set start mth for quarters for more intuitive reference
-      start_qtr_dt =floor_date(end_qtr_dt, unit="months")
+      ## set beg of start mth for quarters for more intuitive reference
+      start_qtr_dt =floor_date(end_qtr_dt-63, unit="months") # back at least 2 mths
     ) %>% rename( ## change 'cyr' to 'year' and 'cat_type' to 'type' for simplicity
       year=cyr,
       type=cat_type
@@ -82,6 +84,15 @@ if(exists('lmr_data', envir = globalenv(), inherits=TRUE)){
     lmr_data$litres <- as.numeric(lmr_data$litres)
 }
 ```
+
+## Highlights
+
+(Quarters based on BC LDB fiscal yr Apr-Mar: Q1=Apr, May, Jun. Period is 2015-2023)
+
+-   BC liquor sales revenue (\$) is strongest in Q2 (Jul-Sep of the fiscal yr) and Q3 (Oct-Dec), with generally steep drop-off in Q4 (Jan-Mar) and increase during Q1 (Apr-Jun).
+-   Litre sales have a strong peak in Q2, driven by summer time beer volumes, whereas consumption shifts toward spirts and wine during holiday season.
+
+## Intro
 
 This is a continuation of a previous analysis of [annual liquor sales in British Columbia](../bc-liquor-market-review-2023-06-pt01-annual-trends), based on data from **British Columbia Liquor Distribution Board** '[**Liquor Market Review**](https://www.bcldb.com/publications/liquor-market-review)'. The Liquor Market Review is released on a quarterly basis, covering dollar and litre sales across major categories of **beer**, **wine**, **spirits**, and **'refreshment beverages'** (ciders, coolers).
 
@@ -225,6 +236,10 @@ trend_qtrs_cat <- trend_qtr_cat %>% group_by(qtr, type) %>%
     avg_litres=mean(litres),
     max_litres=max(litres)
   )
+trend_qtrs_cat <- trend_qtrs_cat %>% group_by(qtr) %>% mutate(
+  avg_netsales_pc=avg_netsales/sum(avg_netsales),
+  avg_litre_pc=avg_litres/sum(avg_litres)
+)
 trend_qtrs_cat$type <- as.factor(trend_qtrs_cat$type)
 ```
 
@@ -248,7 +263,8 @@ trend_qtr_cat %>% ggplot(aes(x=qtr, y=netsales, color=factor(fyr), group=fyr))+
   facet_grid(type~., scales='free_y')+
   scale_y_continuous(labels=label_comma(scale=1e-6, prefix="$", suffix="M"), 
                      limits=c(0,NA))+
-  labs(title=ch_title, x="", color="fiscal yr", y="$ Sales (upper limit varies)")+theme(panel.border = element_rect(fill=NA))
+  labs(title=ch_title, x="", color="fiscal yr", y="$ Sales (upper limit varies)")+
+  theme(panel.border = element_rect(fill=NA))
 ```
 
 Stacked chart highlights the shifts between Q2 and Q3:
@@ -256,20 +272,34 @@ Stacked chart highlights the shifts between Q2 and Q3:
 -   decline in \$ sales of Beer and Refreshment Beverages in Q3 almost completely offset by increase in wine and spirits.
 
 ```{r}
-#| fig-width: 5
-#| fig-height: 6
-#| fig-align: center
 trend_qtrs_cat$type <- fct_reorder(trend_qtrs_cat$type, trend_qtrs_cat$avg_netsales)
 
-ch_title <- "Breakdown in $ Sales per Qtr by Category"
+ch_title <- "$ Sales by Type"
 plot <- trend_qtrs_cat %>% ggplot(aes(x=qtr, y=avg_netsales, fill=type))+
   #geom_col(position='fill')+
   geom_col()+
-  scale_y_continuous(labels=label_comma(scale=1e-6, prefix="$", suffix="M"), expand=expansion(add=c(0,0.1)))+
+  scale_y_continuous(labels=label_comma(scale=1e-6, prefix="$", suffix="M"), 
+                     expand=expansion(add=c(0,0.1)))+
   scale_fill_manual(values=type_color)+
-  labs(title=ch_title, x="",y="Average Net Sales in Qtr (2015-2023)")+
-  theme(axis.ticks.x = element_blank())
-ggplotly(plot)
+  labs(title=ch_title, x="",y="Avg Net Sales in Qtr (2015-2023)")+
+  theme(axis.ticks.x = element_blank(),
+        axis.title.y=element_text(size=9))
+p1_plotly <- ggplotly(plot) %>% layout(margin=list(l=110, r=0), showlegend=TRUE,
+                                       legend=list(x=-1, y=0.6, xanchor='left', 
+                                                   yanchor='middle'))
+
+ch_title <- "% $ Sales by Type"
+plot_f <- trend_qtrs_cat %>% ggplot(aes(x=qtr, y=avg_netsales, fill=type))+
+  geom_col(position='fill')+
+  scale_y_continuous(labels=percent_format(), expand=expansion(add=c(0,0)))+
+  scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="Avg % Net Sales in Qtr (2015-2023)")+
+  theme(axis.ticks.x = element_blank(),
+        axis.title.y=element_text(size=9))
+p2_plotly <- ggplotly(plot_f) %>% layout(margin=list(l=60, r=0), showlegend=FALSE)
+# grid.arrange doesn't work with plotly; plotly has subplot, but couldn't get right layout
+manipulateWidget::combineWidgets(p1_plotly, p2_plotly, nrow=1, colsize = c(3,2))
+
 ```
 
 #### Litres
@@ -294,21 +324,38 @@ trend_qtr_cat %>% ggplot(aes(x=qtr, y=litres, color=factor(fyr), group=fyr))+
 -   Beer and, even more-so, refreshment beverages drop from Q1-Q2 (Apr-Sep) to Q3-Q4 (Oct-Mar).
 -   Wine, Spirits have small peak in Q3 (Oct-Dec) - holiday season.
 
-This pattern shows up clearly when looking at the average % breakdown in litres by beverage type:
+This pattern shows up clearly when looking at the average % breakdown in litres by beverage type (chart on right):
 
 ```{r}
 trend_qtrs_cat$type <- fct_reorder(trend_qtrs_cat$type, trend_qtrs_cat$avg_litres)
 
-ch_title <- "Breakdown in Avg Litre per Qtr by Category"
-trend_qtrs_cat %>% ggplot(aes(x=qtr, y=avg_litres, fill=type))+
-  geom_col(position='fill')+
-  scale_y_continuous(labels=percent_format(), expand=expansion(mult = c(0,0.1)))+
+ch_title <- "Avg Litres by Type"
+plot <- trend_qtrs_cat %>% ggplot(aes(x=qtr, y=avg_litres, fill=type))+
+  geom_col()+
+  scale_y_continuous(labels=label_comma(scale=1e-6, suffix="M"), 
+                     expand=expansion(mult = c(0,0)))+
   scale_fill_manual(values=type_color)+
-  labs(title=ch_title, x="",y="Average % Breakdown by Quarter (2015-2023")+
-  theme(axis.ticks.x = element_blank())
+  labs(title=ch_title, x="",y="Average Litres by Quarter (2015-2023)")+
+  theme(axis.ticks.x = element_blank(),
+        axis.title.y = element_text(size=9),
+        legend.position = 'none')
+plotly_1 <- ggplotly(plot)
+
+ch_title <- "Avg Litre % by Type"
+plot <- trend_qtrs_cat %>% ggplot(aes(x=qtr, y=round(avg_litre_pc,2), fill=type))+
+  geom_col(position='fill')+
+  scale_y_continuous(labels=percent_format(), expand=expansion(mult = c(0,0)))+
+  scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="Average % Share by Quarter (2015-2023)")+
+  theme(axis.ticks.x = element_blank(),
+        axis.title.y = element_text(size=9),
+        legend.position = 'right')
+plotly_2 <- ggplotly(plot)
+combineWidgets(plotly_1, plotly_2, nrow=1, colsize = c(3,5))
+
 ```
 
-The bulge in % share for Wine and Spirits in Q3 (Sep-Dec), at the expense of Beer and Refreshment Beverages, is apparent.
+Chart on right highlights the bulge in % litre share for Wine in Q3 (Sep-Dec), an increase from 15% in previous quarter to 20% in Q3. Spirts likewise have strong increase from 6% in Q2 to 8% in Q3. These shifts in share come at the expense largely of Refreshment Beverages - dropping from 16% in Q2 to 11% in Q3 - and Beer, to a lesser extent, down only 2%. It seems refreshment beverage drinkers are somewhat fickle and maybe make choices based on the season.
 
 ### Part 2 Wrap-up and Next Up
 
