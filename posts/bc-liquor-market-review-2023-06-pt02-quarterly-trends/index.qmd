@@ -34,6 +34,7 @@ library(here)
 library(plotly)
 library(gridExtra)
 library(manipulateWidget)
+library(shinylive)
 # set default theme
 theme_set(theme_classic())
 
@@ -148,7 +149,7 @@ ch_title <- "$ Sales Comparison by Quarter (fiscal yr end Mar 31)"
 plot <- trend_ttl_qtr %>% ggplot(aes(x=qtr, y=netsales, color=factor(fyr), group=fyr))+
   geom_line()+
   geom_point()+
-  geom_line(data=trend_qtrs, aes(x=qtr, y=avgsales, group=1), color='black', size=1.5)+
+  geom_line(data=trend_qtrs, aes(x=qtr, y=avgsales, group=1), color='black', linewidth=1.5)+
   scale_y_continuous(labels=label_comma(scale=1e-6, prefix="$", suffix="M"), expand=expansion(add=c(0,0.1)), limits=c(0,max(trend_ttl_qtr$netsales)))+
   labs(title=ch_title, x="", y="Net $ Sales", color='fiscal yr')
 ggplotly(plot)
@@ -375,7 +376,7 @@ Notes on 'net \$ sales':
 -   there is likely additional factors related to BC LDB pricing structure, wholesaling, etc.
 -   best to **consider average net dollar value per litre referred to below as relative indicator**.
 
-## shiny live
+## shiny live experiment
 
 ```{shinylive-r}
 #| standalone: true
@@ -442,4 +443,3 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 
 ```
-
