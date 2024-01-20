@@ -13,6 +13,8 @@ date-modified: '`r Sys.Date()`'
 fig-height: 4
 fig-width: 6
 code-fold: true
+filters: 
+  - shinylive
 execute:
   echo: true
   error: false
