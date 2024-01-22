@@ -292,6 +292,39 @@ trend_yr_subcat <- trend_yr_subcat %>% mutate(
 
 ```
 
+```{r}
+#| echo: false
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 3
+
+# reorder categories in order of litre sales
+trend_yr_subcat$subcat <- fct_reorder(trend_yr_subcat$subcat, trend_yr_subcat$litres)
+
+ch_title <- "BC Beer Litre Sales by Subcat."
+plot_left <- trend_yr_subcat %>% ggplot(aes(x=as.factor(year), y=litres, 
+                                            fill=subcat))+
+  geom_col()+
+  scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M"), 
+                     expand=expansion(add=c(0,0.1)))+
+  #scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
+
+ch_title <- "BC Beer % Litres by Subcat."
+plot_right <- trend_yr_subcat %>% ggplot(aes(x=as.factor(year), y=litres_pc, 
+                                             fill=subcat))+
+  geom_col(position='fill')+
+  scale_y_continuous(labels=percent_format(), 
+                     expand=expansion(add=c(0,0)))+
+  #scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
+ggplotly(plot_left)
+ggplotly(plot_right)
+```
+
 ## questions
 
 -   breakdown by major category
