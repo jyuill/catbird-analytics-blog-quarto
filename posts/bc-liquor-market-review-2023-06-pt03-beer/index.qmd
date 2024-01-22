@@ -19,7 +19,7 @@ execute:
   warning: false
 ---
 
-```{r}
+```{r setup, include=FALSE}
 #| echo: FALSE
 #| warning: FALSE
 library(tidyverse)
@@ -99,7 +99,7 @@ Data goes back to 2015 (BC LDB Fiscal Year 2016, since fiscal yr ends in March).
 
 We'll start with an annual overview across all beer categories and then look at trends for individual categories further down below.
 
-```{r, annual}
+```{r annual}
 # remove partial yrs - first identify complete yrs
 yr_qtr <- lmr_data %>% group_by(year, qtr) %>% summarize(count=1)
 yr_qtr <- yr_qtr %>% group_by(year) %>% summarize(count=n()) %>% filter(count==4)
@@ -122,7 +122,7 @@ trend_yr <- trend_yr %>% mutate(
 Beer sales have been pretty stable over the last few years, with net \$ sales peaking in 2017, recovering in 2022 in line with inflation. Overall **slight downward trend**, most noticeable in litre consumption.
 
 ```{r, sales dual-axis}
-# try dual axis
+# dual axis - not usually recommended but works ok here
 ch_title <- "BC Beer: Net Sales $ + Litre Sales trend"
 trend_yr %>% ggplot(aes(x=as.factor(year), y=netsales, group=1))+
   geom_line(color=bar_col, size=2)+
@@ -162,7 +162,8 @@ trend_yr_qtr %>% ggplot(aes(x=end_qtr_dt, y=litres, group=1))+
   #geom_point(aes(y=litres), color=bar_col, size=3)+
   geom_smooth(method='lm', se=FALSE)+
   scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M"), 
-                     expand=expansion(mult=c(0,0.1)), limits=c(0,max(trend_yr_qtr$litres)))+
+                     expand=expansion(mult=c(0,0.1)), 
+                     limits=c(0,max(trend_yr_qtr$litres)))+
   labs(title=ch_title, x="")
 ```
 
@@ -175,7 +176,7 @@ BC LDB puts beer into 3 major categories for purposes of the Liquor Market Repor
 -   **Import Beer:** beer imported from outside Canada.
 
 ```{r}
-#unique(lmr_data$category)
+# summarize data by year and major category
 trend_yr_cat <- lmr_data %>% group_by(year, category) %>% summarize(
   netsales=sum(netsales),
   litres=sum(litres)
@@ -204,8 +205,8 @@ trend_yr_cat <- trend_yr_cat %>% ungroup() %>% mutate(
   dollar_per_litre=netsales/litres,
   pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=3)-1
 )
-## clean up category names
-unique(trend_yr_cat$category)
+## simplify category names
+#unique(trend_yr_cat$category)
 trend_yr_cat <- trend_yr_cat %>% mutate(
   category=case_when(
     category=='Domestic - BC Beer' ~ 'BC',
@@ -215,65 +216,80 @@ trend_yr_cat <- trend_yr_cat %>% mutate(
 )
 ```
 
-```{r}
-# reorder categories in order of litre sales
-trend_yr_cat$category <- fct_reorder(trend_yr_cat$category, trend_yr_cat$litres)
-```
+#### Litre sales
 
 Looking at litre consumption for these 3 main categories:
 
 -   volume drops in the BC and Import beer, with **other province beer actually increasing**.
--   in % terms, litre market share for BC remained steady just over 75%, while other provinces totally took their market share out of imports.
+-   in % terms, litre market share for BC remained steady just over 75%, while **other provinces took their market share out of imports**.
 
 ```{r}
-# side-by-side charts
-#| fig-cap: Beer sales by category
-#| label: beer
-#| layout-ncol: 2
-ch_title <- "BC Beer Litre Sales by Category"
+#| echo: false
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 3
+
+# reorder categories in order of litre sales
+trend_yr_cat$category <- fct_reorder(trend_yr_cat$category, trend_yr_cat$litres)
+
+ch_title <- "Beer Litre Sales by Cat."
 plot_left <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), y=litres, fill=category))+
   geom_col()+
   scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M"), 
                      expand=expansion(add=c(0,0.1)))+
   #scale_fill_manual(values=type_color)+
   labs(title=ch_title, x="",y="")+
-  theme(axis.ticks.x = element_blank())
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
 
-ch_title <- "BC Beer % Litre Sales by Category"
-plot_right <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), y=litres, fill=category))+
+ch_title <- "Beer % Litre Sales by Cat."
+plot_right <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), y=litres_pc, fill=category))+
   geom_col(position='fill')+
   scale_y_continuous(labels=percent_format(), 
-                     expand=expansion(add=c(0,0.1)))+
+                     expand=expansion(add=c(0,0)))+
   #scale_fill_manual(values=type_color)+
   labs(title=ch_title, x="",y="")+
-  theme(axis.ticks.x = element_blank())
-plot_left
-plot_right
-#grid.arrange(plot_left, plot_right, ncol=2) 
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
+ggplotly(plot_left)
+ggplotly(plot_right)
 ```
 
-```{r}
-ch_title <- "BC Beer Litre Sales by Category"
-plot <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), y=litres, fill=category))+
-  geom_col()+
-  scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M"), 
-                     expand=expansion(add=c(0,0.1)))+
-  #scale_fill_manual(values=type_color)+
-  labs(title=ch_title, x="",y="")+
-  theme(axis.ticks.x = element_blank())
-ggplotly(plot)
-```
+### Sales by Subcategory within Categories
+
+Each of the main categories above has sub-categories as well. Let's look at how things break-out there.
+
+#### BC Beer
 
 ```{r}
-ch_title <- "BC Beer % Litre Sales by Category"
-plot <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), y=litres, fill=category))+
-  geom_col(position='fill')+
-  scale_y_continuous(labels=percent_format(), 
-                     expand=expansion(add=c(0,0.1)))+
-  #scale_fill_manual(values=type_color)+
-  labs(title=ch_title, x="",y="")+
-  theme(axis.ticks.x = element_blank())
-ggplotly(plot)
+trend_yr_subcat <- lmr_data %>% 
+  filter(category=='Domestic - BC Beer') %>%
+  group_by(year, subcategory) %>% summarize(
+    netsales=sum(netsales),
+    litres=sum(litres)
+) %>% filter(year %in% yr_qtr$year)
+
+# calc % of yr sales by category
+# get totals for each yr
+trend_yr_ttl_sub <- trend_yr_subcat %>% select(year, netsales, litres) %>% 
+  group_by(year) %>% 
+  summarize(
+    ttl_netsales=sum(netsales),
+    ttl_litres=sum(litres)
+  ) 
+# join with trend_yr_cat to get yr total cols
+trend_yr_subcat <- left_join(trend_yr_subcat, trend_yr_ttl_sub, by='year')
+# calc %
+trend_yr_subcat <- trend_yr_subcat %>% mutate(
+  litres_pc=litres/ttl_litres,
+  netsales_pc=litres/ttl_netsales
+)
+
+# simplify subcategory names
+trend_yr_subcat <- trend_yr_subcat %>% mutate(
+  subcat=str_replace(subcategory, "Domestic - BC ",""),
+  subcat=str_replace(subcat, " Beer","")
+)
+
 ```
 
 ## questions
