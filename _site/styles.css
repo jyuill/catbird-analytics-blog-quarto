@@ -3,18 +3,21 @@
 /* original colors from bootstrap theme */
 /* top nav background-color: */
 
-.navbar-dark {
-  /* background-color: #1E53FA; */
-  background-color: navy; 
+/* styling navigation bar */
+.navbar_dark {
+  background-color: "#1E53FA";
+  /* background-color: navy; */
   height: 40px;
   padding-top: 5px;
 }
 
-.quarto-title {
-  /*color: #f58422; */
+/* style titles of blog posts */
+.quarto-title { 
+  /* color: #f58422; */
   color: navy;
   font-size: 1.5em;
 }
+
 .quarto-title-block .quarto-title-banner {
   /* trying to get header image - this works in principal but needs work (resizing etc) */
   /*background-image: url(banner-barcharts-noise-1080-440.png); */
