@@ -8,9 +8,9 @@
 
 <meta name="author" content="John Yuill">
 <meta name="dcterms.date" content="2024-01-27">
-<meta name="description" content="An experiment in shiny app embedding in quarto document.">
+<meta name="description" content="An experiment in shiny app embedding in quarto document that shows functionality and identifies some limitations.">
 
-<title>Catbird Analytics - Quarto Shinylive Experiment</title>
+<title>Catbird Analytics - Quarto Shinylive Experiment: Promising for Limited Use</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -140,7 +140,7 @@ cookieconsent.run({
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Catbird Analytics - Quarto Shinylive Experiment">
+<meta property="og:title" content="Catbird Analytics - Quarto Shinylive Experiment: Promising for Limited Use">
 <meta property="og:description" content="">
 <meta property="og:site_name" content="Catbird Analytics">
 </head>
@@ -202,10 +202,10 @@ cookieconsent.run({
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#quarto-shinylive" id="toc-quarto-shinylive" class="nav-link active" data-scroll-target="#quarto-shinylive">Quarto + Shinylive</a></li>
+  <li><a href="#quarto-shinylive" id="toc-quarto-shinylive" class="nav-link active" data-scroll-target="#quarto-shinylive">Quarto + Shinylive!</a></li>
   <li><a href="#swiss-dataset" id="toc-swiss-dataset" class="nav-link" data-scroll-target="#swiss-dataset">Swiss dataset</a></li>
   <li><a href="#visualize" id="toc-visualize" class="nav-link" data-scroll-target="#visualize">Visualize</a></li>
-  <li><a href="#now-with-shiny" id="toc-now-with-shiny" class="nav-link" data-scroll-target="#now-with-shiny">Now with Shiny!</a></li>
+  <li><a href="#now-with-shinylive" id="toc-now-with-shinylive" class="nav-link" data-scroll-target="#now-with-shinylive">Now with Shiny<em>live</em>!</a></li>
   <li><a href="#but-not-so-fast" id="toc-but-not-so-fast" class="nav-link" data-scroll-target="#but-not-so-fast">But: Not So Fast…</a>
   <ul>
   <li><a href="#working-with-data" id="toc-working-with-data" class="nav-link" data-scroll-target="#working-with-data">Working with data</a></li>
@@ -224,7 +224,7 @@ cookieconsent.run({
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Quarto Shinylive Experiment</h1>
+<h1 class="title">Quarto Shinylive Experiment: Promising for Limited Use</h1>
   <div class="quarto-categories">
     <div class="quarto-category">R</div>
     <div class="quarto-category">quarto</div>
@@ -253,7 +253,7 @@ cookieconsent.run({
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">January 27, 2024</p>
+      <p class="date-modified">January 28, 2024</p>
     </div>
   </div>
     
@@ -264,10 +264,26 @@ cookieconsent.run({
 </header>
 
 
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Summary
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Simple example demonstrates the benefits of embedding Shiny apps in Quarto documents. This technology has some great potential for expanding the use of Shiny apps, although use cases currently limited by lack of ability to pass data in/out of the shiny app.</p>
+</div>
+</div>
 <section id="quarto-shinylive" class="level2">
-<h2 class="anchored" data-anchor-id="quarto-shinylive">Quarto + Shinylive</h2>
-<p>Taking Quarto docs to the next level by embedding live, fully interactive Shiny apps!</p>
-<p>Experiment inspired by Joe Cheng’s presentation ‘<a href="https://www.youtube.com/watch?v=j1M6YyU2ZX8">Running R-Shiny without a Server</a>’ at posit::conf(2023). (20 min video)</p>
+<h2 class="anchored" data-anchor-id="quarto-shinylive">Quarto + Shinylive!</h2>
+<p>Taking Quarto docs to the next level by embedding live, fully interactive Shiny apps! An experiment inspired by Joe Cheng’s presentation ‘<a href="https://www.youtube.com/watch?v=j1M6YyU2ZX8">Running R-Shiny without a Server</a>’ at <strong>posit::conf(2023)</strong>. <em>(20 min video)</em></p>
+<p>Turn out that:</p>
+<ul>
+<li>It is fairly straightforward to implement</li>
+</ul>
 <p>Additional reference:</p>
 <ul>
 <li>To learn more about Shinylive see <a href="https://github.com/posit-dev/r-shinylive" class="uri">github.com/posit-dev/r-shinylive</a>.</li>
@@ -320,9 +336,11 @@ Figure&nbsp;1: from Swiss Fertility &amp; Socioeconomic Indicators (1888); built
 </div>
 </div>
 </section>
-<section id="now-with-shiny" class="level2">
-<h2 class="anchored" data-anchor-id="now-with-shiny">Now with Shiny!</h2>
-<p>Fully interactive chart that leverages R shiny plus webR technology to display in browser…<strong><em>without</em></strong> the need for <strong>shiny server</strong>!</p>
+<section id="now-with-shinylive" class="level2">
+<h2 class="anchored" data-anchor-id="now-with-shinylive">Now with Shiny<em>live</em>!</h2>
+<p>Interactive, filterable version of the chart that leverages R shiny plus webR technology to display in browser…<strong><em>without</em></strong> the need for <strong>shiny server</strong>!</p>
+<p>May take a while to load…</p>
+<p><em>(apologies if the ‘sidebar’ filters are stacked above the chart - appears to be result of narrow width of the theme I’m using and not improved by setting widths of side/main panels; worked as expected in other experiments)</em></p>
 <pre class="shinylive-r" data-engine="r"><code>#| standalone: true
 #| viewerHeight: 700
 
@@ -349,6 +367,7 @@ ui &lt;- fluidPage(
   sidebarLayout(
     # Sidebar panel for inputs
     sidebarPanel(
+      width=3, ## setting worked nicely in other quarto docs - no respond here
       # Input: number of provinces to show (since 47 total)
       numericInput(inputId='num_prov', 
                    label='No. of Provs. to show',
@@ -360,6 +379,7 @@ ui &lt;- fluidPage(
     
     # Main panel for displaying outputs
     mainPanel(
+      width=9,
       h3('Swiss Fertility'),
       # Output: Column chart rendered with ggplot2
       plotOutput(outputId = "fert", height="540px")
@@ -398,13 +418,29 @@ server &lt;- function(input, output, session) {
 
 # create and launch shiny app
 shinyApp(ui = ui, server = server)</code></pre>
-<p>Code display doesn’t work with the {shinylive-r} code block, so showing the skeleton with shown below. Key unique components:</p>
+<p>This is implemented in just a few steps:</p>
+<ol type="1">
+<li><p>Add the Quarto <strong>shinylive extension</strong> to your project.</p>
 <ul>
-<li>{shinyline-r}</li>
-<li>#| standalone: true</li>
-<li>#| viewerHeight: 600 - ensures app window is large enough</li>
-<li>the rest is standard shiny code</li>
-</ul>
+<li><code>terminal: quarto add quarto-ext/shinylive</code></li>
+</ul></li>
+<li><p>Get the <strong>shinylive</strong> package.</p></li>
+<li><p>Add filter to document yaml header</p>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="yaml-filter.png" class="img-fluid quarto-figure quarto-figure-left figure-img" alt="add filters: shinylive to yaml header" width="120"></p>
+</figure>
+</div></li>
+<li><p><strong>{shinylive-r}</strong> code block to hold the shiny code:</p>
+<ul>
+<li><strong>#| standalone: true</strong></li>
+<li><strong>#| viewerHeight: 600</strong> - ensures app window is large enough; adjust to pref</li>
+<li>library(shiny)</li>
+<li>standard shiny code for a single-file app within the code block (ui, server)</li>
+</ul></li>
+</ol>
+<p>That’s it! Render the page and enjoy the view - and the interaction possibilities. (Will need to use ‘<strong>show in new window</strong>’ option, as it won’t display correctly in the Viewer panel.)</p>
+<p>Code display doesn’t work with the {shinylive-r} code block, so showing the skeleton code below, with key components. (actual code is long for this page - you can see similar examples in my <a href="https://github.com/jyuill/quarto-shiny-live-examples">quarto-shiny-live-examples Github repo</a>.)</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -460,14 +496,14 @@ shinyApp(ui = ui, server = server)</code></pre>
 <section id="other-limitations" class="level3">
 <h3 class="anchored" data-anchor-id="other-limitations">Other limitations:</h3>
 <ul>
-<li>single file app, so limited complexity</li>
+<li>single file app, so limited complexity can be developed</li>
 <li>hard to debug - no error messages or other clues when app fails
 <ul>
 <li>can use <a href="https://shinylive.io/r/examples/">shinylive.io</a> for testing</li>
 </ul></li>
 <li>not all R packages available - but most, so shouldn’t be major blocker</li>
 <li>slow loading time - a nuisance, but generally not unbearable</li>
-<li>restricted size: limited by format of quarto document</li>
+<li>restricted size: limited by format of quarto document (since embedded within Quarto doc layout)</li>
 </ul>
 <p>Note that these limitations apply specifically to using Shinylive for embedding into Quarto documents. This is only one use case. Others include:</p>
 <ul>
@@ -478,7 +514,7 @@ shinyApp(ui = ui, server = server)</code></pre>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>This is <strong>powerful technology</strong> that currently has limited application - but will likely become even more valuable over time. Maybe <strong>not ready for primetime</strong>, but will have to <strong>keep an eye on this</strong>!</p>
+<p><strong>Shinylive is a</strong> <strong>powerful new technology</strong> that holds lots of potential for embedding Shiny apps into Quarto documents for interactive data exploration. Currently, though, it has limited application. This will likely be further developed and become even more valuable over time. Maybe <strong>not ready for primetime</strong> now, but will have to <strong>keep an eye on this</strong>!</p>
 
 
 </section>

@@ -1,9 +1,9 @@
 ---
-title: "Quarto Shinylive Experiment"
+title: "Quarto Shinylive Experiment: Promising for Limited Use"
 author: John Yuill
 date: '2024-01-27'
 categories: [R, quarto, shiny]
-description-meta: An experiment in shiny app embedding in quarto document.
+description-meta: An experiment in shiny app embedding in quarto document that shows functionality and identifies some limitations.
 draft: false
 toc: true
 toc-depth: 4
@@ -29,11 +29,19 @@ library(shinylive)
 
 ```
 
-## Quarto + Shinylive
+::: {.callout-note icon="false"}
+## Summary
 
-Taking Quarto docs to the next level by embedding live, fully interactive Shiny apps!
+Simple example demonstrates the benefits of embedding Shiny apps in Quarto documents. This technology has some great potential for expanding the use of Shiny apps, although use cases currently limited by lack of ability to pass data in/out of the shiny app.
+:::
 
-Experiment inspired by Joe Cheng's presentation '[Running R-Shiny without a Server](https://www.youtube.com/watch?v=j1M6YyU2ZX8)' at posit::conf(2023). (20 min video)
+## Quarto + Shinylive!
+
+Taking Quarto docs to the next level by embedding live, fully interactive Shiny apps! An experiment inspired by Joe Cheng's presentation '[Running R-Shiny without a Server](https://www.youtube.com/watch?v=j1M6YyU2ZX8)' at **posit::conf(2023)**. *(20 min video)*
+
+Turn out that:
+
+-   It is fairly straightforward to implement
 
 Additional reference:
 
@@ -78,9 +86,13 @@ swiss_top %>% ggplot(aes(x=reorder(prov,Fertility), y=Fertility))+geom_col()+
         axis.text.y = element_text(size=11))
 ```
 
-## Now with Shiny!
+## Now with Shiny*live*!
 
-Fully interactive chart that leverages R shiny plus webR technology to display in browser...***without*** the need for **shiny server**!
+Interactive, filterable version of the chart that leverages R shiny plus webR technology to display in browser...***without*** the need for **shiny server**!
+
+May take a while to load...
+
+*(apologies if the 'sidebar' filters are stacked above the chart - appears to be result of narrow width of the theme I'm using and not improved by setting widths of side/main panels; worked as expected in other experiments)*
 
 ```{shinylive-r}
 #| standalone: true
@@ -109,6 +121,7 @@ ui <- fluidPage(
   sidebarLayout(
     # Sidebar panel for inputs
     sidebarPanel(
+      width=3, ## setting worked nicely in other quarto docs - no respond here
       # Input: number of provinces to show (since 47 total)
       numericInput(inputId='num_prov', 
                    label='No. of Provs. to show',
@@ -120,6 +133,7 @@ ui <- fluidPage(
     
     # Main panel for displaying outputs
     mainPanel(
+      width=9,
       h3('Swiss Fertility'),
       # Output: Column chart rendered with ggplot2
       plotOutput(outputId = "fert", height="540px")
@@ -160,12 +174,28 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 ```
 
-Code display doesn't work with the {shinylive-r} code block, so showing the skeleton with shown below. Key unique components:
+This is implemented in just a few steps:
 
--   {shinyline-r}
--   #\| standalone: true
--   #\| viewerHeight: 600 - ensures app window is large enough
--   the rest is standard shiny code
+1.  Add the Quarto **shinylive extension** to your project.
+
+    -   `terminal: quarto add quarto-ext/shinylive`
+
+2.  Get the **shinylive** package.
+
+3.  Add filter to document yaml header
+
+    ![](yaml-filter.png){fig-alt="add filters: shinylive to yaml header" fig-align="left" width="120"}
+
+4.  **{shinylive-r}** code block to hold the shiny code:
+
+    -   **#\| standalone: true**
+    -   **#\| viewerHeight: 600** - ensures app window is large enough; adjust to pref
+    -   library(shiny)
+    -   standard shiny code for a single-file app within the code block (ui, server)
+
+That's it! Render the page and enjoy the view - and the interaction possibilities. (Will need to use '**show in new window**' option, as it won't display correctly in the Viewer panel.)
+
+Code display doesn't work with the {shinylive-r} code block, so showing the skeleton code below, with key components. (actual code is long for this page - you can see similar examples in my [quarto-shiny-live-examples Github repo](https://github.com/jyuill/quarto-shiny-live-examples).)
 
 ```{r eval=FALSE}
 
@@ -216,12 +246,12 @@ I haven't been able to figure a way to import data to the app, despite attemptin
 
 ### Other limitations:
 
--   single file app, so limited complexity
+-   single file app, so limited complexity can be developed
 -   hard to debug - no error messages or other clues when app fails
     -   can use [shinylive.io](https://shinylive.io/r/examples/) for testing
 -   not all R packages available - but most, so shouldn't be major blocker
 -   slow loading time - a nuisance, but generally not unbearable
--   restricted size: limited by format of quarto document
+-   restricted size: limited by format of quarto document (since embedded within Quarto doc layout)
 
 Note that these limitations apply specifically to using Shinylive for embedding into Quarto documents. This is only one use case. Others include:
 
@@ -230,4 +260,4 @@ Note that these limitations apply specifically to using Shinylive for embedding 
 
 ## Conclusion
 
-This is **powerful technology** that currently has limited application - but will likely become even more valuable over time. Maybe **not ready for primetime**, but will have to **keep an eye on this**!
+**Shinylive is a** **powerful new technology** that holds lots of potential for embedding Shiny apps into Quarto documents for interactive data exploration. Currently, though, it has limited application. This will likely be further developed and become even more valuable over time. Maybe **not ready for primetime** now, but will have to **keep an eye on this**!

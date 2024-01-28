@@ -11,6 +11,7 @@ execute:
   echo: true
   message: false
   warning: false
+draft: true
 ---
 
 ```{r setup, include=FALSE}
@@ -103,6 +104,7 @@ ui <- fluidPage(
   sidebarLayout(
     # Sidebar panel for inputs
     sidebarPanel(
+      width=3,
       # Input: number of provinces to show (since 47 total)
       numericInput(inputId='num_prov', 
                    label='No. of Provs. to show',
@@ -114,6 +116,7 @@ ui <- fluidPage(
     
     # Main panel for displaying outputs
     mainPanel(
+      width=9,
       h3('Swiss Fertility'),
       # Output: Column chart rendered with ggplot2
       plotOutput(outputId = "fert", height="540px")
