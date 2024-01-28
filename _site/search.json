@@ -130,7 +130,7 @@
     "href": "index.html",
     "title": "Catbird Analytics",
     "section": "",
-    "text": "BC Liquor Sales Analysis: Quarter-of-Year Patterns 2015-2023\n\n\n\n\n\n\nliquor stats\n\n\nreporting\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nNov 19, 2023\n\n\nJohn Yuill\n\n\n\n\n\n\n\n\n\n\n\n\nBC Liquor Sales Analysis: Annual Trends 2016-2022\n\n\n\n\n\n\nliquor stats\n\n\nreporting\n\n\nanalysis\n\n\nR\n\n\n\n\n\n\n\n\n\nNov 5, 2023\n\n\nJohn Yuill\n\n\n\n\n\n\n\n\n\n\n\n\nCrypto Currency (BTC) PRices: Any Tradeable Daily Patterns?\n\n\n\n\n\n\nR\n\n\nanalysis\n\n\ncrpto-currency\n\n\n\n\n\n\n\n\n\nMay 28, 2022\n\n\nJohn Yuill\n\n\n\n\n\n\n\n\n\n\n\n\nR Time Series Objects vs Data Frames: Advantages and Limitations\n\n\n\n\n\n\nR\n\n\ntime-series\n\n\n\n\n\n\n\n\n\nJan 30, 2022\n\n\nJohn Yuill\n\n\n\n\n\n\n\n\n\n\n\n\nGoogle Trends + R: gtrendsR for Powerful Trend Analytics\n\n\n\n\n\n\nR\n\n\nAPIs\n\n\n\n\n\n\n\n\n\nJan 16, 2022\n\n\nJohn Yuill\n\n\n\n\n\n\nNo matching items"
+    "text": "Quarto Shinylive test\n\n\n\n\n\n\n\n\n\n\n\nJohn Yuill\n\n\n\n\n\n\n\n\n\n\n\n\nQuarto Shinylive Experiment\n\n\n\n\n\n\nR\n\n\nquarto\n\n\nshiny\n\n\n\n\n\n\n\n\n\nJan 27, 2024\n\n\nJohn Yuill\n\n\n\n\n\n\n\n\n\n\n\n\nBC Liquor Sales Analysis: Quarter-of-Year Patterns 2015-2023\n\n\n\n\n\n\nliquor stats\n\n\nreporting\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nNov 19, 2023\n\n\nJohn Yuill\n\n\n\n\n\n\n\n\n\n\n\n\nBC Liquor Sales Analysis: Annual Trends 2016-2022\n\n\n\n\n\n\nliquor stats\n\n\nreporting\n\n\nanalysis\n\n\nR\n\n\n\n\n\n\n\n\n\nNov 5, 2023\n\n\nJohn Yuill\n\n\n\n\n\n\n\n\n\n\n\n\nCrypto Currency (BTC) PRices: Any Tradeable Daily Patterns?\n\n\n\n\n\n\nR\n\n\nanalysis\n\n\ncrpto-currency\n\n\n\n\n\n\n\n\n\nMay 28, 2022\n\n\nJohn Yuill\n\n\n\n\n\n\n\n\n\n\n\n\nR Time Series Objects vs Data Frames: Advantages and Limitations\n\n\n\n\n\n\nR\n\n\ntime-series\n\n\n\n\n\n\n\n\n\nJan 30, 2022\n\n\nJohn Yuill\n\n\n\n\n\n\n\n\n\n\n\n\nGoogle Trends + R: gtrendsR for Powerful Trend Analytics\n\n\n\n\n\n\nR\n\n\nAPIs\n\n\n\n\n\n\n\n\n\nJan 16, 2022\n\n\nJohn Yuill\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
@@ -173,5 +173,103 @@
     "title": "BC Liquor Sales Analysis: Quarter-of-Year Patterns 2015-2023",
     "section": "shiny live experiment",
     "text": "shiny live experiment\n#| standalone: true\n\nlibrary(shiny)\n# share as live shiny app using shinylive.io + gist id: \n# https://shinylive.io/r/app/#gist=4bb02686a0bb1f597441527f3031771e\n# Define UI for app that draws a histogram ----\nui <- fluidPage(\n\n  # App title ----\n  titlePanel(\"Shiny in the browser!\"),\n\n  # Sidebar layout with input and output definitions ----\n  sidebarLayout(\n\n    # Sidebar panel for inputs ----\n    sidebarPanel(\n\n      # Input: Slider for the number of bins ----\n      sliderInput(inputId = \"bins\",\n                  label = \"Number of bins:\",\n                  min = 1,\n                  max = 50,\n                  value = 30)\n\n    ),\n\n    # Main panel for displaying outputs ----\n    mainPanel(\n\n      # Output: Histogram ----\n      plotOutput(outputId = \"distPlot\")\n\n    )\n  )\n)\n\n# Define server logic required to draw a histogram ----\nserver <- function(input, output) {\n\n  # Histogram of the Old Faithful Geyser Data ----\n  # with requested number of bins\n  # This expression that generates a histogram is wrapped in a call\n  # to renderPlot to indicate that:\n  #\n  # 1. It is \"reactive\" and therefore should be automatically\n  #    re-executed when inputs (input$bins) change\n  # 2. Its output type is a plot\n  output$distPlot <- renderPlot({\n\n    x    <- faithful$waiting\n    bins <- seq(min(x), max(x), length.out = input$bins + 1)\n\n    hist(x, breaks = bins, col = \"#75AADB\", border = \"white\",\n         xlab = \"Waiting time to next eruption (in mins)\",\n         main = \"Histogram of waiting times\")\n\n    })\n\n}\n\n# Create Shiny app ----\nshinyApp(ui = ui, server = server)"
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/index.html",
+    "href": "posts/quarto-shinylive-experiment/index.html",
+    "title": "Quarto Shinylive Experiment",
+    "section": "",
+    "text": "Taking Quarto docs to the next level by embedding live, fully interactive Shiny apps!\nExperiment inspired by Joe Cheng’s presentation ‘Running R-Shiny without a Server’ at posit::conf(2023). (20 min video)\nAdditional reference:\n\nTo learn more about Shinylive see github.com/posit-dev/r-shinylive.\nTry online version of Shinylive for R and see examples at shinylive.io/r/examples/\nTo learn more about Quarto see quarto.org.\n\nNote: this project set up using ‘.renv’ which is good for reproducibility, but may cause complications for package management on different machines over time."
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/index.html#quarto-shinylive",
+    "href": "posts/quarto-shinylive-experiment/index.html#quarto-shinylive",
+    "title": "Quarto Shinylive Experiment",
+    "section": "",
+    "text": "Taking Quarto docs to the next level by embedding live, fully interactive Shiny apps!\nExperiment inspired by Joe Cheng’s presentation ‘Running R-Shiny without a Server’ at posit::conf(2023). (20 min video)\nAdditional reference:\n\nTo learn more about Shinylive see github.com/posit-dev/r-shinylive.\nTry online version of Shinylive for R and see examples at shinylive.io/r/examples/\nTo learn more about Quarto see quarto.org.\n\nNote: this project set up using ‘.renv’ which is good for reproducibility, but may cause complications for package management on different machines over time."
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/index.html#swiss-dataset",
+    "href": "posts/quarto-shinylive-experiment/index.html#swiss-dataset",
+    "title": "Quarto Shinylive Experiment",
+    "section": "Swiss dataset",
+    "text": "Swiss dataset\nR built-in swiss dataset with fertility and socio-economic indicators by province, from 1888.\n\n\nCode\nswiss &lt;- swiss\nswiss$prov &lt;- rownames(swiss)\nswiss_top &lt;- swiss %&gt;% arrange(-Fertility) %&gt;% slice_head(n=10)\n# save with relative location for importing to shiny app below -&gt; doesn't help\nwrite_csv(swiss_top, 'data/swiss_top.csv')"
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/index.html#visualize",
+    "href": "posts/quarto-shinylive-experiment/index.html#visualize",
+    "title": "Quarto Shinylive Experiment",
+    "section": "Visualize",
+    "text": "Visualize\nTypical static plot produced with ggplot2: useful, but limited:\n\n\nCode\nswiss_top %&gt;% ggplot(aes(x=reorder(prov,Fertility), y=Fertility))+geom_col()+\n  geom_hline(yintercept=mean(swiss_top$Fertility), linetype='dashed', color='green')+\n  coord_flip()+\n  scale_y_continuous(expand=expansion(mult=c(0,0.02)))+\n  labs(title='Top 10 Swiss Provinces by Fertility', x=\"\", \n       subtitle = '(births per 1,000 women; dotted line = average)')+\n  theme_light()+\n  theme(axis.ticks.y = element_blank(),\n        axis.text.y = element_text(size=11))\n\n\n\n\n\n\n\n\nFigure 1: from Swiss Fertility & Socioeconomic Indicators (1888); built-in R dataset."
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/index.html#now-with-shiny",
+    "href": "posts/quarto-shinylive-experiment/index.html#now-with-shiny",
+    "title": "Quarto Shinylive Experiment",
+    "section": "Now with Shiny!",
+    "text": "Now with Shiny!\nFully interactive chart that leverages R shiny plus webR technology to display in browser…without the need for shiny server!\n#| standalone: true\n#| viewerHeight: 700\n\n# load packages\nlibrary(shiny)\nlibrary(datasets)\nlibrary(tidyverse)\nlibrary(scales)\nlibrary(here)\n\n# get data - import saved file with relative location\n#swiss_top &lt;- read_csv('data/swiss_top.csv') # failed attempt at reading data\nswiss &lt;- datasets::swiss\nswiss$prov &lt;- rownames(swiss)\nswiss &lt;- swiss %&gt;% arrange(-Fertility)\n\n# Define shiny ui\nui &lt;- fluidPage(\n  # shiny UI components here\n  # Application title\n  titlePanel(\"Swiss Fertility Data by Province\"),\n  \n  # Sidebar layout with input and output definitions\n  sidebarLayout(\n    # Sidebar panel for inputs\n    sidebarPanel(\n      # Input: number of provinces to show (since 47 total)\n      numericInput(inputId='num_prov', \n                   label='No. of Provs. to show',\n                   value=10, min=1, max=50, step=1),\n      # Input: checkbox for the regions to plot - dynamic based on num_prov\n      uiOutput('dynamicCheckbox'),\n      p('note: 47 provinces in total')\n      ), # end sidebarPanel\n    \n    # Main panel for displaying outputs\n    mainPanel(\n      h3('Swiss Fertility'),\n      # Output: Column chart rendered with ggplot2\n      plotOutput(outputId = \"fert\", height=\"540px\")\n    ) # end mainPanel\n  )\n)\n\n# Define shiny server logic here  \nserver &lt;- function(input, output, session) {\n  # shiny server code\n  output$dynamicCheckbox &lt;- renderUI({\n     num_provinces &lt;- input$num_prov\n     checkboxGroupInput(inputId=\"prov\", \"Select Provinces (desc order of fertility)\", \n                        choices = head(swiss$prov, num_provinces),\n                        select=swiss$prov)\n   })\n  # Reactive expression to generate the plot based on the inputs\n  output$fert &lt;- renderPlot({\n    # filter provinces using checklist and num_prov selector\n    swiss_top &lt;- swiss %&gt;% filter(prov %in% input$prov)\n    # Generate ggplot2 column chart\n    swiss_top |&gt; ggplot(aes(x=reorder(prov, Fertility), y=Fertility))+\n      geom_col()+\n      geom_hline(yintercept=mean(swiss_top$Fertility), \n                 linetype='dashed', color='green')+\n      coord_flip()+\n      scale_y_continuous(expand=expansion(mult=c(0,0.05)))+\n      labs(title='Swiss Provinces by Fertility (1888)', \n           subtitle = '(births per 1,000 women; dotted line = average)',\n           x=\"\")+\n      theme_light()+\n      theme(axis.ticks.y = element_blank(),\n            axis.text.y = element_text(size=12))\n   })\n}\n\n# create and launch shiny app\nshinyApp(ui = ui, server = server)\nCode display doesn’t work with the {shinylive-r} code block, so showing the skeleton with shown below. Key unique components:\n\n{shinyline-r}\n#| standalone: true\n#| viewerHeight: 600 - ensures app window is large enough\nthe rest is standard shiny code\n\n\n\nCode\n{shinylive-r}\n#| standalone: true\n#| viewerHeight: 600\n\nlibrary(shiny)\n\nui &lt;- fluidPage(\n  titlePanel(\"Swiss Fertility Data by Province\"),\n  sidebarLayout(\n    sidebarPanel(\n      inputs\n    ),\n    mainPanel(\n      plotOutput(outputId = \"fert\")\n    )\n  )\n)\n\n# Define shiny server logic here  \nserver &lt;- function(input, output, session) {\n  output$fert &lt;- renderPlot({\n   })\n}\n\n# create and launch shiny app\nshinyApp(ui = ui, server = server)"
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/index.html#but-not-so-fast",
+    "href": "posts/quarto-shinylive-experiment/index.html#but-not-so-fast",
+    "title": "Quarto Shinylive Experiment",
+    "section": "But: Not So Fast…",
+    "text": "But: Not So Fast…\nThere are some significant limitations.\n\nWorking with data\nBy far the most significant, as I’m as I’m concerned:\n\nnot able to load external data from outside the shiny app (as far as I can tell)\n\nno import csv (even local to the quarto project)\nno database connection\nno read googlesheet\n\nI can only use data generated within the app OR built-in R datasets\n\n(hence the use of the swiss dataset here)\n\n\nI haven’t been able to figure a way to import data to the app, despite attempting many approaches. So this is a deal-breaker for a lot applications - pretty much all of the use cases I would have.\n\n\nOther limitations:\n\nsingle file app, so limited complexity\nhard to debug - no error messages or other clues when app fails\n\ncan use shinylive.io for testing\n\nnot all R packages available - but most, so shouldn’t be major blocker\nslow loading time - a nuisance, but generally not unbearable\nrestricted size: limited by format of quarto document\n\nNote that these limitations apply specifically to using Shinylive for embedding into Quarto documents. This is only one use case. Others include:\n\nshinylive.io: for prototyping, potentially sharing apps.\nshiny app conversion: from regular shiny app that needs a server to serverless app that can be shared more easily."
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/index.html#conclusion",
+    "href": "posts/quarto-shinylive-experiment/index.html#conclusion",
+    "title": "Quarto Shinylive Experiment",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis is powerful technology that currently has limited application - but will likely become even more valuable over time. Maybe not ready for primetime, but will have to keep an eye on this!"
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html",
+    "href": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html",
+    "title": "Quarto Shinylive test",
+    "section": "",
+    "text": "Taking Quarto docs to the next level by embedding live, fully interactive Shiny apps!\nExperiment inspired by Joe Cheng’s presentation ‘Running R-Shiny without a Server’ at posit::conf(2023). (20 min video)\nAdditional reference:\n\nTo learn more about Shinylive see github.com/posit-dev/r-shinylive.\nTry online version of Shinylive for R and see examples at shinylive.io/r/examples/\nTo learn more about Quarto see quarto.org.\n\nNote: this project set up using ‘.renv’ which is good for reproducibility, but may cause complications for package management on different machines over time."
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#quarto-shinylive",
+    "href": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#quarto-shinylive",
+    "title": "Quarto Shinylive test",
+    "section": "",
+    "text": "Taking Quarto docs to the next level by embedding live, fully interactive Shiny apps!\nExperiment inspired by Joe Cheng’s presentation ‘Running R-Shiny without a Server’ at posit::conf(2023). (20 min video)\nAdditional reference:\n\nTo learn more about Shinylive see github.com/posit-dev/r-shinylive.\nTry online version of Shinylive for R and see examples at shinylive.io/r/examples/\nTo learn more about Quarto see quarto.org.\n\nNote: this project set up using ‘.renv’ which is good for reproducibility, but may cause complications for package management on different machines over time."
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#swiss-dataset",
+    "href": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#swiss-dataset",
+    "title": "Quarto Shinylive test",
+    "section": "Swiss dataset",
+    "text": "Swiss dataset\nR built-in swiss dataset with fertility and socio-economic indicators by province, from 1888.\n\n\nCode\nswiss &lt;- swiss\nswiss$prov &lt;- rownames(swiss)\nswiss_top &lt;- swiss %&gt;% arrange(-Fertility) %&gt;% slice_head(n=10)\n# save with relative location for importing to shiny app below -&gt; doesn't help\nwrite_csv(swiss_top, 'data/swiss_top.csv')"
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#visualize",
+    "href": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#visualize",
+    "title": "Quarto Shinylive test",
+    "section": "Visualize",
+    "text": "Visualize\nTypical static plot produced with ggplot2: useful, but limited:\n\n\nCode\nswiss_top %&gt;% ggplot(aes(x=reorder(prov,Fertility), y=Fertility))+geom_col()+\n  geom_hline(yintercept=mean(swiss_top$Fertility), linetype='dashed', color='green')+\n  coord_flip()+\n  scale_y_continuous(expand=expansion(mult=c(0,0.02)))+\n  labs(title='Top 10 Swiss Provinces by Fertility', x=\"\", \n       subtitle = '(births per 1,000 women; dotted line = average)')+\n  theme_light()+\n  theme(axis.ticks.y = element_blank(),\n        axis.text.y = element_text(size=11))\n\n\n\n\n\n\n\n\nFigure 1: from Swiss Fertility & Socioeconomic Indicators (1888); built-in R dataset."
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#now-with-shiny",
+    "href": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#now-with-shiny",
+    "title": "Quarto Shinylive test",
+    "section": "Now with Shiny!",
+    "text": "Now with Shiny!\nFully interactive chart that leverages R shiny plus webR technology to display in browser…without the need for shiny server!\n#| standalone: true\n#| viewerHeight: 700\n\n# load packages\nlibrary(shiny)\nlibrary(datasets)\nlibrary(tidyverse)\nlibrary(scales)\nlibrary(here)\n\n# get data - import saved file with relative location\n#swiss_top &lt;- read_csv('data/swiss_top.csv') # failed attempt at reading data\nswiss &lt;- datasets::swiss\nswiss$prov &lt;- rownames(swiss)\nswiss &lt;- swiss %&gt;% arrange(-Fertility)\n\n# Define shiny ui\nui &lt;- fluidPage(\n  # shiny UI components here\n  # Application title\n  titlePanel(\"Swiss Fertility Data by Province\"),\n  \n  # Sidebar layout with input and output definitions\n  sidebarLayout(\n    # Sidebar panel for inputs\n    sidebarPanel(\n      # Input: number of provinces to show (since 47 total)\n      numericInput(inputId='num_prov', \n                   label='No. of Provs. to show',\n                   value=10, min=1, max=50, step=1),\n      # Input: checkbox for the regions to plot - dynamic based on num_prov\n      uiOutput('dynamicCheckbox'),\n      p('note: 47 provinces in total')\n      ), # end sidebarPanel\n    \n    # Main panel for displaying outputs\n    mainPanel(\n      h3('Swiss Fertility'),\n      # Output: Column chart rendered with ggplot2\n      plotOutput(outputId = \"fert\", height=\"540px\")\n    ) # end mainPanel\n  )\n)\n\n# Define shiny server logic here  \nserver &lt;- function(input, output, session) {\n  # shiny server code\n  output$dynamicCheckbox &lt;- renderUI({\n     num_provinces &lt;- input$num_prov\n     checkboxGroupInput(inputId=\"prov\", \"Select Provinces (desc order of fertility)\", \n                        choices = head(swiss$prov, num_provinces),\n                        select=swiss$prov)\n   })\n  # Reactive expression to generate the plot based on the inputs\n  output$fert &lt;- renderPlot({\n    # filter provinces using checklist and num_prov selector\n    swiss_top &lt;- swiss %&gt;% filter(prov %in% input$prov)\n    # Generate ggplot2 column chart\n    swiss_top |&gt; ggplot(aes(x=reorder(prov, Fertility), y=Fertility))+\n      geom_col()+\n      geom_hline(yintercept=mean(swiss_top$Fertility), \n                 linetype='dashed', color='green')+\n      coord_flip()+\n      scale_y_continuous(expand=expansion(mult=c(0,0.05)))+\n      labs(title='Swiss Provinces by Fertility (1888)', \n           subtitle = '(births per 1,000 women; dotted line = average)',\n           x=\"\")+\n      theme_light()+\n      theme(axis.ticks.y = element_blank(),\n            axis.text.y = element_text(size=12))\n   })\n}\n\n# create and launch shiny app\nshinyApp(ui = ui, server = server)\nCode display doesn’t work with the {shinylive-r} code block, so showing the skeleton with shown below. Key unique components:\n\n{shinyline-r}\n#| standalone: true\n#| viewerHeight: 600 - ensures app window is large enough\nthe rest is standard shiny code\n\n\n\nCode\n{shinylive-r}\n#| standalone: true\n#| viewerHeight: 600\n\nlibrary(shiny)\n\nui &lt;- fluidPage(\n  titlePanel(\"Swiss Fertility Data by Province\"),\n  sidebarLayout(\n    sidebarPanel(\n      inputs\n    ),\n    mainPanel(\n      plotOutput(outputId = \"fert\")\n    )\n  )\n)\n\n# Define shiny server logic here  \nserver &lt;- function(input, output, session) {\n  output$fert &lt;- renderPlot({\n   })\n}\n\n# create and launch shiny app\nshinyApp(ui = ui, server = server)"
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#but-not-so-fast",
+    "href": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#but-not-so-fast",
+    "title": "Quarto Shinylive test",
+    "section": "But: Not So Fast…",
+    "text": "But: Not So Fast…\nThere are some significant limitations.\n\nWorking with data\nBy far the most significant, as I’m as I’m concerned:\n\nnot able to load external data from outside the shiny app (as far as I can tell)\n\nno import csv (even local to the quarto project)\nno database connection\nno read googlesheet\n\nI can only use data generated within the app OR built-in R datasets\n\n(hence the use of the swiss dataset here)\n\n\nI haven’t been able to figure a way to import data to the app, despite attempting many approaches. So this is a deal-breaker for a lot applications - pretty much all of the use cases I would have.\n\n\nOther limitations:\n\nsingle file app, so limited complexity\nhard to debug - no error messages or other clues when app fails\n\ncan use shinylive.io for testing\n\nnot all R packages available - but most, so shouldn’t be major blocker\nslow loading time - a nuisance, but generally not unbearable\nrestricted size: limited by format of quarto document\n\nNote that these limitations apply specifically to using Shinylive for embedding into Quarto documents. This is only one use case. Others include:\n\nshinylive.io: for prototyping, potentially sharing apps.\nshiny app conversion: from regular shiny app that needs a server to serverless app that can be shared more easily."
+  },
+  {
+    "objectID": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#conclusion",
+    "href": "posts/quarto-shinylive-experiment/quarto-shinylive-experiment.html#conclusion",
+    "title": "Quarto Shinylive test",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis is powerful technology that currently has limited application - but will likely become even more valuable over time. Maybe not ready for primetime, but will have to keep an eye on this!"
   }
 ]
