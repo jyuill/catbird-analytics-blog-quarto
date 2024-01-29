@@ -258,15 +258,24 @@ ggplotly(plot_right)
 
 Each of the main categories above has sub-categories as well. Let's look at how things break-out there.
 
-#### BC Beer
+#### BC Beer (produced in BC)
 
 ```{r}
+## filter for subcat BC Beer
 trend_yr_subcat <- lmr_data %>% 
   filter(category=='Domestic - BC Beer') %>%
   group_by(year, subcategory) %>% summarize(
     netsales=sum(netsales),
     litres=sum(litres)
 ) %>% filter(year %in% yr_qtr$year)
+
+# ungroup for % chg calcs over lag
+trend_yr_subcat <- trend_yr_subcat %>% ungroup %>% mutate(
+  pc_chg_sales=netsales/lag(netsales, n=3)-1,
+  pc_chg_litres=litres/lag(litres, n=3)-1,
+  dollar_per_litre=netsales/litres,
+  pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=3)-1
+)
 
 # calc % of yr sales by category
 # get totals for each yr
@@ -291,6 +300,8 @@ trend_yr_subcat <- trend_yr_subcat %>% mutate(
 )
 
 ```
+
+We can see the overall decline in litre sales of BC-produced beer is driven by declines in 'Commercial' beer, which Regional breweries have actually grown, and Micro Brews have had some slow growth.
 
 ```{r}
 #| echo: false
@@ -324,6 +335,18 @@ plot_right <- trend_yr_subcat %>% ggplot(aes(x=as.factor(year), y=litres_pc,
 ggplotly(plot_left)
 ggplotly(plot_right)
 ```
+
+```{r}
+trend_yr_subcat %>% ggplot(aes(x=year, y=pc_chg_litres))+geom_col()+
+  facet_grid(.~subcat)+
+  scale_y_continuous(labels=percent_format())+
+  geom_hline(yintercept=0)+
+  labs(title='Year-over-Year % change in Litre Sales', x="", y="Litre sales - % chg")+
+  theme_bw()
+```
+
+-   Commercial beer had negative year-over-year growth every year - with the low being almost -105 in 2019.
+-   
 
 ## questions
 
