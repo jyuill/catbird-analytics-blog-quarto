@@ -4,6 +4,7 @@ project:
 website:
   title: "Catbird Analytics"
   navbar:
+    background: "#333"
     left: 
       - text: "Home"
         file: index.qmd
@@ -21,8 +22,8 @@ website:
 format:
   html:
     theme: 
-    - cosmo
-    - custom.scss
+    - spacelab
+    - custom-style.scss
     css: styles.css
 editor: visual
 
