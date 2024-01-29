@@ -1,6 +1,6 @@
 ---
 title: "About"
-image: avatar_sm.png
+image: avatar.jpg
 about:
   template: trestles
   image-width: 10em
