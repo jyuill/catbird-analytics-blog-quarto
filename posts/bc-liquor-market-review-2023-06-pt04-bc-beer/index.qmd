@@ -1,5 +1,5 @@
 ---
-title: "BC Liquor Sales Analysis: Beer 2016-2022"
+title: "BC Liquor Sales Analysis: BC-Produced Beer 2016-2022"
 author: John Yuill
 date: '2023-11-26'
 categories: [liquor stats, reporting, analysis]
@@ -95,7 +95,9 @@ Data shown here goes back to beginning of 2016 (BC LDB fiscal yr 2016 Q4).
 **As mentioned in previous articles:** *my expertise is in data analysis, not the liquor industry, so the emphasis is on exploring what the data can tell us. Industry-insider context may be lacking. In the interest of promoting data analysis and learning, I am sharing most of the R code used to process the data - hence the expandable 'Code' options.*
 :::
 
-## Beer Sales Trends in BC
+## Beer Sales Trends: BC-produced Beer
+
+== clear out the overall beer sales and focus on BC beer to break things up for more frequent publishing
 
 ### Overview
 
@@ -266,116 +268,143 @@ ggplotly(plot_left, tooltip = "text")
 ggplotly(plot_right, tooltip = "text")
 ```
 
-#### Year-over-Year % Changes
+### Sales by Subcategory within Categories
 
-The year-over-year dynamics in litre consumption stand out even clearer when looking at % change:
+Each of the main categories above has sub-categories as well. Let's look at how things break-out there.
 
--   mostly stable for BC producers.
--   BIG gains by other provinces - as high as almost 40% growth in 2021. Pandemic effect?
--   Imports as the big losers, with over 30% loss in 2021. Possibly related to pandemic and related supply chain issues.
+#### BC Beer (produced in BC)
 
 ```{r}
-trend_yr_cat$category <- fct_relevel(trend_yr_cat$category, levels(trend_yr_cat$category)[3],
-                                              levels(trend_yr_cat$category)[1],
-                                              levels(trend_yr_cat$category)[2])
+## filter for subcat BC Beer
+trend_yr_subcat <- lmr_data %>% 
+  filter(category=='Domestic - BC Beer') %>%
+  group_by(year, subcategory) %>% summarize(
+    netsales=sum(netsales),
+    litres=sum(litres)
+) %>% filter(year %in% yr_qtr$year)
+
+# ungroup for % chg calcs over lag
+trend_yr_subcat <- trend_yr_subcat %>% ungroup %>% mutate(
+  pc_chg_sales=netsales/lag(netsales, n=3)-1,
+  pc_chg_litres=litres/lag(litres, n=3)-1,
+  dollar_per_litre=netsales/litres,
+  pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=3)-1
+)
+
+# calc % of yr sales by category
+# get totals for each yr
+trend_yr_ttl_sub <- trend_yr_subcat %>% select(year, netsales, litres) %>% 
+  group_by(year) %>% 
+  summarize(
+    ttl_netsales=sum(netsales),
+    ttl_litres=sum(litres)
+  ) 
+# join with trend_yr_cat to get yr total cols
+trend_yr_subcat <- left_join(trend_yr_subcat, trend_yr_ttl_sub, by='year')
+# calc %
+trend_yr_subcat <- trend_yr_subcat %>% mutate(
+  litres_pc=litres/ttl_litres,
+  netsales_pc=litres/ttl_netsales
+)
+
+# simplify subcategory names
+trend_yr_subcat <- trend_yr_subcat %>% mutate(
+  subcat=str_replace(subcategory, "Domestic - BC ",""),
+  subcat=str_replace(subcat, " Beer","")
+)
+
 ```
 
+We can see the overall decline in litre sales of BC-produced beer is driven by declines in 'Commercial' beer, while Regional breweries have actually grown, and Micro Brews have had slow growth.
+
 ```{r}
-# YoY % chg chart
-ch_title <- "Year-over-Year % change in Litre Sales"
-plot <- trend_yr_cat %>% ggplot(aes(x=year, y=pc_chg_litres, fill=category,
-                                    text=paste0(year,": ",
-                                                round(pc_chg_litres*100),"%")))+
+#| echo: false
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 3
+
+# reorder categories in order of litre sales
+trend_yr_subcat$subcat <- fct_reorder(trend_yr_subcat$subcat, trend_yr_subcat$litres)
+
+ch_title <- "BC Beer Litre Sales by Subcat."
+# text aesthetic used to set plotly tooltip -> combined with tooltip='text' in ggplotly
+plot_left <- trend_yr_subcat %>% ggplot(aes(x=as.factor(year), y=litres, 
+                                            fill=subcat,
+                                        text= paste0(subcat, 
+                                               "<br>litres: ", format(litres, big.mark=","))))+
+  geom_col()+
+  scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M"), 
+                     expand=expansion(add=c(0,0.1)))+
+  #scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
+
+ch_title <- "BC Beer % Litres by Subcat."
+plot_right <- trend_yr_subcat %>% ggplot(aes(x=as.factor(year), y=litres_pc, 
+                                             fill=subcat,
+                                         text= paste0(subcat,": ", 
+                                                      round(litres_pc*100,0),"%")))+
+  geom_col(position='fill')+
+  scale_y_continuous(labels=percent_format(), 
+                     expand=expansion(add=c(0,0)))+
+  #scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
+ggplotly(plot_left, tooltip="text")
+ggplotly(plot_right, tooltip="text")
+```
+
+Breaking out the year-over-year % changes, we see that:
+
+-   Commercial beer consumption **declined every year** - with the biggest drop being **almost -10% in 2019**.
+-   
+
+```{r}
+trend_yr_subcat %>% ggplot(aes(x=year, y=pc_chg_litres, fill=subcat))+
   geom_col(show.legend = FALSE)+
-  facet_grid(.~category)+
+  facet_grid(.~subcat)+
   scale_y_continuous(labels=percent_format())+
   geom_hline(yintercept=0)+
-  labs(title=ch_title, x="", y="Litre sales - % chg")+
+  labs(title='Year-over-Year % change in Litre Sales', x="", y="Litre sales - % chg")+
   theme_bw()+
   theme(panel.grid = element_blank(),
-        strip.background = element_rect(fill="lightblue"),
-        legend.position = "none")
-ggplotly(plot, tooltip="text")
+        strip.background = element_rect(fill="lightblue"))
 ```
 
-#### Cumulative % Change
+cumulative losses/gains over the period?
 
 ```{r cumulative chg}
 # calculate cumulative change across available yrs
 # need to lag by n yrs in dataset x n categories (or items to be more general)
-n_yrs <- max(trend_yr_cat$year)-min(trend_yr_cat$year)
-n_items <- length(unique(trend_yr_cat$category))
+n_yrs <- max(trend_yr_subcat$year)-min(trend_yr_subcat$year)
+n_items <- length(unique(trend_yr_subcat$subcategory))
 # lag calculation based on n_yrs x n_items
-trend_yr_cat <- trend_yr_cat %>% mutate(
+trend_yr_subcat <- trend_yr_subcat %>% mutate(
   pc_chg_lt_cum =  litres/lag(litres, n=(n_yrs*n_items))-1
 )
 ```
 
-All these year-over-year changes add up - especially for Other Province beer and Imports:
-
--   Other Province beer **almost doubled** over the period!
--   Imports **dropped in half**
--   BC-produced beer saw modest decline.
-
 ```{r}
 #| fig-height: 2
-ch_title <- paste0("Total % chg: ", min(trend_yr_cat$year), " - ", max(trend_yr_cat$year))
-
-plot <- trend_yr_cat %>% ggplot(aes(x=fct_rev(category), y=pc_chg_lt_cum, label=))+geom_col()+
-  geom_text(
-      aes(label=percent(pc_chg_lt_cum, accuracy=1),
-      hjust=ifelse(pc_chg_lt_cum>0, -0.1, 1.1)),
-      size=3)+
-  scale_y_continuous(limits=c(-1,1), expand=expansion(add=c(0.3,0.3)))+
+ch_title <- paste0("Total % chg: ", min(trend_yr_subcat$year), " - ", max(trend_yr_subcat$year))
+trend_yr_subcat %>% ggplot(aes(x=subcat, y=pc_chg_lt_cum))+geom_col()+
+  scale_y_continuous(labels=percent_format())+
   geom_hline(yintercept=0, linetype='solid')+
   coord_flip()+
-  labs(title=ch_title, x="", y="")+
-  theme(axis.text.x = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_blank(),
-        panel.border = element_rect(fill=NA, size=0.3))
-plot
+  labs(title=ch_title, x="", y="")
 ```
-
-As shown earlier, **BC-produced beer makes up almost 80%** of consumption, so beer coming from Other Provinces or Imported from other countries are **fighting over the remaining 20%**. Clearly, breweries in other provinces are winning that battle over the imported beer.
 
 ## questions
 
--   similar analysis but for:
-
-    -   \$
-
-    -   \$/litre
-
-    -   look at relationships between dollars/litre (price) and volume sold
-
-        -   does cheaper drive volume?
-
-        -   are declining prices associated with increase volume sales?
-
--   preview of region
-
-    -   group in BC, Other Canada Prov, import country
-
-        -   Canada
-
-        -   Asia and South Pacific
-
-        -   Europe
-
-        -   Mexico and Caribbean
-
-        -   USA
-
-        -   other country
-
-        -   BUBBLE CHART:
-
-            -   x=litres, y=growth rate, color = region, size=rev/litre
-
-```{r}
-
-```
+-   breakdown by major category
+    -   by year -\> \$ sales and litre sales
+        -   changes in composition?
+    -   yoy change
+-   within each major category
+    -   annual trends -\> \$ sales and litre sales
+        -   changes in composition?
+    -   yoy change -\> what are the biggest gainers / losers?
 
 ## == old info
 
