@@ -339,6 +339,93 @@ plot
 
 As shown earlier, **BC-produced beer makes up almost 80%** of consumption, so beer coming from Other Provinces or Imported from other countries are **fighting over the remaining 20%**. Clearly, breweries in other provinces are winning that battle over the imported beer.
 
+### Regional View
+
+A look at the situation by regions of the world.
+
+```{r}
+# need a new field for region
+# - have to go back to lmr_data
+lmr_data_reg <- lmr_data %>% mutate(
+  region=ifelse(str_detect(subcategory, 'Domestic - BC'),'Canada - BC',
+                ifelse(str_detect(subcategory, 'Domestic - Other'), 'Canada - Other', subcategory))
+)
+
+# summarize data by year and region
+trend_yr_reg <- lmr_data_reg %>% group_by(year, region) %>% summarize(
+  netsales=sum(netsales),
+  litres=sum(litres)
+) %>% filter(year %in% yr_qtr$year) 
+
+# calc % of yr sales by region
+# join with trend_yr_ttl to get yr total cols
+trend_yr_reg <- left_join(trend_yr_reg, trend_yr_ttl, by='year')
+# calc %
+trend_yr_reg <- trend_yr_reg %>% mutate(
+  litres_pc=litres/ttl_litres,
+  netsales_pc=litres/ttl_netsales
+)
+
+# add % chg YoY, $/l
+# ungroup first; use n=3 to lag 3 rows to match categories
+n_items <- length(unique(trend_yr_reg$region))
+trend_yr_reg <- trend_yr_reg %>% ungroup() %>% mutate(
+  pc_chg_sales=netsales/lag(netsales, n=n_items)-1,
+  pc_chg_litres=litres/lag(litres, n=n_items)-1,
+  dollar_per_litre=netsales/litres,
+  pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=n_items)-1
+)
+
+## cumulative chg over period
+n_yrs <- max(trend_yr_reg$year)-min(trend_yr_reg$year)
+trend_yr_reg <- trend_yr_reg %>% mutate(
+  pc_chg_sales_cum = netsales/lag(netsales, n=(n_yrs*n_items))-1,
+  pc_chg_lt_cum =  litres/lag(litres, n=(n_yrs*n_items))-1
+)
+
+## remove 'beer' from region names for brevity
+trend_yr_reg <- trend_yr_reg %>% mutate(
+  region=str_replace_all(region, ' Beer','')
+)
+```
+
+```{r}
+trend_yr_reg %>% ggplot(aes(x=year, y=netsales, color=region))+geom_line()
+```
+
+Chart below highlights some interesting points:
+
+-   BC beer is by far the most volume sold, and also by far the cheapest (smallest dot).
+-   Fastest growth by far over the period (400%) is from 'Other Countries' and is also the highest price beer.
+-   Europe, Asia, Mexico, and the US (in that order) have all had decreases in litres sold
+-   US decline is particularly noteworthy, dropping over 80%! Possibly due to more US brands being produced within Canada, such as Budweiser being brewed in Canada by Labatt (AB InBev) and Coors being brewed by Molson (now Molson Coors).
+
+```{r}
+plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year)) %>% 
+  ggplot(aes(x=litres, y=pc_chg_lt_cum, color=region, size=dollar_per_litre))+
+           geom_point()+
+  scale_x_continuous(labels=label_comma())+
+  scale_y_continuous(labels=percent_format())+
+  geom_hline(yintercept = 0, linetype='solid')+
+  theme(axis.line.x = element_blank())+
+  labs(y="% chg over period", x="litres sold")
+ggplotly(plot)
+```
+
+Remove BC to zoom in on others.
+
+```{r}
+plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year) & region!='Canada - BC') %>% 
+  ggplot(aes(x=litres, y=pc_chg_lt_cum, color=region, size=dollar_per_litre))+
+           geom_point()+
+  scale_x_continuous(labels=label_comma())+
+  scale_y_continuous(labels=percent_format())+
+  geom_hline(yintercept = 0, linetype='solid')+
+  theme(axis.line.x = element_blank())+
+  labs(y="% chg over period", x="litres sold")
+ggplotly(plot)
+```
+
 ## questions
 
 -   similar analysis but for:
@@ -372,10 +459,6 @@ As shown earlier, **BC-produced beer makes up almost 80%** of consumption, so be
         -   BUBBLE CHART:
 
             -   x=litres, y=growth rate, color = region, size=rev/litre
-
-```{r}
-
-```
 
 ## == old info
 
