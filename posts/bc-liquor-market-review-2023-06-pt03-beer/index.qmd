@@ -87,6 +87,18 @@ if(exists('lmr_data', envir = globalenv(), inherits=TRUE)){
 }
 ```
 
+```{r}
+# function for determining how many complete yrs of data, used in 
+fn_yr_qtr <- function(data) {
+  # create variable to identify/remove partial yrs by counting qtrs and select yrs with 4
+  yr_qtr <- data %>% group_by(year, qtr) %>% summarize(count=1)
+  yr_qtr <- yr_qtr %>% group_by(year) %>% summarize(count=n()) %>% filter(count==4)
+  data_cy <- data %>% filter(year %in% yr_qtr$year)
+  return(data_cy)
+}
+lmr_data_cy <- fn_yr_qtr(lmr_data)
+```
+
 This is a continuation of a previous analysis of [annual liquor sales in British Columbia](../bc-liquor-market-review-2023-06-pt01-annual-trends) and [quarter-of-year patterns in BC liquor sales](../bc-liquor-market-review-2023-06-pt02-quarterly-trends), based on data from **British Columbia Liquor Distribution Board** '[**Liquor Market Review**](https://www.bcldb.com/publications/liquor-market-review)'. The Liquor Market Review is released on a quarterly basis, covering dollar and litre sales across major alcoholic beverage categories: here we focus on **BEER**!
 
 Data shown here goes back to beginning of 2016 (BC LDB fiscal yr 2016 Q4).
@@ -101,24 +113,83 @@ Data shown here goes back to beginning of 2016 (BC LDB fiscal yr 2016 Q4).
 
 We'll start with an annual overview across all beer categories and then look at trends for individual categories further down below.
 
-```{r annual}
-# remove partial yrs by counting qtrs and identifying those with 4
-yr_qtr <- lmr_data %>% group_by(year, qtr) %>% summarize(count=1)
-yr_qtr <- yr_qtr %>% group_by(year) %>% summarize(count=n()) %>% filter(count==4)
+```{r}
+## function for summarizing data on various dimensions
+fn_trend_yr_smry <- function(data, grp1=year, grp2) {
+  grp1 <- enquo(grp1)
+  grp2 <- enquo(grp2)
 
-# summarize by calendar yr
-trend_yr <- lmr_data %>% group_by(year) %>% summarize(
-  netsales=sum(netsales),
-  litres=sum(litres)
-) %>% filter(year %in% yr_qtr$year) ## include only complete yrs
-
-# add % chg YoY, $/l
-trend_yr <- trend_yr %>% mutate(
-  pc_chg_sales=netsales/lag(netsales)-1,
-  pc_chg_litres=litres/lag(litres)-1,
-  dollar_per_litre=netsales/litres,
-  pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre)-1
+  # ttls for yr to use for % of ttl calcs used with various dimensions
+  trend_yr_ttl <- data %>% group_by(!!grp1) %>% summarize(
+    ttl_netsales=sum(netsales),
+    ttl_litres=sum(litres)
+  )
+  
+  # summarize data by cal. yr & secondary dimension - if available
+  trend_yr <- data %>% group_by(!!grp1, !!grp2) %>% summarize(
+    netsales=sum(netsales),
+    litres=sum(litres)
+  )
+  
+  # add % chg YoY, $/l
+  # determine lag based on how many items in dimension (must be consistent)
+  trend_yr <- trend_yr %>% ungroup()
+  if(!is.null(grp2)) {
+    grp <- trend_yr %>% group_by(!!grp2) %>% summarize(count=n())
+    n_items <- nrow(grp)
+  } else {
+    n_items <- 1
+  }
+  # calc % chg YoY, by dimension if applicable
+  trend_yr <- trend_yr %>% mutate(
+    pc_chg_sales=netsales/lag(netsales, n=n_items)-1,
+    pc_chg_litres=litres/lag(litres, n=n_items)-1,
+    dollar_per_litre=netsales/litres,
+    pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre)-1
+  )
+  
+  # calc cumulative chg over period - based on no. of periods and dimensions (if applciable)
+  n_yrs <- max(trend_yr$year)-min(trend_yr$year)
+  trend_yr <- trend_yr %>% mutate(
+    pc_chg_sales_cum = netsales/lag(netsales, n=(n_yrs*n_items))-1,
+    pc_chg_lt_cum =  litres/lag(litres, n=(n_yrs*n_items))-1
+  )
+  
+  # calc % of annual total for each dimension (will be 1 for yr, if no additional dimensions)
+  trend_yr <- left_join(trend_yr, trend_yr_ttl, by='year')
+  # calc %
+  trend_yr <- trend_yr %>% mutate(
+    litres_pc=litres/ttl_litres,
+    netsales_pc=netsales/ttl_netsales
 )
+  return(trend_yr)
+}
+#smy2 <- fn_trend_yr_smry(data=lmr_data_reg, grp1=year, grp2=region)
+#smy2
+```
+
+```{r annual}
+# # remove partial yrs by counting qtrs and identifying those with 4
+# yr_qtr <- lmr_data %>% group_by(year, qtr) %>% summarize(count=1)
+# yr_qtr <- yr_qtr %>% group_by(year) %>% summarize(count=n()) %>% filter(count==4)
+# 
+# # summarize by calendar yr
+# trend_yr <- lmr_data %>% group_by(year) %>% summarize(
+#   netsales=sum(netsales),
+#   litres=sum(litres)
+# ) %>% filter(year %in% yr_qtr$year) ## include only complete yrs
+# 
+# # add % chg YoY, $/l
+# trend_yr <- trend_yr %>% mutate(
+#   pc_chg_sales=netsales/lag(netsales)-1,
+#   pc_chg_litres=litres/lag(litres)-1,
+#   dollar_per_litre=netsales/litres,
+#   pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre)-1
+# )
+```
+
+```{r}
+trend_yr <- fn_trend_yr_smry(data=lmr_data_cy)
 ```
 
 Beer sales have been pretty stable over the last few years, with net \$ sales peaking in 2017, recovering in 2022 in line with inflation. Overall **slight downward trend**, most noticeable in litre consumption.
@@ -134,7 +205,7 @@ plot <- trend_yr %>% ggplot(aes(x=as.factor(year), y=netsales, group=1))+
   geom_line(aes(x=as.factor(year), y=litres*3), size=2, color='royalblue')+
   geom_smooth(aes(y=litres*3), method='lm', se=FALSE, color='brown')+
   geom_point(aes(x=as.factor(year), y=litres*3), size=3, color='royalblue')+
-  scale_y_continuous(name='netsales',
+  scale_y_continuous(name='net $ sales',
                       labels=comma_format(prefix="$", scale=1e-9,suffix="B"), 
                      expand=expansion(mult=c(0,0.1)), 
                      limits=c(0,max(trend_yr$netsales)),
@@ -153,18 +224,18 @@ plot
 
 ```{r}
 ## aggregate data by quarter
-trend_yr_qtr <- lmr_data %>% group_by(end_qtr_dt) %>% summarize(
+trend_yr_qtr <- lmr_data_cy %>% group_by(end_qtr_dt) %>% summarize(
   netsales=sum(netsales),
   litres=sum(litres)
 ) 
 ```
 
-Breaking out **litre sales** by quarter confirms the **downward trend**.
+Breaking out **litre sales** by quarter confirms the steady **downward trend** within seasonal cycles**.**
 
 ```{r}
 ch_title <- "BC Beer Litre Sales by Qtr, with Trend"
 plot <- trend_yr_qtr %>% ggplot(aes(x=end_qtr_dt, y=litres, group=1))+
-  geom_line(color=bar_col, size=2)+
+  geom_line(color=bar_col, size=1.4)+
   #geom_point(aes(y=litres), color=bar_col, size=3)+
   geom_smooth(method='lm', se=FALSE)+
   scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M"), 
@@ -172,6 +243,27 @@ plot <- trend_yr_qtr %>% ggplot(aes(x=end_qtr_dt, y=litres, group=1))+
                      limits=c(0,max(trend_yr_qtr$litres)))+
   labs(title=ch_title, x="")
 ggplotly(plot)
+```
+
+The flat trend/recent increase in net \$ sales vs downward trend in litre sales shows up in gradual uptrend in net \$ per litre sales. Brewers are selling fewer litres but getting more money for each of them (on average).
+
+```{r}
+ch_title <- "BC Beer: Net $/Litre trend"
+plot <- trend_yr %>% ggplot(aes(x=as.factor(year), y=dollar_per_litre, group=1))+
+  geom_line(color=bar_col, size=2)+
+  geom_smooth(aes(y=dollar_per_litre), method='lm', se=FALSE, color='brown', linetype='solid', size=1)+
+  geom_point(aes(y=dollar_per_litre), color=bar_col, size=3)+
+  scale_y_continuous(name='Net $/litre',
+                      labels=comma_format(prefix="$"), 
+                     expand=expansion(mult=c(0,0.1)), 
+                     limits=c(0,max(trend_yr$dollar_per_litre)))+
+  labs(title=ch_title, x="")+
+  theme_classic()+
+  theme(
+    axis.title.y = element_text(color = bar_col, size=13)
+  )
+
+plot
 ```
 
 ### Sales by Category
@@ -184,34 +276,35 @@ BC LDB puts beer into 3 major categories for purposes of the Liquor Market Repor
 
 ```{r}
 # summarize data by year and major category
-trend_yr_cat <- lmr_data %>% group_by(year, category) %>% summarize(
-  netsales=sum(netsales),
-  litres=sum(litres)
-) %>% filter(year %in% yr_qtr$year) 
-
-# calc % of yr sales by category
-# get totals for each yr
-trend_yr_ttl <- trend_yr %>% select(year, netsales, litres) %>% 
-  rename(
-    ttl_netsales=netsales,
-    ttl_litres=litres
-  )
-# join with trend_yr_cat to get yr total cols
-trend_yr_cat <- left_join(trend_yr_cat, trend_yr_ttl, by='year')
-# calc %
-trend_yr_cat <- trend_yr_cat %>% mutate(
-  litres_pc=litres/ttl_litres,
-  netsales_pc=litres/ttl_netsales
-)
-
-# add % chg YoY, $/l
-# ungroup first; use n=3 to lag 3 rows to match categories
-trend_yr_cat <- trend_yr_cat %>% ungroup() %>% mutate(
-  pc_chg_sales=netsales/lag(netsales, n=3)-1,
-  pc_chg_litres=litres/lag(litres, n=3)-1,
-  dollar_per_litre=netsales/litres,
-  pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=3)-1
-)
+trend_yr_cat <- fn_trend_yr_smry(data=lmr_data_cy, grp2=category)
+# trend_yr_cat <- lmr_data %>% group_by(year, category) %>% summarize(
+#   netsales=sum(netsales),
+#   litres=sum(litres)
+# ) %>% filter(year %in% yr_qtr$year) 
+# 
+# # calc % of yr sales by category
+# # get totals for each yr
+# trend_yr_ttl <- trend_yr %>% select(year, netsales, litres) %>% 
+#   rename(
+#     ttl_netsales=netsales,
+#     ttl_litres=litres
+#   )
+# # join with trend_yr_cat to get yr total cols
+# trend_yr_cat <- left_join(trend_yr_cat, trend_yr_ttl, by='year')
+# # calc %
+# trend_yr_cat <- trend_yr_cat %>% mutate(
+#   litres_pc=litres/ttl_litres,
+#   netsales_pc=litres/ttl_netsales
+# )
+# 
+# # add % chg YoY, $/l
+# # ungroup first; use n=3 to lag 3 rows to match categories
+# trend_yr_cat <- trend_yr_cat %>% ungroup() %>% mutate(
+#   pc_chg_sales=netsales/lag(netsales, n=3)-1,
+#   pc_chg_litres=litres/lag(litres, n=3)-1,
+#   dollar_per_litre=netsales/litres,
+#   pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=3)-1
+# )
 ## simplify category names
 #unique(trend_yr_cat$category)
 trend_yr_cat <- trend_yr_cat %>% mutate(
@@ -275,6 +368,7 @@ The year-over-year dynamics in litre consumption stand out even clearer when loo
 -   Imports as the big losers, with over 30% loss in 2021. Possibly related to pandemic and related supply chain issues.
 
 ```{r}
+#| echo: false
 trend_yr_cat$category <- fct_relevel(trend_yr_cat$category, levels(trend_yr_cat$category)[3],
                                               levels(trend_yr_cat$category)[1],
                                               levels(trend_yr_cat$category)[2])
@@ -303,12 +397,12 @@ ggplotly(plot, tooltip="text")
 ```{r cumulative chg}
 # calculate cumulative change across available yrs
 # need to lag by n yrs in dataset x n categories (or items to be more general)
-n_yrs <- max(trend_yr_cat$year)-min(trend_yr_cat$year)
-n_items <- length(unique(trend_yr_cat$category))
-# lag calculation based on n_yrs x n_items
-trend_yr_cat <- trend_yr_cat %>% mutate(
-  pc_chg_lt_cum =  litres/lag(litres, n=(n_yrs*n_items))-1
-)
+# n_yrs <- max(trend_yr_cat$year)-min(trend_yr_cat$year)
+# n_items <- length(unique(trend_yr_cat$category))
+# # lag calculation based on n_yrs x n_items
+# trend_yr_cat <- trend_yr_cat %>% mutate(
+#   pc_chg_lt_cum =  litres/lag(litres, n=(n_yrs*n_items))-1
+# )
 ```
 
 All these year-over-year changes add up - especially for Other Province beer and Imports:
@@ -346,42 +440,44 @@ A look at the situation by regions of the world.
 ```{r}
 # need a new field for region
 # - have to go back to lmr_data
-lmr_data_reg <- lmr_data %>% mutate(
+lmr_data_reg <- lmr_data_cy %>% mutate(
   region=ifelse(str_detect(subcategory, 'Domestic - BC'),'Canada - BC',
                 ifelse(str_detect(subcategory, 'Domestic - Other'), 'Canada - Other', subcategory))
 )
 
 # summarize data by year and region
-trend_yr_reg <- lmr_data_reg %>% group_by(year, region) %>% summarize(
-  netsales=sum(netsales),
-  litres=sum(litres)
-) %>% filter(year %in% yr_qtr$year) 
-
-# calc % of yr sales by region
-# join with trend_yr_ttl to get yr total cols
-trend_yr_reg <- left_join(trend_yr_reg, trend_yr_ttl, by='year')
-# calc %
-trend_yr_reg <- trend_yr_reg %>% mutate(
-  litres_pc=litres/ttl_litres,
-  netsales_pc=litres/ttl_netsales
-)
-
-# add % chg YoY, $/l
-# ungroup first; use n=3 to lag 3 rows to match categories
-n_items <- length(unique(trend_yr_reg$region))
-trend_yr_reg <- trend_yr_reg %>% ungroup() %>% mutate(
-  pc_chg_sales=netsales/lag(netsales, n=n_items)-1,
-  pc_chg_litres=litres/lag(litres, n=n_items)-1,
-  dollar_per_litre=netsales/litres,
-  pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=n_items)-1
-)
-
-## cumulative chg over period
-n_yrs <- max(trend_yr_reg$year)-min(trend_yr_reg$year)
-trend_yr_reg <- trend_yr_reg %>% mutate(
-  pc_chg_sales_cum = netsales/lag(netsales, n=(n_yrs*n_items))-1,
-  pc_chg_lt_cum =  litres/lag(litres, n=(n_yrs*n_items))-1
-)
+trend_yr_reg <- fn_trend_yr_smry(data=lmr_data_reg, grp2=region)
+  
+# trend_yr_reg <- lmr_data_reg %>% group_by(year, region) %>% summarize(
+#   netsales=sum(netsales),
+#   litres=sum(litres)
+# ) %>% filter(year %in% yr_qtr$year) 
+# 
+# # calc % of yr sales by region
+# # join with trend_yr_ttl to get yr total cols
+# trend_yr_reg <- left_join(trend_yr_reg, trend_yr_ttl, by='year')
+# # calc %
+# trend_yr_reg <- trend_yr_reg %>% mutate(
+#   litres_pc=litres/ttl_litres,
+#   netsales_pc=litres/ttl_netsales
+# )
+# 
+# # add % chg YoY, $/l
+# # ungroup first; use n=3 to lag 3 rows to match categories
+# n_items <- length(unique(trend_yr_reg$region))
+# trend_yr_reg <- trend_yr_reg %>% ungroup() %>% mutate(
+#   pc_chg_sales=netsales/lag(netsales, n=n_items)-1,
+#   pc_chg_litres=litres/lag(litres, n=n_items)-1,
+#   dollar_per_litre=netsales/litres,
+#   pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=n_items)-1
+# )
+# 
+# ## cumulative chg over period
+# n_yrs <- max(trend_yr_reg$year)-min(trend_yr_reg$year)
+# trend_yr_reg <- trend_yr_reg %>% mutate(
+#   pc_chg_sales_cum = netsales/lag(netsales, n=(n_yrs*n_items))-1,
+#   pc_chg_lt_cum =  litres/lag(litres, n=(n_yrs*n_items))-1
+# )
 
 ## remove 'beer' from region names for brevity
 trend_yr_reg <- trend_yr_reg %>% mutate(
@@ -390,7 +486,69 @@ trend_yr_reg <- trend_yr_reg %>% mutate(
 ```
 
 ```{r}
-trend_yr_reg %>% ggplot(aes(x=year, y=netsales, color=region))+geom_line()
+#| echo: false
+#trend_yr_reg %>% ggplot(aes(x=year, y=netsales, color=region))+geom_line()
+```
+
+```{r}
+#| echo: false
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 3
+
+# reorder categories in order of litre sales
+trend_yr_reg$region <- fct_reorder(trend_yr_reg$region, trend_yr_reg$litres)
+
+# ch_title <- "Beer Litre Sales by Cat."
+# # text aesthetic used to set plotly tooltip -> combined with tooltip='text' in ggplotly
+# plot_left <- trend_yr_reg %>% ggplot(aes(x=as.factor(year), y=litres, fill=region, 
+#                                          text= paste("litres:", format(litres, big.mark=","), 
+#                                                      "<br>reg:", region)))+
+#   geom_col()+
+#   scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M"), 
+#                      expand=expansion(add=c(0,0.1)))+
+#   labs(title=ch_title, x="",y="")+
+#   theme(axis.ticks.x = element_blank(),
+#         axis.text.x = element_text(angle=45))
+# 
+# ch_title <- "Beer % Litre Sales by Cat."
+# plot_right <- trend_yr_reg %>% ggplot(aes(x=as.factor(year), y=litres_pc, fill=region,
+#                                           text= paste0("share: ", round(litres_pc*100,0),"%",
+#                                                      "<br>reg: ", region)))+
+#   geom_col(position='fill')+
+#   scale_y_continuous(labels=percent_format(), 
+#                      expand=expansion(add=c(0,0)))+
+#   #scale_fill_manual(values=type_color)+
+#   labs(title=ch_title, x="",y="")+
+#   theme(axis.ticks.x = element_blank(),
+#         axis.text.x = element_text(angle=45))
+# ggplotly(plot_left, tooltip = "text")
+# ggplotly(plot_right, tooltip = "text")
+```
+
+```{r}
+# function for stacked bar chart, absolute numbers
+stack_col_chart <- function(title=ch_title, data, x_var, y_var, fill_var, 
+                            sci_scale=1e-6, ylab_suffix='M') {
+  # convert vars
+  x_var <- enquo(x_var)
+  y_var <- enquo(y_var)
+  fill_var <- enquo(fill_var)
+  # plot
+  plot <- data %>% ggplot(aes(x=as.factor(!!x_var), y=!!y_var, fill=!!fill_var)) +
+    geom_col() +
+    scale_y_continuous(labels=comma_format(scale=sci_scale,suffix=ylab_suffix), 
+                     expand=expansion(add=c(0,0.1)))+
+    labs(title=ch_title, x="",y="")+
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_text(angle=45, vjust=0.5))
+  
+  return(plot)
+}
+```
+
+```{r}
+ch_title <- "Beer Litre Sales by Cat."
+stack_col_chart(title=ch_title, data=trend_yr_reg, x_var=year, y_var=litres, fill_var=region)
 ```
 
 Chart below highlights some interesting points:
@@ -425,6 +583,8 @@ plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year) & region!='Canada -
   labs(y="% chg over period", x="litres sold")
 ggplotly(plot)
 ```
+
+ANIMATE TO SHOW CHANGES OVER TIME
 
 ## questions
 
