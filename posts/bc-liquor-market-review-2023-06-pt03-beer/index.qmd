@@ -3,7 +3,7 @@ title: "BC Liquor Sales Analysis: Beer 2016-2022"
 author: John Yuill
 date: '2023-11-26'
 categories: [liquor stats, reporting, analysis]
-description-meta: BC Liquor Market Review data exploration and analysis covering the years 2016 to 2023, focusing on quarter-level trends, patterns and observations.
+description-meta: BC Liquor Market Review beer sales data exploration and analysis covering the years 2016 to 2022 with trends, patterns and observations.
 draft: true
 #image: .png 
 toc: true
@@ -33,6 +33,7 @@ library(RColorBrewer)
 library(here)
 library(plotly)
 library(gridExtra)
+library(gganimate)
 # set default theme
 theme_set(theme_classic())
 
@@ -164,28 +165,6 @@ fn_trend_yr_smry <- function(data, grp1=year, grp2) {
 )
   return(trend_yr)
 }
-#smy2 <- fn_trend_yr_smry(data=lmr_data_reg, grp1=year, grp2=region)
-#smy2
-```
-
-```{r annual}
-# # remove partial yrs by counting qtrs and identifying those with 4
-# yr_qtr <- lmr_data %>% group_by(year, qtr) %>% summarize(count=1)
-# yr_qtr <- yr_qtr %>% group_by(year) %>% summarize(count=n()) %>% filter(count==4)
-# 
-# # summarize by calendar yr
-# trend_yr <- lmr_data %>% group_by(year) %>% summarize(
-#   netsales=sum(netsales),
-#   litres=sum(litres)
-# ) %>% filter(year %in% yr_qtr$year) ## include only complete yrs
-# 
-# # add % chg YoY, $/l
-# trend_yr <- trend_yr %>% mutate(
-#   pc_chg_sales=netsales/lag(netsales)-1,
-#   pc_chg_litres=litres/lag(litres)-1,
-#   dollar_per_litre=netsales/litres,
-#   pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre)-1
-# )
 ```
 
 ```{r}
@@ -275,36 +254,9 @@ BC LDB puts beer into 3 major categories for purposes of the Liquor Market Repor
 -   **Import Beer:** beer imported from outside Canada.
 
 ```{r}
-# summarize data by year and major category
+# summarize data by year and major category - using function
 trend_yr_cat <- fn_trend_yr_smry(data=lmr_data_cy, grp2=category)
-# trend_yr_cat <- lmr_data %>% group_by(year, category) %>% summarize(
-#   netsales=sum(netsales),
-#   litres=sum(litres)
-# ) %>% filter(year %in% yr_qtr$year) 
-# 
-# # calc % of yr sales by category
-# # get totals for each yr
-# trend_yr_ttl <- trend_yr %>% select(year, netsales, litres) %>% 
-#   rename(
-#     ttl_netsales=netsales,
-#     ttl_litres=litres
-#   )
-# # join with trend_yr_cat to get yr total cols
-# trend_yr_cat <- left_join(trend_yr_cat, trend_yr_ttl, by='year')
-# # calc %
-# trend_yr_cat <- trend_yr_cat %>% mutate(
-#   litres_pc=litres/ttl_litres,
-#   netsales_pc=litres/ttl_netsales
-# )
-# 
-# # add % chg YoY, $/l
-# # ungroup first; use n=3 to lag 3 rows to match categories
-# trend_yr_cat <- trend_yr_cat %>% ungroup() %>% mutate(
-#   pc_chg_sales=netsales/lag(netsales, n=3)-1,
-#   pc_chg_litres=litres/lag(litres, n=3)-1,
-#   dollar_per_litre=netsales/litres,
-#   pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=3)-1
-# )
+
 ## simplify category names
 #unique(trend_yr_cat$category)
 trend_yr_cat <- trend_yr_cat %>% mutate(
@@ -394,17 +346,6 @@ ggplotly(plot, tooltip="text")
 
 #### Cumulative % Change
 
-```{r cumulative chg}
-# calculate cumulative change across available yrs
-# need to lag by n yrs in dataset x n categories (or items to be more general)
-# n_yrs <- max(trend_yr_cat$year)-min(trend_yr_cat$year)
-# n_items <- length(unique(trend_yr_cat$category))
-# # lag calculation based on n_yrs x n_items
-# trend_yr_cat <- trend_yr_cat %>% mutate(
-#   pc_chg_lt_cum =  litres/lag(litres, n=(n_yrs*n_items))-1
-# )
-```
-
 All these year-over-year changes add up - especially for Other Province beer and Imports:
 
 -   Other Province beer **almost doubled** over the period!
@@ -435,7 +376,7 @@ As shown earlier, **BC-produced beer makes up almost 80%** of consumption, so be
 
 ### Regional View
 
-A look at the situation by regions of the world.
+A look at BC beer sales by global region of production.
 
 ```{r}
 # need a new field for region
@@ -448,37 +389,6 @@ lmr_data_reg <- lmr_data_cy %>% mutate(
 # summarize data by year and region
 trend_yr_reg <- fn_trend_yr_smry(data=lmr_data_reg, grp2=region)
   
-# trend_yr_reg <- lmr_data_reg %>% group_by(year, region) %>% summarize(
-#   netsales=sum(netsales),
-#   litres=sum(litres)
-# ) %>% filter(year %in% yr_qtr$year) 
-# 
-# # calc % of yr sales by region
-# # join with trend_yr_ttl to get yr total cols
-# trend_yr_reg <- left_join(trend_yr_reg, trend_yr_ttl, by='year')
-# # calc %
-# trend_yr_reg <- trend_yr_reg %>% mutate(
-#   litres_pc=litres/ttl_litres,
-#   netsales_pc=litres/ttl_netsales
-# )
-# 
-# # add % chg YoY, $/l
-# # ungroup first; use n=3 to lag 3 rows to match categories
-# n_items <- length(unique(trend_yr_reg$region))
-# trend_yr_reg <- trend_yr_reg %>% ungroup() %>% mutate(
-#   pc_chg_sales=netsales/lag(netsales, n=n_items)-1,
-#   pc_chg_litres=litres/lag(litres, n=n_items)-1,
-#   dollar_per_litre=netsales/litres,
-#   pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=n_items)-1
-# )
-# 
-# ## cumulative chg over period
-# n_yrs <- max(trend_yr_reg$year)-min(trend_yr_reg$year)
-# trend_yr_reg <- trend_yr_reg %>% mutate(
-#   pc_chg_sales_cum = netsales/lag(netsales, n=(n_yrs*n_items))-1,
-#   pc_chg_lt_cum =  litres/lag(litres, n=(n_yrs*n_items))-1
-# )
-
 ## remove 'beer' from region names for brevity
 trend_yr_reg <- trend_yr_reg %>% mutate(
   region=str_replace_all(region, ' Beer','')
@@ -487,76 +397,58 @@ trend_yr_reg <- trend_yr_reg %>% mutate(
 
 ```{r}
 #| echo: false
-#trend_yr_reg %>% ggplot(aes(x=year, y=netsales, color=region))+geom_line()
-```
-
-```{r}
-#| echo: false
-#| layout-ncol: 2 # for side-by-side charts
-#| fig-height: 3
-
-# reorder categories in order of litre sales
+# reorder categories in order of litre sales for stack chart
 trend_yr_reg$region <- fct_reorder(trend_yr_reg$region, trend_yr_reg$litres)
-
-# ch_title <- "Beer Litre Sales by Cat."
-# # text aesthetic used to set plotly tooltip -> combined with tooltip='text' in ggplotly
-# plot_left <- trend_yr_reg %>% ggplot(aes(x=as.factor(year), y=litres, fill=region, 
-#                                          text= paste("litres:", format(litres, big.mark=","), 
-#                                                      "<br>reg:", region)))+
-#   geom_col()+
-#   scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M"), 
-#                      expand=expansion(add=c(0,0.1)))+
-#   labs(title=ch_title, x="",y="")+
-#   theme(axis.ticks.x = element_blank(),
-#         axis.text.x = element_text(angle=45))
-# 
-# ch_title <- "Beer % Litre Sales by Cat."
-# plot_right <- trend_yr_reg %>% ggplot(aes(x=as.factor(year), y=litres_pc, fill=region,
-#                                           text= paste0("share: ", round(litres_pc*100,0),"%",
-#                                                      "<br>reg: ", region)))+
-#   geom_col(position='fill')+
-#   scale_y_continuous(labels=percent_format(), 
-#                      expand=expansion(add=c(0,0)))+
-#   #scale_fill_manual(values=type_color)+
-#   labs(title=ch_title, x="",y="")+
-#   theme(axis.ticks.x = element_blank(),
-#         axis.text.x = element_text(angle=45))
-# ggplotly(plot_left, tooltip = "text")
-# ggplotly(plot_right, tooltip = "text")
 ```
 
 ```{r}
-# function for stacked bar chart, absolute numbers
+# function for stacked bar chart: absolute numbers and % 
+# assumes % metric available; hover text format based on values > or < 1
 stack_col_chart <- function(title=ch_title, data, x_var, y_var, fill_var, 
                             sci_scale=1e-6, ylab_suffix='M') {
   # convert vars
   x_var <- enquo(x_var)
   y_var <- enquo(y_var)
   fill_var <- enquo(fill_var)
+
   # plot
-  plot <- data %>% ggplot(aes(x=as.factor(!!x_var), y=!!y_var, fill=!!fill_var)) +
-    geom_col() +
-    scale_y_continuous(labels=comma_format(scale=sci_scale,suffix=ylab_suffix), 
-                     expand=expansion(add=c(0,0.1)))+
-    labs(title=ch_title, x="",y="")+
-    theme(axis.ticks.x = element_blank(),
-          axis.text.x = element_text(angle=45, vjust=0.5))
+  plot <- data %>% mutate(
+    # create formatted variable for hover text
+      var_f = ifelse(!!y_var>1, format(!!y_var, big.mark=","),
+                     paste0(round(!!y_var*100,0),"%"))
+    ) %>%
+    ggplot(aes(x=as.factor(!!x_var), y=!!y_var, fill=!!fill_var,
+                              text=paste0(var_f, "<br>", !!fill_var))) +
+      geom_col() +
+      scale_y_continuous(labels=comma_format(scale=sci_scale,suffix=ylab_suffix), 
+                       expand=expansion(add=c(0,0.1)))+
+      labs(title=ch_title, x="",y="")+
+      theme(axis.ticks.x = element_blank(),
+            axis.text.x = element_text(angle=45, vjust=0.5))
   
   return(plot)
 }
 ```
 
 ```{r}
-ch_title <- "Beer Litre Sales by Cat."
-stack_col_chart(title=ch_title, data=trend_yr_reg, x_var=year, y_var=litres, fill_var=region)
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 3
+
+ch_title <- "Beer Litre Sales by Region"
+plot_left <- stack_col_chart(title=ch_title, data=trend_yr_reg, x_var=year, y_var=litres, fill_var=region)
+
+ch_title <- "Beer Litre Sales % by Region"
+plot_right <- stack_col_chart(title=ch_title, data=trend_yr_reg, x_var=year, y_var=litres_pc, fill_var=region, sci_scale=1e+2, ylab_suffix="%")
+
+ggplotly(plot_left, tooltip = "text")
+ggplotly(plot_right, tooltip = "text")
 ```
 
-Chart below highlights some interesting points:
+### Regional breakout by litres, % change, \$/litre
 
--   BC beer is by far the most volume sold, and also by far the cheapest (smallest dot).
--   Fastest growth by far over the period (400%) is from 'Other Countries' and is also the highest price beer.
--   Europe, Asia, Mexico, and the US (in that order) have all had decreases in litres sold
--   US decline is particularly noteworthy, dropping over 80%! Possibly due to more US brands being produced within Canada, such as Budweiser being brewed in Canada by Labatt (AB InBev) and Coors being brewed by Molson (now Molson Coors).
+We can do a deeper dive on regional differences by comparing not only litre sales but also % change over time, and \$/litre (proxy for price):
+
+-   **negative growth** over the period, with the **strong exception of 'Other Country'** and '**Canada - other provinces'** to lesser extent.
 
 ```{r}
 plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year)) %>% 
@@ -569,6 +461,11 @@ plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year)) %>%
   labs(y="% chg over period", x="litres sold")
 ggplotly(plot)
 ```
+
+-   BC beer is by far the most volume sold, and also by far the cheapest (smallest dot).
+-   Fastest growth by far over the period (400%) is from 'Other Countries' and is also the highest price beer.
+-   Europe, Asia, Mexico, and the US (in that order) have all had decreases in litres sold.
+-   US decline is particularly noteworthy, dropping over 80%! Possibly due to more US brands being produced within Canada, such as Budweiser being brewed in Canada by Labatt (AB InBev) and Coors being brewed by Molson (now Molson Coors).
 
 Remove BC to zoom in on others.
 
@@ -584,7 +481,26 @@ plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year) & region!='Canada -
 ggplotly(plot)
 ```
 
-ANIMATE TO SHOW CHANGES OVER TIME
+Patterns even more apparent with in zoomed-in view.
+
+#### Animation of Regional Growth
+
+Animation showing the changes over time.
+
+```{r}
+#| fig-width: 10
+plot_anim <- trend_yr_reg %>% 
+  ggplot(aes(x=litres, y=pc_chg_litres, color=region, size=dollar_per_litre))+
+           geom_point()+
+  transition_time(year)+
+  scale_x_continuous(labels=label_comma())+
+  scale_y_continuous(labels=percent_format())+
+  geom_hline(yintercept = 0, linetype='solid')+
+  theme(axis.line.x = element_blank())+
+  labs(y="% chg over period", x="litres sold")
+animate(plot_anim, duration=10, fps=5)
+#anim_save("animated_bubble_chart.gif")
+```
 
 ## questions
 
@@ -620,224 +536,9 @@ ANIMATE TO SHOW CHANGES OVER TIME
 
             -   x=litres, y=growth rate, color = region, size=rev/litre
 
+### Beer: Wrap-up and Next Up
+
 ## == old info
-
-### Quarter Data
-
-```{r, calc_qtr}
-# roll-up categories by qtr
-trend_ttl_qtr <- lmr_data %>% group_by(year, fyr, fy_qtr, qtr) %>% summarize(
-  netsales=sum(netsales),
-  litres=sum(litres)
-)
-# calculate quarterly info
-trend_qtr <- lmr_data %>% group_by(fy_qtr, start_qtr_dt, qtr) %>% 
-  summarize(netsales=sum(netsales),
-            litres=sum(litres)
-            )
-
-trend_qtr <- trend_qtr %>% ungroup() %>% mutate(
-            pc_chg_sales=netsales/lag(netsales)-1,
-            pc_chg_litres=litres/lag(litres)-1,
-            pc_chg_sales_qtr=netsales/lag(netsales, n=4),
-            pc_chg_litres_qtr=litres/lag(litres, n=4)
-)
-# averages
-trend_qtrs <- trend_qtr %>% group_by(qtr) %>% summarize(
-  avgsales=mean(netsales),
-  avglitres=mean(litres),
-  avg_sales_pc_chg=mean(pc_chg_sales, na.rm=TRUE),
-  avg_litres_pc_chg=mean(pc_chg_litres, na.rm=TRUE)
-)
-```
-
-#### \$ Qtr Sales
-
-Overlay of \$ sales data for quarter of each year to see overall trends:
-
--   sales are mostly even in Q2 (Jul-Aug-Sep) and Q3 (Oct-Nov-Dec), covering most of the summer and the Christmas holiday season.
--   Q4 (Jan-Feb-Mar) by far the slowest period.
-
-```{r}
-#| fig-cap: BC LDB fiscal yr end Mar 31, so Q1=Apr-May-Jun, and so on; black line = average.
-ch_title <- "$ Sales Comparison by Quarter (fiscal yr end Mar 31)"
-plot <- trend_ttl_qtr %>% ggplot(aes(x=qtr, y=netsales, color=factor(fyr), group=fyr))+
-  geom_line()+
-  geom_point()+
-  geom_line(data=trend_qtrs, aes(x=qtr, y=avgsales, group=1), color='black', size=1.5)+
-  scale_y_continuous(labels=label_comma(scale=1e-6, prefix="$", suffix="M"), expand=expansion(add=c(0,0.1)), limits=c(0,max(trend_ttl_qtr$netsales)))+
-  labs(title=ch_title, x="", y="Net $ Sales", color='fiscal yr')
-ggplotly(plot)
-  
-```
-
-The drop from Q3 to Q4 is the only consistent pattern across the years looked at. Relative level of sales between Q1-Q2 and Q2-Q3 varies from year to year.
-
-Looking at patterns in % change between quarters confirms that either ends of the fiscal yr have the biggest changes:
-
--   Q4 has a consistently large drop from previous quarter and Q1 has consistently big increase from previous quarter.
--   Q2 tends to show positive growth over Q1, but not always. Q3 straddles 0% change from previous.
-
-```{r}
-ch_title <- "Distribution of % Change in $ Sales Between Quarters"
-plot <- trend_qtr %>% ggplot(aes(y=pc_chg_sales, x=qtr))+
-  geom_boxplot(fill=bar_col)+
-  scale_y_continuous(labels=percent_format())+
-  geom_hline(yintercept = 0, linetype='dotted')+
-  labs(title=ch_title, x="",y="% chg from prev quarter")
-ggplotly(plot)
-```
-
-The middle black line represents median for each quarter, with the colored area representing the range from 25% of the time to 75% of the time (1st & 3rd quartiles).
-
-#### Litres
-
-Overlaying litres sold by quarter for each year shows volume changes throughout the year:
-
--   Q2 (Jul-Aug-Sep) has highest sales, edging out Q1 (Apr-May-Jun)
--   Q3 (Oct-Nov-Dec) sees drop, even with holidays, and then lower again for Q4 (Jan-Feb-Mar)
-
-```{r}
-#| fig-cap: BC LDB fiscal yr ends Mar 31
-ch_title <- "Litres Comparison by Quarter (fiscal yr end Mar 31)"
-plot <- trend_ttl_qtr %>% ggplot(aes(x=qtr, y=litres, color=factor(fyr), group=fyr))+
-  geom_line()+
-  geom_point()+
-  geom_line(data=trend_qtrs, aes(x=qtr, y=avglitres, group=1), color='black', size=1.5)+
-  scale_y_continuous(labels=label_comma(scale=1e-6, suffix="M"), expand=expansion(add=c(0,0.1)), limits=c(0,max(trend_ttl_qtr$litres)))+
-  labs(title=ch_title, x="", y="litres", color='fiscal yr')
-ggplotly(plot)
-  
-```
-
-The different pattern compared to \$ sales likely represents the shift in drinking habits with the seasons:
-
--   peak volume (litres) is in Q2 - beer season, and beer, along with refreshment beverages, are consumer in higher volumes than the other types.
--   Q3, which is usually even with Q2 in \$ sales, has a consistent drop in litre volume compared to Q2, due to shift away from beer/refreshments beverages toward wine and spirits.
-
-Patterns by beverage type are looked at more below.
-
-Percentage changes from one quarter to the next reflect the different quarter-by-quarter patterns for litres.
-
-```{r}
-ch_title <- "Distribution of % Change in Litres Between Quarters"
-plot <- trend_qtr %>% ggplot(aes(y=pc_chg_litres, x=qtr))+
-  geom_boxplot(fill=bar_col)+
-  scale_y_continuous(labels=percent_format())+
-  geom_hline(yintercept = 0, linetype='dotted')+
-  labs(title=ch_title, x="",y="% chg from prev quarter")
-ggplotly(plot)
-```
-
--   Q1 (Apr-May-Jun) typically has around 35% increase over previous Q4
--   Q2 (Jul-Aug-Sep) tends to be even or slight increase over Q1.
--   Q3 (Oct-Nov-Dec) big drop around 15% range compared to Q2.
--   Q4 (Jan-Feb-Mar) usually another \~15% from Q3 to Q4.
-
-### By Major Beverage Type
-
-Let's look at beverage types to see what is going on below the surface of overall trends.
-
-```{r}
-# quarters at cat_type level
-trend_qtr_cat <- lmr_data %>% group_by(year, fyr, fy_qtr, start_qtr_dt, qtr, type) %>%
-  summarize(netsales=sum(netsales),
-            litres=sum(litres)
-            )
-trend_qtr_cat$type <- as.factor(trend_qtr_cat$type)
-
-trend_qtrs_cat <- trend_qtr_cat %>% group_by(qtr, type) %>% 
-  summarize(
-    avg_netsales=mean(netsales),
-    avg_litres=mean(litres),
-    max_litres=max(litres)
-  )
-trend_qtrs_cat$type <- as.factor(trend_qtrs_cat$type)
-```
-
-#### \$ Sales
-
-Looking at quarter sales by beverage type reveals patterns we suspected earlier:
-
--   **Beer and refreshment beverages tend to peak in Q2** and decline in Q3 and Q4.
--   **Wine and, especially, spirits peak in Q3** and offset the decline in revenue from beer and refreshment beverages.
-
-```{r}
-#| fig-cap: "black line = average"
-#| fig-width: 5
-#| fig-height: 6
-#| fig-align: center
-ch_title <- "Comparison of Qtrly $ Sales by Beverage Type"
-trend_qtr_cat %>% ggplot(aes(x=qtr, y=netsales, color=factor(fyr), group=fyr))+
-  geom_line()+
-  geom_point()+
-  geom_line(data=trend_qtrs_cat, aes(x=qtr, y=avg_netsales), color='black', group=1, size=1.2)+
-  facet_grid(type~., scales='free_y')+
-  scale_y_continuous(labels=label_comma(scale=1e-6, prefix="$", suffix="M"), 
-                     limits=c(0,NA))+
-  labs(title=ch_title, x="", color="fiscal yr", y="$ Sales (upper limit varies)")+theme(panel.border = element_rect(fill=NA))
-```
-
-Stacked chart highlights the shifts between Q2 and Q3:
-
--   decline in \$ sales of Beer and Refreshment Beverages in Q3 almost completely offset by increase in wine and spirits.
-
-```{r}
-#| fig-width: 5
-#| fig-height: 6
-#| fig-align: center
-trend_qtrs_cat$type <- fct_reorder(trend_qtrs_cat$type, trend_qtrs_cat$avg_netsales)
-
-ch_title <- "Breakdown in $ Sales per Qtr by Category"
-plot <- trend_qtrs_cat %>% ggplot(aes(x=qtr, y=avg_netsales, fill=type))+
-  #geom_col(position='fill')+
-  geom_col()+
-  scale_y_continuous(labels=label_comma(scale=1e-6, prefix="$", suffix="M"), expand=expansion(add=c(0,0.1)))+
-  scale_fill_manual(values=type_color)+
-  labs(title=ch_title, x="",y="Average Net Sales in Qtr (2015-2023)")+
-  theme(axis.ticks.x = element_blank())
-ggplotly(plot)
-```
-
-#### Litres
-
-Similar quarter-over-quarter patterns can be seen when looking at litres sold, although the overall differences from one quarter to the next - especially Q2 to Q3 - are larger when measured in litres, since Beer and Refreshment Beverages are consumed in larger quantities than Wine and Spirits.
-
-```{r}
-#| fig-width: 5
-#| fig-height: 6
-#| fig-align: center
-ch_title <- "Comparison of Qtrly volume by Category"
-trend_qtr_cat %>% ggplot(aes(x=qtr, y=litres, color=factor(fyr), group=fyr))+
-  geom_line()+
-  geom_point()+
-  facet_grid(type~., scales='free_y')+
-  scale_y_continuous(labels=label_comma(scale=1e-6, suffix="M"), 
-                     limits=c(0,NA))+
-  labs(title=ch_title, x="", color="fiscal yr", y="litres (upper limit varies)")+theme(panel.border = element_rect(fill=NA))
-  #+ theme(panel.border = element_line())
-```
-
--   Beer and, even more-so, refreshment beverages drop from Q1-Q2 (Apr-Sep) to Q3-Q4 (Oct-Mar).
--   Wine, Spirits have small peak in Q3 (Oct-Dec) - holiday season.
-
-This pattern shows up clearly when looking at the average % breakdown in litres by beverage type:
-
-```{r}
-trend_qtrs_cat$type <- fct_reorder(trend_qtrs_cat$type, trend_qtrs_cat$avg_litres)
-
-ch_title <- "Breakdown in Avg Litre per Qtr by Category"
-trend_qtrs_cat %>% ggplot(aes(x=qtr, y=avg_litres, fill=type))+
-  geom_col(position='fill')+
-  scale_y_continuous(labels=percent_format(), expand=expansion(mult = c(0,0.1)))+
-  scale_fill_manual(values=type_color)+
-  labs(title=ch_title, x="",y="Average % Breakdown by Quarter (2015-2023")+
-  theme(axis.ticks.x = element_blank())
-```
-
-The bulge in % share for Wine and Spirits in Q3 (Sep-Dec), at the expense of Beer and Refreshment Beverages, is apparent.
-
-### Part 2 Wrap-up and Next Up
 
 This concludes our look at quarter patterns, including quarters from mid-2015 to mid-2023.
 
