@@ -1,0 +1,68 @@
+---
+title: "For new blog post: SAVE AS index.qmd in New Folder in posts folder"
+author: John Yuill
+date: date
+categories: []
+description-meta: .
+draft: true
+#image: .png 
+toc: true
+toc-depth: 4
+toc-location: left
+date-modified: '`r Sys.Date()`'
+fig-height: 4
+fig-width: 6
+code-fold: true
+execute:
+  echo: true
+  error: false
+  warning: false
+---
+
+```{r setup, include=FALSE}
+#| echo: FALSE
+#| warning: FALSE
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(glue)
+library(ggrepel)
+library(readr) ## for easy conversion of $ characters to numeric
+library(RMariaDB) ## best way to access MySQL from R
+library(RColorBrewer)
+library(here)
+library(plotly)
+library(gridExtra)
+library(gganimate)
+# set default theme
+theme_set(theme_classic())
+
+# chart parameters
+bar_col <- brewer.pal(n=9, name='YlGnBu')[9]
+
+```
+
+```{r get_data}
+#| echo: FALSE
+
+```
+
+### Intro
+
+Intro text
+
+```{r functions}
+## put functions here
+
+```
+
+```{r}
+#| echo: false
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 3
+
+```
+
+```{r}
+
+```

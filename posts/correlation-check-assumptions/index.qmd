@@ -1,0 +1,302 @@
+---
+title: "Correlation is NOT Causation...It May Not Even Be Correlation"
+author: John Yuill
+date: '2024-03-03'
+categories: [analysis, r]
+description-meta: Calculating a correlation coefficient aka R value does not guarantee that the number is valid. Correlation calculation are based on key assumptions that should be checked to ensure that the linear correlation is providing relevant indication of relationship between two variables.
+draft: true
+#image: .png 
+toc: true
+toc-depth: 4
+toc-location: left
+date-modified: '`r Sys.Date()`'
+fig-height: 4
+fig-width: 6
+code-fold: true
+execute:
+  echo: true
+  error: false
+  warning: false
+---
+
+```{r setup, include=FALSE}
+#| echo: FALSE
+#| warning: FALSE
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(glue)
+library(ggrepel)
+library(readr) ## for easy conversion of $ characters to numeric
+library(RMariaDB) ## best way to access MySQL from R
+library(RColorBrewer)
+library(here)
+library(plotly)
+library(gridExtra)
+library(gganimate)
+library(ggpubr)
+library(lmtest)
+library(gt)
+# set default theme
+theme_set(theme_classic())
+
+# chart parameters
+bar_col <- brewer.pal(n=9, name='YlGnBu')[9]
+
+```
+
+```{r get_data}
+#| echo: FALSE
+ans <- datasets::anscombe
+
+```
+
+## Intro
+
+Most people dealing with data recognize that **correlation does not imply causation**, and that if correlation between two variables is detected, further steps must be taken to determine if there is indeed a causal relationship.
+
+But before we even get to pinning down causation, I have noticed some important steps being skipped in the initial hunt for correlation. Correlation calculations are based on specific assumptions that, if not met, render the outcome of these calculations less than reliable. Proceeding without checking these assumptions can lead to erroneous conclusions and bad decisions.
+
+So let's talk about how we can deal with this situation and at least check to understand how solid the ground is we are standing on.
+
+## The Assumptions
+
+There are different ways to calculate correlation, but by far the most common is the [Pearson Correlation Coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient). This is the formula that results in the famous 'r' value, ranging from 1 to -1, where 1 is perfect positive correlation (same direction), -1 is perfect negative correlation (opposite direction) and 0 is no correlation. Importantly, the accuracy of this calculation depends on several key assumptions, nicely described by chatGPT:
+
+"For the Pearson correlation coefficient to provide meaningful and reliable results, several key assumptions must be met:
+
+1.  **Linearity**: The relationship between the two variables is linear, meaning the best-fit line through the data points is a straight line. This implies that as one variable increases or decreases, the other variable does so in a consistent manner.
+
+2.  **Homoscedasticity**: The variances along the line of best fit remain similar as we move along the line. This means that the spread (variance) of data points around the line of best fit is roughly constant across all levels of the independent variable.
+
+3.  **Normality**: The Pearson correlation assumes that both variables are normally distributed. More specifically, the assumption is about the normality of the distribution of values for each variable, and ideally, the joint normality of the two variables. However, in practice, it's the distribution of the variables themselves that's most scrutinized.
+
+4.  **Interval or Ratio Scale**: Both variables should be measured on either an interval or ratio scale. This means that the variables should represent numeric values where meaningful amounts of differences between measurements can be determined.
+
+5.  **Absence of Outliers**: Outliers can have a disproportionate effect on the correlation coefficient, pulling the line of best fit and therefore the correlation measure in their direction. It's important that there are no outliers in the data, or that their impact is minimized, perhaps through robust statistical techniques.
+
+6.  **Independence of Observations**: Each pair of observations is independent of each other pair. This means the data points collected do not influence each other, which is particularly relevant in time-series data where this assumption might be violated due to autocorrelation.
+
+When these assumptions are not met, the Pearson correlation coefficient might not be the appropriate measure of association between two variables."
+
+## Look at the Data
+
+First and foremost: look at the data. This is the beautifully illustrated with Anscombe's quartet, where each data set has the same Pearson's correlation value (among other summary metrics).
+
+[![Anscombe Quartet \[click for source\]](images/anscombe-quartet.png){width="600"}](https://matplotlib.org/stable/gallery/specialty_plots/anscombe.html)
+
+```{r ans_functions}
+## put functions here
+ans_cor <- function(data, x, y, anum) {
+  xe <- enquo(x) # convert var reference
+  ye <- enquo(y) # convert var reference
+  xes <- as.character(xe)[2] # convert to string for use in annotation
+  yes <- as.character(ye)[2] 
+  x_lab <- max(data[[xes]])*0.75 # set x location for annotation
+  y_lab <- max(data[[yes]]) # set y location for annotation
+  
+  plot <- data %>% ggplot(aes(x=!!xe, y=!!ye))+geom_point()+
+    geom_smooth(method='lm', se=FALSE)+
+    stat_cor()+
+    annotate(geom='text',y=y_lab, x=x_lab, label=anum, size=8, color='red')
+  plot
+}
+# run functions to get info
+a1 <- ans_cor(data=ans, x=x1, y=y1, anum='I')
+a2 <- ans_cor(data=ans, x=x2, y=y2, anum='II')
+a3 <- ans_cor(data=ans, x=x3, y=y3, anum='III')
+a4 <- ans_cor(data=ans, x=x4, y=y4, anum='IV')
+```
+
+```{r ans_qt}
+#| echo: false
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 4
+#| fig-width: 4
+
+a1
+a2
+a3
+a4
+```
+
+## Checking Assumptions
+
+So clearly some reason for skepticism about whether the assumptions hold up in most of these cases. Let's take a closer look, one at a time:
+
+### Linearity
+
+-   **criteria:** relationship between the two variables is linear, best-fit line through the data points is a straight line, as one variable increases or decreases, other variable does so in a consistent manner.
+-   **method:** visual inspection
+-   **conclusion:**
+    -   I: somewhat.
+    -   II: no; at lower x values but then inverts.
+    -   III: yes - except outlier.
+    -   IV: no.
+
+### **Homoscedasticity**
+
+-   **criteria:** variances along the line of best fit remain similar as we move along the line; spread (variance) of data points around the line of best fit is roughly constant.
+-   **method:** residuals plot, Breusch-Pagan test
+
+```{r homoskedacitytest}
+homoSkedTest <- function(data, x, y, anum) {
+  xe <- enquo(x) # convert var reference
+  ye <- enquo(y) # convert var reference
+  xes <- as.character(xe)[2] # convert to string for use in annotation
+  yes <- as.character(ye)[2] 
+  x_lab <- max(data[[xes]])*0.75 # set x location for annotation
+  y_lab <- max(data[[yes]]) # set y location for annotation
+  
+  formula <- paste0(quo_name(ye), " ~ ", quo_name(xe))
+  # calculate model
+  model <- lm(formula, data=data)
+  # add residuals and fitted values to the data for plotting
+  data$residuals <- residuals(model)
+  data$fitted <- fitted(model)
+  x_lab <- min(data$fitted)+0.5
+  y_lab <- max(data$residuals)
+  ## generate plot
+  plot <- data %>% ggplot(aes(x=fitted, y=residuals))+geom_point()+
+      geom_hline(yintercept=0, linetype='dashed', color='red')+
+      geom_segment(aes(xend=fitted, yend=0), alpha=0.5)+
+      annotate(geom='text',y=y_lab, x=x_lab, label=anum, size=8, color='red')+
+      labs(x='Fitted Values', y='Residuals', title='Residual Plot')+
+      theme_minimal()
+  # Breusch-Pagan test for homoskedasticity
+  bpt_results <- bptest(model)
+  # put results in table
+  bpt_row <- data.frame(case=anum, BP_statistic=bpt_results$statistic, p_value=bpt_results$p.value)
+  row.names(bpt_row) <- anum
+  bpt_row <- bpt_row %>% mutate(
+    conclusion=ifelse(p_value>0.05,"Homoskedasticity: null hypothesis holds.","Homoskedasticity issues: null hypotheis fails.")
+  )
+  # return results from plot and BP test
+  list(plot=plot, bpt=bpt_results,bpt_row=bpt_row)
+}
+#anss <- homoSkedTest(ans, x1, y1, 'I')
+#anss$plot
+#anss$bpt
+
+```
+
+```{r hskt_values}
+hskt_01 <- homoSkedTest(data=ans, x=x1, y=y1, anum='I')
+hskt_02 <- homoSkedTest(data=ans, x=x2, y=y2, anum='II')
+hskt_03 <- homoSkedTest(data=ans, x=x3, y=y3, anum='III')
+hskt_04 <- homoSkedTest(data=ans, x=x4, y=y4, anum='IV')
+
+```
+
+#### Residuals Plots
+
+```{r resid_plot}
+#| echo: false
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 4
+#| fig-width: 4
+
+hskt_01$plot
+hskt_02$plot
+hskt_03$plot
+hskt_04$plot
+```
+
+#### Breusch-Pagan Test
+
+make into table for more concise review
+
+```{r bptr_table}
+bptr_table <- bind_rows(hskt_01$bpt_row, hskt_02$bpt_row, 
+                        hskt_03$bpt_row, hskt_04$bpt_row)
+gt(bptr_table)
+```
+
+-   **conclusion:**
+    -   there are obviously issues to some degree with all the datasets, except maybe case #1.
+
+    -   visual inspection of residuals charts appears more reliable than the Breusch-Pagan test in many cases.
+
+### **Normality**
+
+-   **criteria:** Pearson correlation assumes that both variables are normally distributed.
+
+-   **methodology:** QQ plot, Shapiro-Wilk test
+
+```{r normal_test}
+normalTest <- function(data, var, vars) {
+  # specify variables covered - for chart title
+  vars <- paste0(vars, collapse=', ')
+  # convert variable name
+  vare <- enquo(var)
+  # convert to string for use with shapiro-wilk
+  vares <- as.character(vare)[[2]]
+  # create plot
+  plot <- data %>% ggplot(aes(sample=!!vare))+stat_qq()+stat_qq_line()+
+  ggtitle(paste0("Variable ",vars,": Q-Q Plot"))+
+  theme_minimal()
+  # check shapiro-wilk test
+  sw_test <- shapiro.test(data[[vares]])
+  # return plot and sw test results
+  list(plot=plot, sw_test=sw_test)
+}
+```
+
+```{r norm_values}
+# first 3 vars are same
+norm_01 <- normalTest(data=ans, var=x1, vars=c('x1','x2','x3'))
+norm_04 <- normalTest(data=ans, var=x4, vars=c('x4'))
+norm_01a <- normalTest(data=ans, var=y1, vars=c('y1'))
+norm_02a <- normalTest(data=ans, var=y2, vars='y2')
+norm_03a <- normalTest(data=ans, var=y3, vars='y3')
+norm_04a <- normalTest(data=ans, var=y4, vars='y4')
+```
+
+#### QQ Plots
+
+```{r}
+#| echo: false
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 4
+#| fig-width: 4
+
+norm_01$plot
+norm_04$plot
+norm_01a$plot
+norm_02a$plot
+norm_03a$plot
+norm_04a$plot
+```
+
+#### Shapiro-Wilk
+
+set up for commentary and interpretation
+
+```{r}
+norm_01$sw_test
+norm_04$sw_test
+norm_01a$sw_test
+norm_02a$sw_test
+norm_03a$sw_test
+norm_04a$sw_test
+```
+
+### **Interval or Ratio Scale**
+
+yes
+
+### **Absence of Outliers**
+
+define outliers -\> outside 1.5\*iqr
+
+### **Independence of Observations**
+
+Need domain knowledge for this one.
+
+notes:
+
+-   check assumptions
+
+-   state if they are violated
+
+-   what to do if not met? other options
