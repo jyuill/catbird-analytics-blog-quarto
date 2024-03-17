@@ -76,7 +76,7 @@ If the correlation coefficient is not a reliable summary of the relationship, th
 
 So this is why it is important to understand when we can rely on a correlation calculation, and when we can't.
 
-## The Assumptions
+## The Six Assumptions
 
 There are different ways to calculate correlation, but by far the most common is the [Pearson Correlation Coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) for linear correlation. This is the formula that results in the famous 'r' value, ranging from 1 to -1, where 1 is perfect positive correlation (same direction), -1 is perfect negative correlation (opposite direction) and 0 is no correlation. Importantly, the accuracy of this calculation depends on **several key assumptions**, nicely described by chatGPT:
 
@@ -156,7 +156,7 @@ So right away that knocks out **cases II and IV**:
 
 -   Pearson correlation coefficient between variables is **NOT going to be a useful, reliable statistic** for understanding the relationship between the variables involved.
 
-Let's continue on with testing further assumptions focusing on cases I and III (with cases II and IV for additional reference).
+Let's continue on with testing further assumptions **focusing on cases I and III** (with cases II and IV for additional reference).
 
 ### **Homoscedasticity**
 
@@ -343,17 +343,64 @@ shap_wilk_table %>% select(-method) %>% gt()
 
 Based on Shapiro-Wilk test, we have a mix of Normal and non-Normal distributions.
 
+-   **Normality conclusions**
+
+    -   Overall similar results between Q-Q plots and Shapiro-Wilk.
+
+    -   x1/x2/x3/y1: look close to Normal in Q-Q plots and also pass Shapiro-Wilk test.
+
+    -   x4/y2: doesn't fit with Normal on Q-Q plot or Shapiro-Wilk test.
+
+    -   y3: borderline based on Q-Q plot due to outliers, fails Shapiro-Wilk test.
+
+    -   y4: borderline based on Q-Q plot due to outliers, passes Shapiro-Wilk test.
+
+So as far as the Normal distribution assumption for Pearson correlation, it depends on the combination of variables being used from this data set.
+
 ### **Interval or Ratio Scale**
 
-yes
+-   **criteria:** Pearson correlation only works on numeric values.
+-   **methodology:** check class of variables.
 
-### **Absence of Outliers**
+```{r}
+str(ans)
+```
 
-define outliers -\> outside 1.5\*iqr
+-   **conclusion:** all variables are numeric, so we are on solid ground here.
+
+### **Absence of Outliers** 
+
+-   **criteria:** ideally, no outliers, as they can have a disproportionate affect on the correlation coefficient.
+-   **method:** boxplot for visual inspection.
+
+#### Boxplot
+
+A boxplot can be simple way to see if outliers exist in the variables. The interpretation is:
+
+-   **mid-line** is median.
+-   **box** covers the IQR (inter-quartlie range) from 25th percentile to 75th percentile, covering the middle 50% of the data.
+-   **whiskers** reach out to values that are 1.5 below/above the 25th and 75th percentiles, respectively.
+-   **DOTS represent outliers**: data points beyond the whiskers represent outliers - these are what we are watching for.
+
+```{r}
+#ans %>% ggplot(aes(x=x1))+geom_boxplot()
+ans_long <- ans %>% pivot_longer(cols=everything(), names_to="variable", values_to = "value")
+ans_long %>% ggplot(aes(x=value, y=variable))+geom_boxplot(fill='grey')+
+  coord_flip()
+```
+
+The variables with dots are sure signs of outliers.
+
+-   **Outlier conclusions:**
+
+    -   x4, y2, y3, y4 all have outliers: use caution with Pearson correlation involving these metrics.
 
 ### **Independence of Observations**
 
-Need domain knowledge for this one.
+-   **criteria:** each pair of observations in the data set is independent of each other, do not influence each other.
+-   **method:** knowledge of the origin and meaning of the data.
+
+Domain knowledge is needed for this one. We can't make any conclusions on the Anscombe dataset because we don't know anything about the origin of the data or what it represents.
 
 notes:
 
@@ -362,6 +409,22 @@ notes:
 -   state if they are violated
 
 -   what to do if not met? other options
+
+## Is Correlation Valid for this Data Set?
+
+To review this quartet of variable combinations against the 6 assumptions:
+
+1.  **Linearity**: case I (var x1 and y1) and case III (x3 and y3) make the grade.
+
+2.  **Homoscedasticity**:
+
+3.  **Normality**:
+
+4.  **Interval or Ratio Scale**:
+
+5.  **Absence of Outliers**:
+
+6.  **Independence of Observations**:
 
 ## Conclusion
 
