@@ -43,6 +43,9 @@ theme_set(theme_classic())
 # chart parameters
 bar_col <- brewer.pal(n=9, name='YlGnBu')[9]
 
+# avoid scientific notation
+options(scipen = 999)
+
 ```
 
 ```{r get_data}
@@ -53,15 +56,29 @@ ans <- datasets::anscombe
 
 ## Intro
 
-Most people dealing with data recognize that **correlation does not imply causation**, and that if correlation between two variables is detected, further steps must be taken to determine if there is indeed a causal relationship.
+Most people recognize that **correlation does not imply causation**, and that if correlation between two variables is detected, further steps must be taken to determine if there is indeed a causal relationship.
 
-But before we even get to pinning down causation, I have noticed some important steps being skipped in the initial hunt for correlation. Correlation calculations are based on specific assumptions that, if not met, render the outcome of these calculations less than reliable. Proceeding without checking these assumptions can lead to erroneous conclusions and bad decisions.
+But before we even get to pinning down causation, there are some important steps to ensure that the correlation is valid. Correlation calculations are based on specific assumptions that, if not met, render the outcome of these calculations less than reliable. Proceeding without checking these assumptions can lead to erroneous conclusions and bad decisions.
 
-So let's talk about how we can deal with this situation and at least check to understand how solid the ground is we are standing on.
+So let's talk about how we can deal with this situation and at least check to understand how solid is the ground we are standing on.
+
+## The Point of Correlation
+
+A correlation coefficient is intended to **summarize the presence, strength and direction** of a relationship between two variables. This has a variety of applications, including **predictive analysis**. While you can't predict the value of one variable from another based on a correlation coefficient alone - you need linear regression (or related method) for that - you can form an expectation of how one variable will change (or not) based on changes in the other.
+
+For example, if you have a strong correlation between variables (say greater than 0.5) you can:
+
+-   make decisions based on expectation that as one variable rises, the other will as well, even in the absence of direct causality.
+-   take actions to influence one variable in hopes of influencing the other, possibly as a test of causality.
+-   use this information to include or exclude a variable in a statistical model, such as linear regression, causal impact, and more.
+
+If the correlation coefficient is not a reliable summary of the relationship, this can lead to **incorrect assumptions, wasted time and effort, and unexpected negative consequences** due to decision-making based on faulty information.
+
+So this is why it is important to understand when we can rely on a correlation calculation, and when we can't.
 
 ## The Assumptions
 
-There are different ways to calculate correlation, but by far the most common is the [Pearson Correlation Coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient). This is the formula that results in the famous 'r' value, ranging from 1 to -1, where 1 is perfect positive correlation (same direction), -1 is perfect negative correlation (opposite direction) and 0 is no correlation. Importantly, the accuracy of this calculation depends on several key assumptions, nicely described by chatGPT:
+There are different ways to calculate correlation, but by far the most common is the [Pearson Correlation Coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) for linear correlation. This is the formula that results in the famous 'r' value, ranging from 1 to -1, where 1 is perfect positive correlation (same direction), -1 is perfect negative correlation (opposite direction) and 0 is no correlation. Importantly, the accuracy of this calculation depends on **several key assumptions**, nicely described by chatGPT:
 
 "For the Pearson correlation coefficient to provide meaningful and reliable results, several key assumptions must be met:
 
@@ -81,9 +98,7 @@ When these assumptions are not met, the Pearson correlation coefficient might no
 
 ## Look at the Data
 
-First and foremost: look at the data. This is the beautifully illustrated with Anscombe's quartet, where each data set has the same Pearson's correlation value (among other summary metrics).
-
-[![Anscombe Quartet \[click for source\]](images/anscombe-quartet.png){width="600"}](https://matplotlib.org/stable/gallery/specialty_plots/anscombe.html)
+First and foremost: **look at the data**. This is the beautifully illustrated with **Anscombe's quartet**, where each data set has the same Pearson's correlation value (among other summary metrics).
 
 ```{r ans_functions}
 ## put functions here
@@ -93,10 +108,11 @@ ans_cor <- function(data, x, y, anum) {
   xes <- as.character(xe)[2] # convert to string for use in annotation
   yes <- as.character(ye)[2] 
   x_lab <- max(data[[xes]])*0.75 # set x location for annotation
-  y_lab <- max(data[[yes]]) # set y location for annotation
+  y_lab <- max(data[[yes]]*1.05) # set y location for annotation
   
   plot <- data %>% ggplot(aes(x=!!xe, y=!!ye))+geom_point()+
     geom_smooth(method='lm', se=FALSE)+
+    geom_smooth(method='loess', se=FALSE, color='green', linetype='dashed', size=0.8)+
     stat_cor()+
     annotate(geom='text',y=y_lab, x=x_lab, label=anum, size=8, color='red')
   plot
@@ -108,11 +124,13 @@ a3 <- ans_cor(data=ans, x=x3, y=y3, anum='III')
 a4 <- ans_cor(data=ans, x=x4, y=y4, anum='IV')
 ```
 
+Here are the Anscombe quartet charts - blue line is linear regression, green line is a loess smoothed line as reference. Ideally, it should track close to the blue line if linearity is strong.
+
 ```{r ans_qt}
 #| echo: false
 #| layout-ncol: 2 # for side-by-side charts
-#| fig-height: 4
-#| fig-width: 4
+#| fig-height: 3.5
+#| fig-width: 3.5
 
 a1
 a2
@@ -124,23 +142,29 @@ a4
 
 So clearly some reason for skepticism about whether the assumptions hold up in most of these cases. Let's take a closer look, one at a time:
 
-### Linearity
+### Linearity of relationship
 
 -   **criteria:** relationship between the two variables is linear, best-fit line through the data points is a straight line, as one variable increases or decreases, other variable does so in a consistent manner.
--   **method:** visual inspection
+-   **method:** visual inspection via scatterplot, preferably with linear regression line.
 -   **conclusion:**
-    -   I: somewhat.
-    -   II: no; at lower x values but then inverts.
-    -   III: yes - except outlier.
-    -   IV: no.
+    -   **I:** *somewhat*.
+    -   **II:** **no;** at lower x values but then inverts.
+    -   **III:** *yes* - except outlier.
+    -   **IV:** **no.**
+
+So right away that knocks out **cases II and IV**:
+
+-   Pearson correlation coefficient between variables is **NOT going to be a useful, reliable statistic** for understanding the relationship between the variables involved.
+
+Let's continue on with testing further assumptions focusing on cases I and III (with cases II and IV for additional reference).
 
 ### **Homoscedasticity**
 
 -   **criteria:** variances along the line of best fit remain similar as we move along the line; spread (variance) of data points around the line of best fit is roughly constant.
 -   **method:** residuals plot, Breusch-Pagan test
 
-```{r homoskedacitytest}
-homoSkedTest <- function(data, x, y, anum) {
+```{r homoscedasticitytest}
+homoScedTest <- function(data, x, y, anum) {
   xe <- enquo(x) # convert var reference
   ye <- enquo(y) # convert var reference
   xes <- as.character(xe)[2] # convert to string for use in annotation
@@ -163,32 +187,34 @@ homoSkedTest <- function(data, x, y, anum) {
       annotate(geom='text',y=y_lab, x=x_lab, label=anum, size=8, color='red')+
       labs(x='Fitted Values', y='Residuals', title='Residual Plot')+
       theme_minimal()
-  # Breusch-Pagan test for homoskedasticity
+  # Breusch-Pagan test for homoscedasticity
   bpt_results <- bptest(model)
   # put results in table
   bpt_row <- data.frame(case=anum, BP_statistic=bpt_results$statistic, p_value=bpt_results$p.value)
   row.names(bpt_row) <- anum
   bpt_row <- bpt_row %>% mutate(
-    conclusion=ifelse(p_value>0.05,"Homoskedasticity: null hypothesis holds.","Homoskedasticity issues: null hypotheis fails.")
+    conclusion=ifelse(p_value>0.05,"Homoscedasticity: null hypothesis holds.","Homoscedasticity issues: null hypotheis fails.")
   )
   # return results from plot and BP test
   list(plot=plot, bpt=bpt_results,bpt_row=bpt_row)
 }
-#anss <- homoSkedTest(ans, x1, y1, 'I')
+#anss <- homoScedTest(ans, x1, y1, 'I')
 #anss$plot
 #anss$bpt
 
 ```
 
 ```{r hskt_values}
-hskt_01 <- homoSkedTest(data=ans, x=x1, y=y1, anum='I')
-hskt_02 <- homoSkedTest(data=ans, x=x2, y=y2, anum='II')
-hskt_03 <- homoSkedTest(data=ans, x=x3, y=y3, anum='III')
-hskt_04 <- homoSkedTest(data=ans, x=x4, y=y4, anum='IV')
+hskt_01 <- homoScedTest(data=ans, x=x1, y=y1, anum='I')
+hskt_02 <- homoScedTest(data=ans, x=x2, y=y2, anum='II')
+hskt_03 <- homoScedTest(data=ans, x=x3, y=y3, anum='III')
+hskt_04 <- homoScedTest(data=ans, x=x4, y=y4, anum='IV')
 
 ```
 
 #### Residuals Plots
+
+Let's take a look at residuals plotted over the fitted values y volumes. In other words, using a simple linear regression model to predict the y-values based on x-values, what are the differences between the predicted values vs actual values provided? These are the residuals. In context of homoscedasticity, is there a **balanced pattern in the residuals,** OR are they changing (in particular growing) as we move to higher values of prediction?
 
 ```{r resid_plot}
 #| echo: false
@@ -202,9 +228,11 @@ hskt_03$plot
 hskt_04$plot
 ```
 
+None of these look very good from a residuals point of view. Case I is the closest although residuals seem to be increasing as we move along the y-axis. This is especially important if we want to understand if the correlation will hold over larger values.
+
 #### Breusch-Pagan Test
 
-make into table for more concise review
+Breusch-Pagan is a statistical test that can be used to assess homoscedasticity. The **NULL hypothesis is that the residuals have homoscedasticity** (consistency in residuals), and the test evaluates how well the dataset supports this hypothesis. A p-value is used to estimate the likelihood that the current dataset is consistent with the NULL hypothesis. Low p-value (\<0.05) indicates that the NULL hypothesis is not supported and the data is likely NOT homoscedastic and the assumption required for Pearson Correlation does not hold.
 
 ```{r bptr_table}
 bptr_table <- bind_rows(hskt_01$bpt_row, hskt_02$bpt_row, 
@@ -212,15 +240,20 @@ bptr_table <- bind_rows(hskt_01$bpt_row, hskt_02$bpt_row,
 gt(bptr_table)
 ```
 
--   **conclusion:**
-    -   there are obviously issues to some degree with all the datasets, except maybe case #1.
+Results here are interesting: NULL hypothesis of homoscedasticity is upheld, to varying degrees for each case, including case 2 where p-value = 1.
 
-    -   visual inspection of residuals charts appears more reliable than the Breusch-Pagan test in many cases.
+-   **Homoscedasticity conclusion:**
+    -   Based on residuals plots, there are clearly **issues with homoscedasticity** to varying degrees with all the datasets.
+
+    -   Visual inspection of residuals charts in these cases seems much more reliable than the Breusch-Pagan test.
+
+    -   **Small sample size** affects reliability of Breusch-Pagan test: at least 30 observations recommended for reliable BP test, and at least 50 is even better. Here we are dealing with only 11 observations.
+
+The homoscedasticity testing gives more reasons to be skeptical about the value of Pearson correlation for this data.
 
 ### **Normality**
 
--   **criteria:** Pearson correlation assumes that both variables are normally distributed.
-
+-   **criteria:** Pearson correlation assumes that each variable is normally distributed.
 -   **methodology:** QQ plot, Shapiro-Wilk test
 
 ```{r normal_test}
@@ -230,15 +263,20 @@ normalTest <- function(data, var, vars) {
   # convert variable name
   vare <- enquo(var)
   # convert to string for use with shapiro-wilk
-  vares <- as.character(vare)[[2]]
+  vare_char <- as.character(vare)[[2]]
   # create plot
   plot <- data %>% ggplot(aes(sample=!!vare))+stat_qq()+stat_qq_line()+
   ggtitle(paste0("Variable ",vars,": Q-Q Plot"))+
   theme_minimal()
   # check shapiro-wilk test
-  sw_test <- shapiro.test(data[[vares]])
+  sw_test <- shapiro.test(data[[vare_char]])
+  sw_test_row <- data.frame(dataset=vars,
+                            method=sw_test$method,
+                            w=sw_test$statistic,
+                            p_value=sw_test$p.value)
+  row.names(sw_test_row) <- vare_char
   # return plot and sw test results
-  list(plot=plot, sw_test=sw_test)
+  list(plot=plot, sw_test=sw_test, sw_test_row=sw_test_row)
 }
 ```
 
@@ -254,6 +292,10 @@ norm_04a <- normalTest(data=ans, var=y4, vars='y4')
 
 #### QQ Plots
 
+QQ (Quantile-Quantile) Plots show how well a given variable fits with a Normal distribution (can be used with other distributions, but we're focused on Normal). The key thing to know for interpretation is that **if the data follows a Normal distribution, the** **points will approximately lie along the line** shown in the chart. Large or consistent deviations from the line suggest deviations from the theoretical distribution, meaning that the Normality assumption required for Pearson correlation is not being met.
+
+There are a total of 8 variables in the dataset, but the first three (x1, x2, x3) have the same values, so there is just one Q-Q plot for these variables. So six plots cover all the variables.
+
 ```{r}
 #| echo: false
 #| layout-ncol: 2 # for side-by-side charts
@@ -268,18 +310,38 @@ norm_03a$plot
 norm_04a$plot
 ```
 
-#### Shapiro-Wilk
+From these six plots we see:
 
-set up for commentary and interpretation
+-   variables x1/x2/x3 & y1: looks like a fit with Normality for the most part.
+-   x4, y2: no
+-   y3, y4: yes, BUT with outliers that are cause for concern.
 
-```{r}
-norm_01$sw_test
-norm_04$sw_test
-norm_01a$sw_test
-norm_02a$sw_test
-norm_03a$sw_test
-norm_04a$sw_test
+#### Shapiro-Wilk Test
+
+So we have some initial conclusions from Q-Q plots, which provide a quick visual guide. Let's compare to results from Shapiro-Wilkes test.
+
+Shapiro-Wilkes works similar to to Breusch-Pagan test, but with reference to Normal distribution:
+
+-   NULL hypothesis is Normality, p-value indicates likelihood of the dataset being consistent with the Normality null hypothesis.
+-   Low p-value indicates lack of support for the NULL hypothesis and suggests data set may not fit Normal distribution.
+
+```{r shapirowilktbl}
+# create table of results from all shapiro-wilk tests
+shap_wilk_table <- bind_rows(norm_01$sw_test_row,
+                       norm_04$sw_test_row,
+                       norm_01a$sw_test_row,
+                       norm_02a$sw_test_row,
+                       norm_03a$sw_test_row,
+                       norm_04a$sw_test_row)
+shap_wilk_table <- shap_wilk_table %>% mutate(
+    conclusion=ifelse(p_value>0.05,"Norm. dist.: null hypothesis holds.","Norm. dist. issues: null hypotheis fails.")
+  )
+shap_wilk_table[] <- lapply(shap_wilk_table, function(x)
+  if(is.numeric(x)) round(x,4) else (x))
+shap_wilk_table %>% select(-method) %>% gt()
 ```
+
+Based on Shapiro-Wilk test, we have a mix of Normal and non-Normal distributions.
 
 ### **Interval or Ratio Scale**
 
@@ -300,3 +362,9 @@ notes:
 -   state if they are violated
 
 -   what to do if not met? other options
+
+## Conclusion
+
+This is a manufactured case that may not reflect common real-world data situations, but is hopefully useful in understanding how to think critically about Pearson correlation - and to use statistical methods to determine how applicable/reliable/representative Pearson correlation may be in any given situation.
+
+Beyond strength of applicability it hopefully highlights the importance of understanding correlation as a summary statistic that can only tell you so much about the relationships in the data. As such, it is best used within early stages of exploratory analysis, pointing the way toward further analysis, and not as a final conclusion.

@@ -198,11 +198,12 @@ cookieconsent.run({
    
   <ul>
   <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">Intro</a></li>
+  <li><a href="#the-point-of-correlation" id="toc-the-point-of-correlation" class="nav-link" data-scroll-target="#the-point-of-correlation">The Point of Correlation</a></li>
   <li><a href="#the-assumptions" id="toc-the-assumptions" class="nav-link" data-scroll-target="#the-assumptions">The Assumptions</a></li>
   <li><a href="#look-at-the-data" id="toc-look-at-the-data" class="nav-link" data-scroll-target="#look-at-the-data">Look at the Data</a></li>
   <li><a href="#checking-assumptions" id="toc-checking-assumptions" class="nav-link" data-scroll-target="#checking-assumptions">Checking Assumptions</a>
   <ul>
-  <li><a href="#linearity" id="toc-linearity" class="nav-link" data-scroll-target="#linearity">Linearity</a></li>
+  <li><a href="#linearity-of-relationship" id="toc-linearity-of-relationship" class="nav-link" data-scroll-target="#linearity-of-relationship">Linearity of relationship</a></li>
   <li><a href="#homoscedasticity" id="toc-homoscedasticity" class="nav-link" data-scroll-target="#homoscedasticity"><strong>Homoscedasticity</strong></a>
   <ul class="collapse">
   <li><a href="#residuals-plots" id="toc-residuals-plots" class="nav-link" data-scroll-target="#residuals-plots">Residuals Plots</a></li>
@@ -211,12 +212,13 @@ cookieconsent.run({
   <li><a href="#normality" id="toc-normality" class="nav-link" data-scroll-target="#normality"><strong>Normality</strong></a>
   <ul class="collapse">
   <li><a href="#qq-plots" id="toc-qq-plots" class="nav-link" data-scroll-target="#qq-plots">QQ Plots</a></li>
-  <li><a href="#shapiro-wilk" id="toc-shapiro-wilk" class="nav-link" data-scroll-target="#shapiro-wilk">Shapiro-Wilk</a></li>
+  <li><a href="#shapiro-wilkes" id="toc-shapiro-wilkes" class="nav-link" data-scroll-target="#shapiro-wilkes">Shapiro-Wilkes</a></li>
   </ul></li>
   <li><a href="#interval-or-ratio-scale" id="toc-interval-or-ratio-scale" class="nav-link" data-scroll-target="#interval-or-ratio-scale"><strong>Interval or Ratio Scale</strong></a></li>
   <li><a href="#absence-of-outliers" id="toc-absence-of-outliers" class="nav-link" data-scroll-target="#absence-of-outliers"><strong>Absence of Outliers</strong></a></li>
   <li><a href="#independence-of-observations" id="toc-independence-of-observations" class="nav-link" data-scroll-target="#independence-of-observations"><strong>Independence of Observations</strong></a></li>
   </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
 </nav>
@@ -257,7 +259,7 @@ cookieconsent.run({
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">March 3, 2024</p>
+      <p class="date-modified">March 17, 2024</p>
     </div>
   </div>
     
@@ -270,13 +272,25 @@ cookieconsent.run({
 
 <section id="intro" class="level2">
 <h2 class="anchored" data-anchor-id="intro">Intro</h2>
-<p>Most people dealing with data recognize that <strong>correlation does not imply causation</strong>, and that if correlation between two variables is detected, further steps must be taken to determine if there is indeed a causal relationship.</p>
-<p>But before we even get to pinning down causation, I have noticed some important steps being skipped in the initial hunt for correlation. Correlation calculations are based on specific assumptions that, if not met, render the outcome of these calculations less than reliable. Proceeding without checking these assumptions can lead to erroneous conclusions and bad decisions.</p>
-<p>So let’s talk about how we can deal with this situation and at least check to understand how solid the ground is we are standing on.</p>
+<p>Most people recognize that <strong>correlation does not imply causation</strong>, and that if correlation between two variables is detected, further steps must be taken to determine if there is indeed a causal relationship.</p>
+<p>But before we even get to pinning down causation, there are some important steps to ensure that the correlation is valid. Correlation calculations are based on specific assumptions that, if not met, render the outcome of these calculations less than reliable. Proceeding without checking these assumptions can lead to erroneous conclusions and bad decisions.</p>
+<p>So let’s talk about how we can deal with this situation and at least check to understand how solid is the ground we are standing on.</p>
+</section>
+<section id="the-point-of-correlation" class="level2">
+<h2 class="anchored" data-anchor-id="the-point-of-correlation">The Point of Correlation</h2>
+<p>A correlation coefficient is intended to <strong>summarize the presence, strength and direction</strong> of a relationship between two variables. This has a variety of applications, including <strong>predictive analysis</strong>. While you can’t predict the value of one variable from another based on a correlation coefficient alone - you need linear regression (or related method) for that - you can form an expectation of how one variable will change (or not) based on changes in the other.</p>
+<p>For example, if you have a strong correlation between variables (say greater than 0.5) you can:</p>
+<ul>
+<li>make decisions based on expectation that as one variable rises, the other will as well, even in the absence of direct causality.</li>
+<li>take actions to influence one variable in hopes of influencing the other, possibly as a test of causality.</li>
+<li>use this information to include or exclude a variable in a statistical model, such as linear regression, causal impact, and more.</li>
+</ul>
+<p>If the correlation coefficient is not a reliable summary of the relationship, this can lead to <strong>incorrect assumptions, wasted time and effort, and unexpected negative consequences</strong> due to decision-making based on faulty information.</p>
+<p>So this is why it is important to understand when we can rely on a correlation calculation, and when we can’t.</p>
 </section>
 <section id="the-assumptions" class="level2">
 <h2 class="anchored" data-anchor-id="the-assumptions">The Assumptions</h2>
-<p>There are different ways to calculate correlation, but by far the most common is the <a href="https://en.wikipedia.org/wiki/Pearson_correlation_coefficient">Pearson Correlation Coefficient</a>. This is the formula that results in the famous ‘r’ value, ranging from 1 to -1, where 1 is perfect positive correlation (same direction), -1 is perfect negative correlation (opposite direction) and 0 is no correlation. Importantly, the accuracy of this calculation depends on several key assumptions, nicely described by chatGPT:</p>
+<p>There are different ways to calculate correlation, but by far the most common is the <a href="https://en.wikipedia.org/wiki/Pearson_correlation_coefficient">Pearson Correlation Coefficient</a> for linear correlation. This is the formula that results in the famous ‘r’ value, ranging from 1 to -1, where 1 is perfect positive correlation (same direction), -1 is perfect negative correlation (opposite direction) and 0 is no correlation. Importantly, the accuracy of this calculation depends on <strong>several key assumptions</strong>, nicely described by chatGPT:</p>
 <p>“For the Pearson correlation coefficient to provide meaningful and reliable results, several key assumptions must be met:</p>
 <ol type="1">
 <li><p><strong>Linearity</strong>: The relationship between the two variables is linear, meaning the best-fit line through the data points is a straight line. This implies that as one variable increases or decreases, the other variable does so in a consistent manner.</p></li>
@@ -290,13 +304,7 @@ cookieconsent.run({
 </section>
 <section id="look-at-the-data" class="level2">
 <h2 class="anchored" data-anchor-id="look-at-the-data">Look at the Data</h2>
-<p>First and foremost: look at the data. This is the beautifully illustrated with Anscombe’s quartet, where each data set has the same Pearson’s correlation value (among other summary metrics).</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="https://matplotlib.org/stable/gallery/specialty_plots/anscombe.html"><img src="images/anscombe-quartet.png" class="img-fluid figure-img" width="600" alt="Anscombe Quartet [click for source]"></a></p>
-<figcaption>Anscombe Quartet [click for source]</figcaption>
-</figure>
-</div>
+<p>First and foremost: <strong>look at the data</strong>. This is the beautifully illustrated with <strong>Anscombe’s quartet</strong>, where each data set has the same Pearson’s correlation value (among other summary metrics).</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -307,39 +315,41 @@ cookieconsent.run({
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  xes <span class="ot">&lt;-</span> <span class="fu">as.character</span>(xe)[<span class="dv">2</span>] <span class="co"># convert to string for use in annotation</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  yes <span class="ot">&lt;-</span> <span class="fu">as.character</span>(ye)[<span class="dv">2</span>] </span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  x_lab <span class="ot">&lt;-</span> <span class="fu">max</span>(data[[xes]])<span class="sc">*</span><span class="fl">0.75</span> <span class="co"># set x location for annotation</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  y_lab <span class="ot">&lt;-</span> <span class="fu">max</span>(data[[yes]]) <span class="co"># set y location for annotation</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  y_lab <span class="ot">&lt;-</span> <span class="fu">max</span>(data[[yes]]<span class="sc">*</span><span class="fl">1.05</span>) <span class="co"># set y location for annotation</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="sc">!!</span>xe, <span class="at">y=</span><span class="sc">!!</span>ye))<span class="sc">+</span><span class="fu">geom_point</span>()<span class="sc">+</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">se=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_cor</span>()<span class="sc">+</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">annotate</span>(<span class="at">geom=</span><span class="st">'text'</span>,<span class="at">y=</span>y_lab, <span class="at">x=</span>x_lab, <span class="at">label=</span>anum, <span class="at">size=</span><span class="dv">8</span>, <span class="at">color=</span><span class="st">'red'</span>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  plot</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># run functions to get info</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>a1 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x1, <span class="at">y=</span>y1, <span class="at">anum=</span><span class="st">'I'</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>a2 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x2, <span class="at">y=</span>y2, <span class="at">anum=</span><span class="st">'II'</span>)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>a3 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x3, <span class="at">y=</span>y3, <span class="at">anum=</span><span class="st">'III'</span>)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>a4 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x4, <span class="at">y=</span>y4, <span class="at">anum=</span><span class="st">'IV'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'loess'</span>, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">color=</span><span class="st">'green'</span>, <span class="at">linetype=</span><span class="st">'dashed'</span>, <span class="at">size=</span><span class="fl">0.8</span>)<span class="sc">+</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_cor</span>()<span class="sc">+</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">annotate</span>(<span class="at">geom=</span><span class="st">'text'</span>,<span class="at">y=</span>y_lab, <span class="at">x=</span>x_lab, <span class="at">label=</span>anum, <span class="at">size=</span><span class="dv">8</span>, <span class="at">color=</span><span class="st">'red'</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  plot</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># run functions to get info</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>a1 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x1, <span class="at">y=</span>y1, <span class="at">anum=</span><span class="st">'I'</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>a2 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x2, <span class="at">y=</span>y2, <span class="at">anum=</span><span class="st">'II'</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>a3 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x3, <span class="at">y=</span>y3, <span class="at">anum=</span><span class="st">'III'</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>a4 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x4, <span class="at">y=</span>y4, <span class="at">anum=</span><span class="st">'IV'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<p>Here are the Anscombe quartet charts - blue line is linear regression, green line is a loess smoothed line as reference. Ideally, it should track close to the blue line if linearity is strong.</p>
 <div>
 
 </div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="index_files/figure-html/ans_qt-1.png" class="img-fluid" width="384"></p>
+<p><img src="index_files/figure-html/ans_qt-1.png" class="img-fluid" width="336"></p>
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="index_files/figure-html/ans_qt-2.png" class="img-fluid" width="384"></p>
+<p><img src="index_files/figure-html/ans_qt-2.png" class="img-fluid" width="336"></p>
 </div>
 </div>
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="index_files/figure-html/ans_qt-3.png" class="img-fluid" width="384"></p>
+<p><img src="index_files/figure-html/ans_qt-3.png" class="img-fluid" width="336"></p>
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="index_files/figure-html/ans_qt-4.png" class="img-fluid" width="384"></p>
+<p><img src="index_files/figure-html/ans_qt-4.png" class="img-fluid" width="336"></p>
 </div>
 </div>
 </div>
@@ -347,19 +357,24 @@ cookieconsent.run({
 <section id="checking-assumptions" class="level2">
 <h2 class="anchored" data-anchor-id="checking-assumptions">Checking Assumptions</h2>
 <p>So clearly some reason for skepticism about whether the assumptions hold up in most of these cases. Let’s take a closer look, one at a time:</p>
-<section id="linearity" class="level3">
-<h3 class="anchored" data-anchor-id="linearity">Linearity</h3>
+<section id="linearity-of-relationship" class="level3">
+<h3 class="anchored" data-anchor-id="linearity-of-relationship">Linearity of relationship</h3>
 <ul>
 <li><strong>criteria:</strong> relationship between the two variables is linear, best-fit line through the data points is a straight line, as one variable increases or decreases, other variable does so in a consistent manner.</li>
-<li><strong>method:</strong> visual inspection</li>
+<li><strong>method:</strong> visual inspection via scatterplot, preferably with linear regression line.</li>
 <li><strong>conclusion:</strong>
 <ul>
-<li>I: somewhat.</li>
-<li>II: no; at lower x values but then inverts.</li>
-<li>III: yes - except outlier.</li>
-<li>IV: no.</li>
+<li><strong>I:</strong> <em>somewhat</em>.</li>
+<li><strong>II:</strong> <strong>no;</strong> at lower x values but then inverts.</li>
+<li><strong>III:</strong> <em>yes</em> - except outlier.</li>
+<li><strong>IV:</strong> <strong>no.</strong></li>
 </ul></li>
 </ul>
+<p>So right away that knocks out <strong>cases II and IV</strong>:</p>
+<ul>
+<li>Pearson correlation coefficient between variables is <strong>NOT going to be a useful, reliable statistic</strong> for understanding the relationship between the variables involved.</li>
+</ul>
+<p>Let’s continue on with testing further assumptions focusing on cases I and III (with cases II and IV for additional reference).</p>
 </section>
 <section id="homoscedasticity" class="level3">
 <h3 class="anchored" data-anchor-id="homoscedasticity"><strong>Homoscedasticity</strong></h3>
@@ -370,7 +385,7 @@ cookieconsent.run({
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>homoSkedTest <span class="ot">&lt;-</span> <span class="cf">function</span>(data, x, y, anum) {</span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>homoScedTest <span class="ot">&lt;-</span> <span class="cf">function</span>(data, x, y, anum) {</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  xe <span class="ot">&lt;-</span> <span class="fu">enquo</span>(x) <span class="co"># convert var reference</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  ye <span class="ot">&lt;-</span> <span class="fu">enquo</span>(y) <span class="co"># convert var reference</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  xes <span class="ot">&lt;-</span> <span class="fu">as.character</span>(xe)[<span class="dv">2</span>] <span class="co"># convert to string for use in annotation</span></span>
@@ -393,18 +408,18 @@ cookieconsent.run({
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">annotate</span>(<span class="at">geom=</span><span class="st">'text'</span>,<span class="at">y=</span>y_lab, <span class="at">x=</span>x_lab, <span class="at">label=</span>anum, <span class="at">size=</span><span class="dv">8</span>, <span class="at">color=</span><span class="st">'red'</span>)<span class="sc">+</span></span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">labs</span>(<span class="at">x=</span><span class="st">'Fitted Values'</span>, <span class="at">y=</span><span class="st">'Residuals'</span>, <span class="at">title=</span><span class="st">'Residual Plot'</span>)<span class="sc">+</span></span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_minimal</span>()</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Breusch-Pagan test for homoskedasticity</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Breusch-Pagan test for homoscedasticity</span></span>
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  bpt_results <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model)</span>
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># put results in table</span></span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  bpt_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">case=</span>anum, <span class="at">BP_statistic=</span>bpt_results<span class="sc">$</span>statistic, <span class="at">p_value=</span>bpt_results<span class="sc">$</span>p.value)</span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row.names</span>(bpt_row) <span class="ot">&lt;-</span> anum</span>
 <span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  bpt_row <span class="ot">&lt;-</span> bpt_row <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">conclusion=</span><span class="fu">ifelse</span>(p_value<span class="sc">&gt;</span><span class="fl">0.05</span>,<span class="st">"Homoskedasticity: null hypothesis holds."</span>,<span class="st">"Homoskedasticity issues: null hypotheis fails."</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">conclusion=</span><span class="fu">ifelse</span>(p_value<span class="sc">&gt;</span><span class="fl">0.05</span>,<span class="st">"Homoscedasticity: null hypothesis holds."</span>,<span class="st">"Homoscedasticity issues: null hypotheis fails."</span>)</span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return results from plot and BP test</span></span>
 <span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">plot=</span>plot, <span class="at">bpt=</span>bpt_results,<span class="at">bpt_row=</span>bpt_row)</span>
 <span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co">#anss &lt;- homoSkedTest(ans, x1, y1, 'I')</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co">#anss &lt;- homoScedTest(ans, x1, y1, 'I')</span></span>
 <span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co">#anss$plot</span></span>
 <span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="co">#anss$bpt</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -412,14 +427,15 @@ cookieconsent.run({
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hskt_01 <span class="ot">&lt;-</span> <span class="fu">homoSkedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x1, <span class="at">y=</span>y1, <span class="at">anum=</span><span class="st">'I'</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>hskt_02 <span class="ot">&lt;-</span> <span class="fu">homoSkedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x2, <span class="at">y=</span>y2, <span class="at">anum=</span><span class="st">'II'</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>hskt_03 <span class="ot">&lt;-</span> <span class="fu">homoSkedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x3, <span class="at">y=</span>y3, <span class="at">anum=</span><span class="st">'III'</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>hskt_04 <span class="ot">&lt;-</span> <span class="fu">homoSkedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x4, <span class="at">y=</span>y4, <span class="at">anum=</span><span class="st">'IV'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hskt_01 <span class="ot">&lt;-</span> <span class="fu">homoScedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x1, <span class="at">y=</span>y1, <span class="at">anum=</span><span class="st">'I'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>hskt_02 <span class="ot">&lt;-</span> <span class="fu">homoScedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x2, <span class="at">y=</span>y2, <span class="at">anum=</span><span class="st">'II'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>hskt_03 <span class="ot">&lt;-</span> <span class="fu">homoScedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x3, <span class="at">y=</span>y3, <span class="at">anum=</span><span class="st">'III'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>hskt_04 <span class="ot">&lt;-</span> <span class="fu">homoScedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x4, <span class="at">y=</span>y4, <span class="at">anum=</span><span class="st">'IV'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <section id="residuals-plots" class="level4">
 <h4 class="anchored" data-anchor-id="residuals-plots">Residuals Plots</h4>
+<p>Let’s take a look at residuals plotted over the fitted values y volumes. In other words, using a simple linear regression model to predict the y-values based on x-values, what are the differences between the predicted values vs actual values provided? These are the residuals. In context of homoscedasticity, is there a <strong>balanced pattern in the residuals,</strong> OR are they changing (in particular growing) as we move to higher values of prediction?</p>
 <div>
 
 </div>
@@ -441,10 +457,11 @@ cookieconsent.run({
 </div>
 </div>
 </div>
+<p>None of these look very good from a residuals point of view. Case I is the closest although residuals seem to be increasing as we move along the y-axis. This is especially important if we want to understand if the correlation will hold over larger values.</p>
 </section>
 <section id="breusch-pagan-test" class="level4">
 <h4 class="anchored" data-anchor-id="breusch-pagan-test">Breusch-Pagan Test</h4>
-<p>make into table for more concise review</p>
+<p>Breusch-Pagan is a statistical test that can be used to assess homoscedasticity. The <strong>NULL hypothesis is that the residuals have homoscedasticity</strong> (consistency in residuals), and the test evaluates how well the dataset supports this hypothesis. A p-value is used to estimate the likelihood that the current dataset is consistent with the NULL hypothesis. Low p-value (&lt;0.05) indicates that the NULL hypothesis is not supported and the data is likely NOT homoscedastic and the assumption required for Pearson Correlation does not hold.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -453,23 +470,23 @@ cookieconsent.run({
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(bptr_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="uziinkbwxw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#uziinkbwxw table {
+<div id="iyutwcwrjo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#iyutwcwrjo table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#uziinkbwxw thead, #uziinkbwxw tbody, #uziinkbwxw tfoot, #uziinkbwxw tr, #uziinkbwxw td, #uziinkbwxw th {
+#iyutwcwrjo thead, #iyutwcwrjo tbody, #iyutwcwrjo tfoot, #iyutwcwrjo tr, #iyutwcwrjo td, #iyutwcwrjo th {
   border-style: none;
 }
 
-#uziinkbwxw p {
+#iyutwcwrjo p {
   margin: 0;
   padding: 0;
 }
 
-#uziinkbwxw .gt_table {
+#iyutwcwrjo .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -495,12 +512,12 @@ cookieconsent.run({
   border-left-color: #D3D3D3;
 }
 
-#uziinkbwxw .gt_caption {
+#iyutwcwrjo .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#uziinkbwxw .gt_title {
+#iyutwcwrjo .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -512,7 +529,7 @@ cookieconsent.run({
   border-bottom-width: 0;
 }
 
-#uziinkbwxw .gt_subtitle {
+#iyutwcwrjo .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -524,7 +541,7 @@ cookieconsent.run({
   border-top-width: 0;
 }
 
-#uziinkbwxw .gt_heading {
+#iyutwcwrjo .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -536,13 +553,13 @@ cookieconsent.run({
   border-right-color: #D3D3D3;
 }
 
-#uziinkbwxw .gt_bottom_border {
+#iyutwcwrjo .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#uziinkbwxw .gt_col_headings {
+#iyutwcwrjo .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -557,7 +574,7 @@ cookieconsent.run({
   border-right-color: #D3D3D3;
 }
 
-#uziinkbwxw .gt_col_heading {
+#iyutwcwrjo .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -577,7 +594,7 @@ cookieconsent.run({
   overflow-x: hidden;
 }
 
-#uziinkbwxw .gt_column_spanner_outer {
+#iyutwcwrjo .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -589,15 +606,15 @@ cookieconsent.run({
   padding-right: 4px;
 }
 
-#uziinkbwxw .gt_column_spanner_outer:first-child {
+#iyutwcwrjo .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#uziinkbwxw .gt_column_spanner_outer:last-child {
+#iyutwcwrjo .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#uziinkbwxw .gt_column_spanner {
+#iyutwcwrjo .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -609,11 +626,11 @@ cookieconsent.run({
   width: 100%;
 }
 
-#uziinkbwxw .gt_spanner_row {
+#iyutwcwrjo .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#uziinkbwxw .gt_group_heading {
+#iyutwcwrjo .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -639,7 +656,7 @@ cookieconsent.run({
   text-align: left;
 }
 
-#uziinkbwxw .gt_empty_group_heading {
+#iyutwcwrjo .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -654,15 +671,15 @@ cookieconsent.run({
   vertical-align: middle;
 }
 
-#uziinkbwxw .gt_from_md > :first-child {
+#iyutwcwrjo .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#uziinkbwxw .gt_from_md > :last-child {
+#iyutwcwrjo .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#uziinkbwxw .gt_row {
+#iyutwcwrjo .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -681,7 +698,7 @@ cookieconsent.run({
   overflow-x: hidden;
 }
 
-#uziinkbwxw .gt_stub {
+#iyutwcwrjo .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -694,7 +711,7 @@ cookieconsent.run({
   padding-right: 5px;
 }
 
-#uziinkbwxw .gt_stub_row_group {
+#iyutwcwrjo .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -708,15 +725,15 @@ cookieconsent.run({
   vertical-align: top;
 }
 
-#uziinkbwxw .gt_row_group_first td {
+#iyutwcwrjo .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#uziinkbwxw .gt_row_group_first th {
+#iyutwcwrjo .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#uziinkbwxw .gt_summary_row {
+#iyutwcwrjo .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -726,16 +743,16 @@ cookieconsent.run({
   padding-right: 5px;
 }
 
-#uziinkbwxw .gt_first_summary_row {
+#iyutwcwrjo .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#uziinkbwxw .gt_first_summary_row.thick {
+#iyutwcwrjo .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#uziinkbwxw .gt_last_summary_row {
+#iyutwcwrjo .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -745,7 +762,7 @@ cookieconsent.run({
   border-bottom-color: #D3D3D3;
 }
 
-#uziinkbwxw .gt_grand_summary_row {
+#iyutwcwrjo .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -755,7 +772,7 @@ cookieconsent.run({
   padding-right: 5px;
 }
 
-#uziinkbwxw .gt_first_grand_summary_row {
+#iyutwcwrjo .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -765,7 +782,7 @@ cookieconsent.run({
   border-top-color: #D3D3D3;
 }
 
-#uziinkbwxw .gt_last_grand_summary_row_top {
+#iyutwcwrjo .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -775,11 +792,11 @@ cookieconsent.run({
   border-bottom-color: #D3D3D3;
 }
 
-#uziinkbwxw .gt_striped {
+#iyutwcwrjo .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#uziinkbwxw .gt_table_body {
+#iyutwcwrjo .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -788,7 +805,7 @@ cookieconsent.run({
   border-bottom-color: #D3D3D3;
 }
 
-#uziinkbwxw .gt_footnotes {
+#iyutwcwrjo .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -802,7 +819,7 @@ cookieconsent.run({
   border-right-color: #D3D3D3;
 }
 
-#uziinkbwxw .gt_footnote {
+#iyutwcwrjo .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -811,7 +828,7 @@ cookieconsent.run({
   padding-right: 5px;
 }
 
-#uziinkbwxw .gt_sourcenotes {
+#iyutwcwrjo .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -825,7 +842,7 @@ cookieconsent.run({
   border-right-color: #D3D3D3;
 }
 
-#uziinkbwxw .gt_sourcenote {
+#iyutwcwrjo .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -833,63 +850,63 @@ cookieconsent.run({
   padding-right: 5px;
 }
 
-#uziinkbwxw .gt_left {
+#iyutwcwrjo .gt_left {
   text-align: left;
 }
 
-#uziinkbwxw .gt_center {
+#iyutwcwrjo .gt_center {
   text-align: center;
 }
 
-#uziinkbwxw .gt_right {
+#iyutwcwrjo .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#uziinkbwxw .gt_font_normal {
+#iyutwcwrjo .gt_font_normal {
   font-weight: normal;
 }
 
-#uziinkbwxw .gt_font_bold {
+#iyutwcwrjo .gt_font_bold {
   font-weight: bold;
 }
 
-#uziinkbwxw .gt_font_italic {
+#iyutwcwrjo .gt_font_italic {
   font-style: italic;
 }
 
-#uziinkbwxw .gt_super {
+#iyutwcwrjo .gt_super {
   font-size: 65%;
 }
 
-#uziinkbwxw .gt_footnote_marks {
+#iyutwcwrjo .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#uziinkbwxw .gt_asterisk {
+#iyutwcwrjo .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#uziinkbwxw .gt_indent_1 {
+#iyutwcwrjo .gt_indent_1 {
   text-indent: 5px;
 }
 
-#uziinkbwxw .gt_indent_2 {
+#iyutwcwrjo .gt_indent_2 {
   text-indent: 10px;
 }
 
-#uziinkbwxw .gt_indent_3 {
+#iyutwcwrjo .gt_indent_3 {
   text-indent: 15px;
 }
 
-#uziinkbwxw .gt_indent_4 {
+#iyutwcwrjo .gt_indent_4 {
   text-indent: 20px;
 }
 
-#uziinkbwxw .gt_indent_5 {
+#iyutwcwrjo .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -908,25 +925,25 @@ cookieconsent.run({
 <td class="gt_row gt_left" headers="case">I</td>
 <td class="gt_row gt_right" headers="BP_statistic">6.553076e-01</td>
 <td class="gt_row gt_right" headers="p_value">0.41822146</td>
-<td class="gt_row gt_left" headers="conclusion">Homoskedasticity: null hypothesis holds.</td>
+<td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="case">II</td>
 <td class="gt_row gt_right" headers="BP_statistic">2.835517e-30</td>
 <td class="gt_row gt_right" headers="p_value">1.00000000</td>
-<td class="gt_row gt_left" headers="conclusion">Homoskedasticity: null hypothesis holds.</td>
+<td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="case">III</td>
 <td class="gt_row gt_right" headers="BP_statistic">2.723417e+00</td>
 <td class="gt_row gt_right" headers="p_value">0.09888612</td>
-<td class="gt_row gt_left" headers="conclusion">Homoskedasticity: null hypothesis holds.</td>
+<td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="case">IV</td>
 <td class="gt_row gt_right" headers="BP_statistic">1.182091e+00</td>
 <td class="gt_row gt_right" headers="p_value">0.27693071</td>
-<td class="gt_row gt_left" headers="conclusion">Homoskedasticity: null hypothesis holds.</td>
+<td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
 </tr>
 </tbody>
 </table>
@@ -934,20 +951,23 @@ cookieconsent.run({
 </div>
 </div>
 </div>
+<p>Results here are interesting: NULL hypothesis of homoscedasticity is upheld, to varying degrees for each case, including case 2 where p-value = 1.</p>
 <ul>
-<li><strong>conclusion:</strong>
+<li><strong>Homoscedasticity conclusion:</strong>
 <ul>
-<li><p>there are obviously issues to some degree with all the datasets, except maybe case #1.</p></li>
-<li><p>visual inspection of residuals charts appears more reliable than the Breusch-Pagan test in many cases.</p></li>
+<li><p>Based on residuals plots, there are clearly <strong>issues with homoscedasticity</strong> to varying degrees with all the datasets.</p></li>
+<li><p>Visual inspection of residuals charts in these cases seems much more reliable than the Breusch-Pagan test.</p></li>
+<li><p><strong>Small sample size</strong> affects reliability of Breusch-Pagan test: at least 30 observations recommended for reliable BP test, and at least 50 is even better. Here we are dealing with only 11 observations.</p></li>
 </ul></li>
 </ul>
+<p>The homoscedasticity testing gives more reasons to be skeptical about the value of Pearson correlation for this data.</p>
 </section>
 </section>
 <section id="normality" class="level3">
 <h3 class="anchored" data-anchor-id="normality"><strong>Normality</strong></h3>
 <ul>
-<li><p><strong>criteria:</strong> Pearson correlation assumes that both variables are normally distributed.</p></li>
-<li><p><strong>methodology:</strong> QQ plot, Shapiro-Wilk test</p></li>
+<li><strong>criteria:</strong> Pearson correlation assumes that each variable is normally distributed.</li>
+<li><strong>methodology:</strong> QQ plot, Shapiro-Wilk test</li>
 </ul>
 <div class="cell">
 <details class="code-fold">
@@ -984,6 +1004,8 @@ cookieconsent.run({
 </div>
 <section id="qq-plots" class="level4">
 <h4 class="anchored" data-anchor-id="qq-plots">QQ Plots</h4>
+<p>QQ (Quantile-Quantile) Plots show how well a given variable fits with a Normal distribution (can be used with other distributions, but we’re focused on Normal). The key thing to know for interpretation is that <strong>if the data follows a Normal distribution, the</strong> <strong>points will approximately lie along the line</strong> shown in the chart. Large or consistent deviations from the line suggest deviations from the theoretical distribution, meaning that the Normality assumption required for Pearson correlation is not being met.</p>
+<p>There are a total of 8 variables in the dataset, but the first three (x1, x2, x3) have the same values, so there is just one Q-Q plot for these variables. So six plots cover all the variables.</p>
 <div>
 
 </div>
@@ -1014,8 +1036,8 @@ cookieconsent.run({
 </div>
 </div>
 </section>
-<section id="shapiro-wilk" class="level4">
-<h4 class="anchored" data-anchor-id="shapiro-wilk">Shapiro-Wilk</h4>
+<section id="shapiro-wilkes" class="level4">
+<h4 class="anchored" data-anchor-id="shapiro-wilkes">Shapiro-Wilkes</h4>
 <p>set up for commentary and interpretation</p>
 <div class="cell">
 <details class="code-fold">
@@ -1104,9 +1126,14 @@ W = 0.87536, p-value = 0.09081</code></pre>
 <li><p>state if they are violated</p></li>
 <li><p>what to do if not met? other options</p></li>
 </ul>
-
-
 </section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This is a manufactured case that may not reflect common real-world data situations, but is hopefully useful in understanding how to think critically about Pearson correlation - and to use statistical methods to determine how applicable/reliable/representative Pearson correlation may be in any given situation.</p>
+<p>Beyond strength of applicability it hopefully highlights the importance of understanding correlation as a summary statistic that can only tell you so much about the relationships in the data. As such, it is best used within early stages of exploratory analysis, pointing the way toward further analysis, and not as a final conclusion.</p>
+
+
 </section>
 
 </main> <!-- /main -->
