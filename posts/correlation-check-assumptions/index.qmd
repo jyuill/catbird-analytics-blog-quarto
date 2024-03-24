@@ -324,7 +324,7 @@ So we have some initial conclusions from Q-Q plots, which provide a quick visual
 
 Shapiro-Wilkes works similar to to Breusch-Pagan test, but with reference to Normal distribution:
 
--   NULL hypothesis is Normality, p-value indicates likelihood of the dataset being consistent with the Normality null hypothesis.
+-   **NULL hypothesis is Normality**, p-value indicates likelihood of the dataset being consistent with the Normality null hypothesis.
 -   Low p-value indicates lack of support for the NULL hypothesis and suggests data set may not fit Normal distribution.
 
 ```{r shapirowilktbl}
