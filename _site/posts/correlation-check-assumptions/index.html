@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="John Yuill">
-<meta name="dcterms.date" content="2024-03-03">
+<meta name="dcterms.date" content="2024-03-24">
 <meta name="description" content="Calculating a correlation coefficient aka R value does not guarantee that the number is valid. Correlation calculation are based on key assumptions that should be checked to ensure that the linear correlation is providing relevant indication of relationship between two variables.">
 
 <title>Catbird Analytics - Correlation is NOT Causation…It May Not Even Be Correlation</title>
@@ -137,6 +137,7 @@ cookieconsent.run({
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Catbird Analytics - Correlation is NOT Causation…It May Not Even Be Correlation">
 <meta property="og:description" content="">
+<meta property="og:image" content="img/resid-plot.png">
 <meta property="og:site_name" content="Catbird Analytics">
 </head>
 
@@ -199,7 +200,7 @@ cookieconsent.run({
   <ul>
   <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">Intro</a></li>
   <li><a href="#the-point-of-correlation" id="toc-the-point-of-correlation" class="nav-link" data-scroll-target="#the-point-of-correlation">The Point of Correlation</a></li>
-  <li><a href="#the-assumptions" id="toc-the-assumptions" class="nav-link" data-scroll-target="#the-assumptions">The Assumptions</a></li>
+  <li><a href="#the-six-assumptions" id="toc-the-six-assumptions" class="nav-link" data-scroll-target="#the-six-assumptions">The Six Assumptions</a></li>
   <li><a href="#look-at-the-data" id="toc-look-at-the-data" class="nav-link" data-scroll-target="#look-at-the-data">Look at the Data</a></li>
   <li><a href="#checking-assumptions" id="toc-checking-assumptions" class="nav-link" data-scroll-target="#checking-assumptions">Checking Assumptions</a>
   <ul>
@@ -212,12 +213,16 @@ cookieconsent.run({
   <li><a href="#normality" id="toc-normality" class="nav-link" data-scroll-target="#normality"><strong>Normality</strong></a>
   <ul class="collapse">
   <li><a href="#qq-plots" id="toc-qq-plots" class="nav-link" data-scroll-target="#qq-plots">QQ Plots</a></li>
-  <li><a href="#shapiro-wilkes" id="toc-shapiro-wilkes" class="nav-link" data-scroll-target="#shapiro-wilkes">Shapiro-Wilkes</a></li>
+  <li><a href="#shapiro-wilk-test" id="toc-shapiro-wilk-test" class="nav-link" data-scroll-target="#shapiro-wilk-test">Shapiro-Wilk Test</a></li>
   </ul></li>
   <li><a href="#interval-or-ratio-scale" id="toc-interval-or-ratio-scale" class="nav-link" data-scroll-target="#interval-or-ratio-scale"><strong>Interval or Ratio Scale</strong></a></li>
-  <li><a href="#absence-of-outliers" id="toc-absence-of-outliers" class="nav-link" data-scroll-target="#absence-of-outliers"><strong>Absence of Outliers</strong></a></li>
+  <li><a href="#absence-of-outliers" id="toc-absence-of-outliers" class="nav-link" data-scroll-target="#absence-of-outliers"><strong>Absence of Outliers</strong></a>
+  <ul class="collapse">
+  <li><a href="#boxplot" id="toc-boxplot" class="nav-link" data-scroll-target="#boxplot">Boxplot</a></li>
+  </ul></li>
   <li><a href="#independence-of-observations" id="toc-independence-of-observations" class="nav-link" data-scroll-target="#independence-of-observations"><strong>Independence of Observations</strong></a></li>
   </ul></li>
+  <li><a href="#is-correlation-valid-for-this-data-set" id="toc-is-correlation-valid-for-this-data-set" class="nav-link" data-scroll-target="#is-correlation-valid-for-this-data-set">Is Correlation Valid for this Data Set?</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
@@ -235,6 +240,7 @@ cookieconsent.run({
   <div class="quarto-categories">
     <div class="quarto-category">analysis</div>
     <div class="quarto-category">r</div>
+    <div class="quarto-category">statistics</div>
   </div>
   </div>
 
@@ -252,14 +258,14 @@ cookieconsent.run({
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 3, 2024</p>
+      <p class="date">March 24, 2024</p>
     </div>
   </div>
   
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">March 17, 2024</p>
+      <p class="date-modified">March 24, 2024</p>
     </div>
   </div>
     
@@ -273,8 +279,8 @@ cookieconsent.run({
 <section id="intro" class="level2">
 <h2 class="anchored" data-anchor-id="intro">Intro</h2>
 <p>Most people recognize that <strong>correlation does not imply causation</strong>, and that if correlation between two variables is detected, further steps must be taken to determine if there is indeed a causal relationship.</p>
-<p>But before we even get to pinning down causation, there are some important steps to ensure that the correlation is valid. Correlation calculations are based on specific assumptions that, if not met, render the outcome of these calculations less than reliable. Proceeding without checking these assumptions can lead to erroneous conclusions and bad decisions.</p>
-<p>So let’s talk about how we can deal with this situation and at least check to understand how solid is the ground we are standing on.</p>
+<p>But before we even get to pinning down causation, there are <strong>important</strong> <strong>steps to ensure that the correlation is valid</strong>. Correlation calculations are based on specific assumptions that, if not met, render the outcome of these calculations less than reliable. Proceeding without checking these assumptions can lead to erroneous conclusions and bad decisions.</p>
+<p>So let’s talk about how we can dig into these assumptions and check how solid the ground is that we are standing on when referencing a correlation coefficient.</p>
 </section>
 <section id="the-point-of-correlation" class="level2">
 <h2 class="anchored" data-anchor-id="the-point-of-correlation">The Point of Correlation</h2>
@@ -288,8 +294,8 @@ cookieconsent.run({
 <p>If the correlation coefficient is not a reliable summary of the relationship, this can lead to <strong>incorrect assumptions, wasted time and effort, and unexpected negative consequences</strong> due to decision-making based on faulty information.</p>
 <p>So this is why it is important to understand when we can rely on a correlation calculation, and when we can’t.</p>
 </section>
-<section id="the-assumptions" class="level2">
-<h2 class="anchored" data-anchor-id="the-assumptions">The Assumptions</h2>
+<section id="the-six-assumptions" class="level2">
+<h2 class="anchored" data-anchor-id="the-six-assumptions">The Six Assumptions</h2>
 <p>There are different ways to calculate correlation, but by far the most common is the <a href="https://en.wikipedia.org/wiki/Pearson_correlation_coefficient">Pearson Correlation Coefficient</a> for linear correlation. This is the formula that results in the famous ‘r’ value, ranging from 1 to -1, where 1 is perfect positive correlation (same direction), -1 is perfect negative correlation (opposite direction) and 0 is no correlation. Importantly, the accuracy of this calculation depends on <strong>several key assumptions</strong>, nicely described by chatGPT:</p>
 <p>“For the Pearson correlation coefficient to provide meaningful and reliable results, several key assumptions must be met:</p>
 <ol type="1">
@@ -374,7 +380,7 @@ cookieconsent.run({
 <ul>
 <li>Pearson correlation coefficient between variables is <strong>NOT going to be a useful, reliable statistic</strong> for understanding the relationship between the variables involved.</li>
 </ul>
-<p>Let’s continue on with testing further assumptions focusing on cases I and III (with cases II and IV for additional reference).</p>
+<p>Let’s continue on with testing further assumptions <strong>focusing on cases I and III</strong> (with cases II and IV for additional reference).</p>
 </section>
 <section id="homoscedasticity" class="level3">
 <h3 class="anchored" data-anchor-id="homoscedasticity"><strong>Homoscedasticity</strong></h3>
@@ -467,26 +473,28 @@ cookieconsent.run({
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>bptr_table <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(hskt_01<span class="sc">$</span>bpt_row, hskt_02<span class="sc">$</span>bpt_row, </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                        hskt_03<span class="sc">$</span>bpt_row, hskt_04<span class="sc">$</span>bpt_row)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(bptr_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>bptr_table[] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(bptr_table, <span class="cf">function</span>(x)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">is.numeric</span>(x)) <span class="fu">round</span>(x,<span class="dv">2</span>) <span class="cf">else</span> (x))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(bptr_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="iyutwcwrjo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#iyutwcwrjo table {
+<div id="ydtrxseibc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ydtrxseibc table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#iyutwcwrjo thead, #iyutwcwrjo tbody, #iyutwcwrjo tfoot, #iyutwcwrjo tr, #iyutwcwrjo td, #iyutwcwrjo th {
+#ydtrxseibc thead, #ydtrxseibc tbody, #ydtrxseibc tfoot, #ydtrxseibc tr, #ydtrxseibc td, #ydtrxseibc th {
   border-style: none;
 }
 
-#iyutwcwrjo p {
+#ydtrxseibc p {
   margin: 0;
   padding: 0;
 }
 
-#iyutwcwrjo .gt_table {
+#ydtrxseibc .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -512,12 +520,12 @@ cookieconsent.run({
   border-left-color: #D3D3D3;
 }
 
-#iyutwcwrjo .gt_caption {
+#ydtrxseibc .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#iyutwcwrjo .gt_title {
+#ydtrxseibc .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -529,7 +537,7 @@ cookieconsent.run({
   border-bottom-width: 0;
 }
 
-#iyutwcwrjo .gt_subtitle {
+#ydtrxseibc .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -541,7 +549,7 @@ cookieconsent.run({
   border-top-width: 0;
 }
 
-#iyutwcwrjo .gt_heading {
+#ydtrxseibc .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -553,13 +561,13 @@ cookieconsent.run({
   border-right-color: #D3D3D3;
 }
 
-#iyutwcwrjo .gt_bottom_border {
+#ydtrxseibc .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#iyutwcwrjo .gt_col_headings {
+#ydtrxseibc .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -574,7 +582,7 @@ cookieconsent.run({
   border-right-color: #D3D3D3;
 }
 
-#iyutwcwrjo .gt_col_heading {
+#ydtrxseibc .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -594,7 +602,7 @@ cookieconsent.run({
   overflow-x: hidden;
 }
 
-#iyutwcwrjo .gt_column_spanner_outer {
+#ydtrxseibc .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -606,15 +614,15 @@ cookieconsent.run({
   padding-right: 4px;
 }
 
-#iyutwcwrjo .gt_column_spanner_outer:first-child {
+#ydtrxseibc .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#iyutwcwrjo .gt_column_spanner_outer:last-child {
+#ydtrxseibc .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#iyutwcwrjo .gt_column_spanner {
+#ydtrxseibc .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -626,11 +634,11 @@ cookieconsent.run({
   width: 100%;
 }
 
-#iyutwcwrjo .gt_spanner_row {
+#ydtrxseibc .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#iyutwcwrjo .gt_group_heading {
+#ydtrxseibc .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -656,7 +664,7 @@ cookieconsent.run({
   text-align: left;
 }
 
-#iyutwcwrjo .gt_empty_group_heading {
+#ydtrxseibc .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -671,15 +679,15 @@ cookieconsent.run({
   vertical-align: middle;
 }
 
-#iyutwcwrjo .gt_from_md > :first-child {
+#ydtrxseibc .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#iyutwcwrjo .gt_from_md > :last-child {
+#ydtrxseibc .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#iyutwcwrjo .gt_row {
+#ydtrxseibc .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -698,7 +706,7 @@ cookieconsent.run({
   overflow-x: hidden;
 }
 
-#iyutwcwrjo .gt_stub {
+#ydtrxseibc .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -711,7 +719,7 @@ cookieconsent.run({
   padding-right: 5px;
 }
 
-#iyutwcwrjo .gt_stub_row_group {
+#ydtrxseibc .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -725,15 +733,15 @@ cookieconsent.run({
   vertical-align: top;
 }
 
-#iyutwcwrjo .gt_row_group_first td {
+#ydtrxseibc .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#iyutwcwrjo .gt_row_group_first th {
+#ydtrxseibc .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#iyutwcwrjo .gt_summary_row {
+#ydtrxseibc .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -743,16 +751,16 @@ cookieconsent.run({
   padding-right: 5px;
 }
 
-#iyutwcwrjo .gt_first_summary_row {
+#ydtrxseibc .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#iyutwcwrjo .gt_first_summary_row.thick {
+#ydtrxseibc .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#iyutwcwrjo .gt_last_summary_row {
+#ydtrxseibc .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -762,7 +770,7 @@ cookieconsent.run({
   border-bottom-color: #D3D3D3;
 }
 
-#iyutwcwrjo .gt_grand_summary_row {
+#ydtrxseibc .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -772,7 +780,7 @@ cookieconsent.run({
   padding-right: 5px;
 }
 
-#iyutwcwrjo .gt_first_grand_summary_row {
+#ydtrxseibc .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -782,7 +790,7 @@ cookieconsent.run({
   border-top-color: #D3D3D3;
 }
 
-#iyutwcwrjo .gt_last_grand_summary_row_top {
+#ydtrxseibc .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -792,11 +800,11 @@ cookieconsent.run({
   border-bottom-color: #D3D3D3;
 }
 
-#iyutwcwrjo .gt_striped {
+#ydtrxseibc .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#iyutwcwrjo .gt_table_body {
+#ydtrxseibc .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -805,7 +813,7 @@ cookieconsent.run({
   border-bottom-color: #D3D3D3;
 }
 
-#iyutwcwrjo .gt_footnotes {
+#ydtrxseibc .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -819,7 +827,7 @@ cookieconsent.run({
   border-right-color: #D3D3D3;
 }
 
-#iyutwcwrjo .gt_footnote {
+#ydtrxseibc .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -828,7 +836,7 @@ cookieconsent.run({
   padding-right: 5px;
 }
 
-#iyutwcwrjo .gt_sourcenotes {
+#ydtrxseibc .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -842,7 +850,7 @@ cookieconsent.run({
   border-right-color: #D3D3D3;
 }
 
-#iyutwcwrjo .gt_sourcenote {
+#ydtrxseibc .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -850,63 +858,63 @@ cookieconsent.run({
   padding-right: 5px;
 }
 
-#iyutwcwrjo .gt_left {
+#ydtrxseibc .gt_left {
   text-align: left;
 }
 
-#iyutwcwrjo .gt_center {
+#ydtrxseibc .gt_center {
   text-align: center;
 }
 
-#iyutwcwrjo .gt_right {
+#ydtrxseibc .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#iyutwcwrjo .gt_font_normal {
+#ydtrxseibc .gt_font_normal {
   font-weight: normal;
 }
 
-#iyutwcwrjo .gt_font_bold {
+#ydtrxseibc .gt_font_bold {
   font-weight: bold;
 }
 
-#iyutwcwrjo .gt_font_italic {
+#ydtrxseibc .gt_font_italic {
   font-style: italic;
 }
 
-#iyutwcwrjo .gt_super {
+#ydtrxseibc .gt_super {
   font-size: 65%;
 }
 
-#iyutwcwrjo .gt_footnote_marks {
+#ydtrxseibc .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#iyutwcwrjo .gt_asterisk {
+#ydtrxseibc .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#iyutwcwrjo .gt_indent_1 {
+#ydtrxseibc .gt_indent_1 {
   text-indent: 5px;
 }
 
-#iyutwcwrjo .gt_indent_2 {
+#ydtrxseibc .gt_indent_2 {
   text-indent: 10px;
 }
 
-#iyutwcwrjo .gt_indent_3 {
+#ydtrxseibc .gt_indent_3 {
   text-indent: 15px;
 }
 
-#iyutwcwrjo .gt_indent_4 {
+#ydtrxseibc .gt_indent_4 {
   text-indent: 20px;
 }
 
-#iyutwcwrjo .gt_indent_5 {
+#ydtrxseibc .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -923,26 +931,26 @@ cookieconsent.run({
 <tbody class="gt_table_body">
 <tr class="odd">
 <td class="gt_row gt_left" headers="case">I</td>
-<td class="gt_row gt_right" headers="BP_statistic">6.553076e-01</td>
-<td class="gt_row gt_right" headers="p_value">0.41822146</td>
+<td class="gt_row gt_right" headers="BP_statistic">0.66</td>
+<td class="gt_row gt_right" headers="p_value">0.42</td>
 <td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="case">II</td>
-<td class="gt_row gt_right" headers="BP_statistic">2.835517e-30</td>
-<td class="gt_row gt_right" headers="p_value">1.00000000</td>
+<td class="gt_row gt_right" headers="BP_statistic">0.00</td>
+<td class="gt_row gt_right" headers="p_value">1.00</td>
 <td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
 </tr>
 <tr class="odd">
 <td class="gt_row gt_left" headers="case">III</td>
-<td class="gt_row gt_right" headers="BP_statistic">2.723417e+00</td>
-<td class="gt_row gt_right" headers="p_value">0.09888612</td>
+<td class="gt_row gt_right" headers="BP_statistic">2.72</td>
+<td class="gt_row gt_right" headers="p_value">0.10</td>
 <td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
 </tr>
 <tr class="even">
 <td class="gt_row gt_left" headers="case">IV</td>
-<td class="gt_row gt_right" headers="BP_statistic">1.182091e+00</td>
-<td class="gt_row gt_right" headers="p_value">0.27693071</td>
+<td class="gt_row gt_right" headers="BP_statistic">1.18</td>
+<td class="gt_row gt_right" headers="p_value">0.28</td>
 <td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
 </tr>
 </tbody>
@@ -978,16 +986,21 @@ cookieconsent.run({
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert variable name</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  vare <span class="ot">&lt;-</span> <span class="fu">enquo</span>(var)</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert to string for use with shapiro-wilk</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  vares <span class="ot">&lt;-</span> <span class="fu">as.character</span>(vare)[[<span class="dv">2</span>]]</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  vare_char <span class="ot">&lt;-</span> <span class="fu">as.character</span>(vare)[[<span class="dv">2</span>]]</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create plot</span></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">sample=</span><span class="sc">!!</span>vare))<span class="sc">+</span><span class="fu">stat_qq</span>()<span class="sc">+</span><span class="fu">stat_qq_line</span>()<span class="sc">+</span></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Variable "</span>,vars,<span class="st">": Q-Q Plot"</span>))<span class="sc">+</span></span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># check shapiro-wilk test</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  sw_test <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(data[[vares]])</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return plot and sw test results</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">plot=</span>plot, <span class="at">sw_test=</span>sw_test)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  sw_test <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(data[[vare_char]])</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  sw_test_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">dataset=</span>vars,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                            <span class="at">method=</span>sw_test<span class="sc">$</span>method,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                            <span class="at">w=</span>sw_test<span class="sc">$</span>statistic,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>                            <span class="at">p_value=</span>sw_test<span class="sc">$</span>p.value)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row.names</span>(sw_test_row) <span class="ot">&lt;-</span> vare_char</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return plot and sw test results</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">plot=</span>plot, <span class="at">sw_test=</span>sw_test, <span class="at">sw_test_row=</span>sw_test_row)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -1035,91 +1048,620 @@ cookieconsent.run({
 </div>
 </div>
 </div>
+<p>From these six plots we see:</p>
+<ul>
+<li>variables x1/x2/x3 &amp; y1: looks like a fit with Normality for the most part.</li>
+<li>x4, y2: no</li>
+<li>y3, y4: yes, BUT with outliers that are cause for concern.</li>
+</ul>
 </section>
-<section id="shapiro-wilkes" class="level4">
-<h4 class="anchored" data-anchor-id="shapiro-wilkes">Shapiro-Wilkes</h4>
-<p>set up for commentary and interpretation</p>
+<section id="shapiro-wilk-test" class="level4">
+<h4 class="anchored" data-anchor-id="shapiro-wilk-test">Shapiro-Wilk Test</h4>
+<p>So we have some initial conclusions from Q-Q plots, which provide a quick visual guide. Let’s compare to results from Shapiro-Wilkes test.</p>
+<p>Shapiro-Wilkes works similar to to Breusch-Pagan test, but with reference to Normal distribution:</p>
+<ul>
+<li>NULL hypothesis is Normality, p-value indicates likelihood of the dataset being consistent with the Normality null hypothesis.</li>
+<li>Low p-value indicates lack of support for the NULL hypothesis and suggests data set may not fit Normal distribution.</li>
+</ul>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>norm_01<span class="sc">$</span>sw_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create table of results from all shapiro-wilk tests</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>shap_wilk_table <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(norm_01<span class="sc">$</span>sw_test_row,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                       norm_04<span class="sc">$</span>sw_test_row,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                       norm_01a<span class="sc">$</span>sw_test_row,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                       norm_02a<span class="sc">$</span>sw_test_row,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                       norm_03a<span class="sc">$</span>sw_test_row,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                       norm_04a<span class="sc">$</span>sw_test_row)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>shap_wilk_table <span class="ot">&lt;-</span> shap_wilk_table <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">conclusion=</span><span class="fu">ifelse</span>(p_value<span class="sc">&gt;</span><span class="fl">0.05</span>,<span class="st">"Norm. dist.: null hypothesis holds."</span>,<span class="st">"Norm. dist. issues: null hypotheis fails."</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>shap_wilk_table[] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(shap_wilk_table, <span class="cf">function</span>(x)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">is.numeric</span>(x)) <span class="fu">round</span>(x,<span class="dv">2</span>) <span class="cf">else</span> (x))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>shap_wilk_table <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>method) <span class="sc">%&gt;%</span> <span class="fu">gt</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Shapiro-Wilk normality test
+<div class="cell-output-display">
+<div id="aysaazwyls" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#aysaazwyls table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-data:  data[[vares]]
-W = 0.96839, p-value = 0.8698</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>norm_04<span class="sc">$</span>sw_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Shapiro-Wilk normality test
+#aysaazwyls thead, #aysaazwyls tbody, #aysaazwyls tfoot, #aysaazwyls tr, #aysaazwyls td, #aysaazwyls th {
+  border-style: none;
+}
 
-data:  data[[vares]]
-W = 0.34499, p-value = 2.243e-08</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>norm_01a<span class="sc">$</span>sw_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Shapiro-Wilk normality test
+#aysaazwyls p {
+  margin: 0;
+  padding: 0;
+}
 
-data:  data[[vares]]
-W = 0.97693, p-value = 0.9467</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>norm_02a<span class="sc">$</span>sw_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Shapiro-Wilk normality test
+#aysaazwyls .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
 
-data:  data[[vares]]
-W = 0.82837, p-value = 0.02222</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>norm_03a<span class="sc">$</span>sw_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Shapiro-Wilk normality test
+#aysaazwyls .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
 
-data:  data[[vares]]
-W = 0.83361, p-value = 0.02604</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>norm_04a<span class="sc">$</span>sw_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Shapiro-Wilk normality test
+#aysaazwyls .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
 
-data:  data[[vares]]
-W = 0.87536, p-value = 0.09081</code></pre>
+#aysaazwyls .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#aysaazwyls .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#aysaazwyls .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aysaazwyls .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#aysaazwyls .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#aysaazwyls .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#aysaazwyls .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#aysaazwyls .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#aysaazwyls .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#aysaazwyls .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#aysaazwyls .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#aysaazwyls .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#aysaazwyls .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#aysaazwyls .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#aysaazwyls .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#aysaazwyls .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aysaazwyls .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#aysaazwyls .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#aysaazwyls .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#aysaazwyls .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aysaazwyls .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#aysaazwyls .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#aysaazwyls .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aysaazwyls .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aysaazwyls .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#aysaazwyls .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aysaazwyls .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#aysaazwyls .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aysaazwyls .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#aysaazwyls .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aysaazwyls .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#aysaazwyls .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aysaazwyls .gt_left {
+  text-align: left;
+}
+
+#aysaazwyls .gt_center {
+  text-align: center;
+}
+
+#aysaazwyls .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#aysaazwyls .gt_font_normal {
+  font-weight: normal;
+}
+
+#aysaazwyls .gt_font_bold {
+  font-weight: bold;
+}
+
+#aysaazwyls .gt_font_italic {
+  font-style: italic;
+}
+
+#aysaazwyls .gt_super {
+  font-size: 65%;
+}
+
+#aysaazwyls .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#aysaazwyls .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#aysaazwyls .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#aysaazwyls .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#aysaazwyls .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#aysaazwyls .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#aysaazwyls .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="dataset" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">dataset</th>
+<th id="w" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">w</th>
+<th id="p_value" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">p_value</th>
+<th id="conclusion" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">conclusion</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="dataset">x1, x2, x3</td>
+<td class="gt_row gt_right" headers="w">0.97</td>
+<td class="gt_row gt_right" headers="p_value">0.87</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist.: null hypothesis holds.</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="dataset">x4</td>
+<td class="gt_row gt_right" headers="w">0.34</td>
+<td class="gt_row gt_right" headers="p_value">0.00</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist. issues: null hypotheis fails.</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="dataset">y1</td>
+<td class="gt_row gt_right" headers="w">0.98</td>
+<td class="gt_row gt_right" headers="p_value">0.95</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist.: null hypothesis holds.</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="dataset">y2</td>
+<td class="gt_row gt_right" headers="w">0.83</td>
+<td class="gt_row gt_right" headers="p_value">0.02</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist. issues: null hypotheis fails.</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="dataset">y3</td>
+<td class="gt_row gt_right" headers="w">0.83</td>
+<td class="gt_row gt_right" headers="p_value">0.03</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist. issues: null hypotheis fails.</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="dataset">y4</td>
+<td class="gt_row gt_right" headers="w">0.88</td>
+<td class="gt_row gt_right" headers="p_value">0.09</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist.: null hypothesis holds.</td>
+</tr>
+</tbody>
+</table>
+
 </div>
 </div>
+</div>
+<p>Based on Shapiro-Wilk test, we have a mix of Normal and non-Normal distributions.</p>
+<ul>
+<li><p><strong>Normality conclusions</strong></p>
+<ul>
+<li><p>Overall similar results between Q-Q plots and Shapiro-Wilk.</p></li>
+<li><p>x1/x2/x3/y1: look close to Normal in Q-Q plots and also pass Shapiro-Wilk test.</p></li>
+<li><p>x4/y2: doesn’t fit with Normal on Q-Q plot or Shapiro-Wilk test.</p></li>
+<li><p>y3: borderline based on Q-Q plot due to outliers, fails Shapiro-Wilk test.</p></li>
+<li><p>y4: borderline based on Q-Q plot due to outliers, passes Shapiro-Wilk test.</p></li>
+</ul></li>
+</ul>
+<p>So as far as the Normal distribution assumption for Pearson correlation, it depends on the combination of variables being used from this data set.</p>
 </section>
 </section>
 <section id="interval-or-ratio-scale" class="level3">
 <h3 class="anchored" data-anchor-id="interval-or-ratio-scale"><strong>Interval or Ratio Scale</strong></h3>
-<p>yes</p>
+<ul>
+<li><strong>criteria:</strong> Pearson correlation only works on numeric values.</li>
+<li><strong>methodology:</strong> check class of variables.</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ans)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   11 obs. of  8 variables:
+ $ x1: num  10 8 13 9 11 14 6 4 12 7 ...
+ $ x2: num  10 8 13 9 11 14 6 4 12 7 ...
+ $ x3: num  10 8 13 9 11 14 6 4 12 7 ...
+ $ x4: num  8 8 8 8 8 8 8 19 8 8 ...
+ $ y1: num  8.04 6.95 7.58 8.81 8.33 ...
+ $ y2: num  9.14 8.14 8.74 8.77 9.26 8.1 6.13 3.1 9.13 7.26 ...
+ $ y3: num  7.46 6.77 12.74 7.11 7.81 ...
+ $ y4: num  6.58 5.76 7.71 8.84 8.47 7.04 5.25 12.5 5.56 7.91 ...</code></pre>
+</div>
+</div>
+<ul>
+<li><strong>conclusion:</strong> all variables are numeric, so we are on solid ground here.</li>
+</ul>
 </section>
 <section id="absence-of-outliers" class="level3">
 <h3 class="anchored" data-anchor-id="absence-of-outliers"><strong>Absence of Outliers</strong></h3>
-<p>define outliers -&gt; outside 1.5*iqr</p>
+<ul>
+<li><strong>criteria:</strong> ideally, no outliers, as they can have a disproportionate affect on the correlation coefficient.</li>
+<li><strong>method:</strong> boxplot for visual inspection.</li>
+</ul>
+<section id="boxplot" class="level4">
+<h4 class="anchored" data-anchor-id="boxplot">Boxplot</h4>
+<p>A boxplot can be simple way to see if outliers exist in the variables. The interpretation is:</p>
+<ul>
+<li><strong>mid-line</strong> is median.</li>
+<li><strong>box</strong> covers the IQR (inter-quartlie range) from 25th percentile to 75th percentile, covering the middle 50% of the data.</li>
+<li><strong>whiskers</strong> reach out to values that are 1.5 below/above the 25th and 75th percentiles, respectively.</li>
+<li><strong>DOTS represent outliers</strong>: data points beyond the whiskers represent outliers - these are what we are watching for.</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ans %&gt;% ggplot(aes(x=x1))+geom_boxplot()</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ans_long <span class="ot">&lt;-</span> ans <span class="sc">%&gt;%</span> <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">everything</span>(), <span class="at">names_to=</span><span class="st">"variable"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>ans_long <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>value, <span class="at">y=</span>variable))<span class="sc">+</span><span class="fu">geom_boxplot</span>(<span class="at">fill=</span><span class="st">'grey'</span>)<span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The variables with dots are sure signs of outliers.</p>
+<ul>
+<li><p><strong>Outlier conclusions:</strong></p>
+<ul>
+<li>x4, y2, y3, y4 all have outliers: use caution with Pearson correlation involving these metrics.</li>
+</ul></li>
+</ul>
+</section>
 </section>
 <section id="independence-of-observations" class="level3">
 <h3 class="anchored" data-anchor-id="independence-of-observations"><strong>Independence of Observations</strong></h3>
-<p>Need domain knowledge for this one.</p>
+<ul>
+<li><strong>criteria:</strong> each pair of observations in the data set is independent of each other, do not influence each other.</li>
+<li><strong>method:</strong> knowledge of the origin and meaning of the data.</li>
+</ul>
+<p>Domain knowledge is needed for this one. We can’t make any conclusions on the Anscombe dataset because we don’t know anything about the origin of the data or what it represents.</p>
 <p>notes:</p>
 <ul>
 <li><p>check assumptions</p></li>
@@ -1128,10 +1670,23 @@ W = 0.87536, p-value = 0.09081</code></pre>
 </ul>
 </section>
 </section>
+<section id="is-correlation-valid-for-this-data-set" class="level2">
+<h2 class="anchored" data-anchor-id="is-correlation-valid-for-this-data-set">Is Correlation Valid for this Data Set?</h2>
+<p>We know that Anscombe’s Quartet is designed to show how summary statistics can be misleading. But for the sake of completion here, let’s review whether quartet of variable combinations ‘<strong>pass</strong>’ or ’<strong>fail’</strong> against the 6 assumptions:</p>
+<ol type="1">
+<li><p><strong>Linearity</strong>: pass for <strong>case I</strong> (var x1 and y1), <strong>case III</strong> (x3 and y3); fail for case II and IV.</p></li>
+<li><p><strong>Homoscedasticity</strong>: leans toward fail for all, although hard to make solid conclusion on small sample size.</p></li>
+<li><p><strong>Normality</strong>: pass for <strong>case I</strong>; fail for others, where at least one variable fails normality test</p></li>
+<li><p><strong>Interval or Ratio Scale</strong>: pass for all.</p></li>
+<li><p><strong>Absence of Outliers</strong>: pass for <strong>case I</strong>; fail for others, where at least one variable has outliers.</p></li>
+<li><p><strong>Independence of Observations</strong>: inconclusive - requires domain knowledge.</p></li>
+</ol>
+<p>In summary, <strong>case I looks like a reasonable case for Pearson Correlation,</strong> while others have one or more fatal flaws that make Pearson Correlation misleading. This is fairly obvious on initial view of the data, but further reinforced by examining the assumptions individually.</p>
+</section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>This is a manufactured case that may not reflect common real-world data situations, but is hopefully useful in understanding how to think critically about Pearson correlation - and to use statistical methods to determine how applicable/reliable/representative Pearson correlation may be in any given situation.</p>
-<p>Beyond strength of applicability it hopefully highlights the importance of understanding correlation as a summary statistic that can only tell you so much about the relationships in the data. As such, it is best used within early stages of exploratory analysis, pointing the way toward further analysis, and not as a final conclusion.</p>
+<p>This is a manufactured case that may not reflect common real-world data situations, but is hopefully useful in understanding how to <strong>think critically about Pearson correlation</strong> - including using visual and statistical methods to determine how applicable/reliable/representative Pearson correlation may be in any given situation.</p>
+<p>This highlights the importance of understanding <strong>correlation as a summary statistic</strong> that can only tell you so much about the relationships in the data - and in some cases, nothing at all. At the end of the day, if the correlation coefficient can’t tell you something about what to expect from the dependent variable when the independent variable changes, it is not helpful. As such, it is <strong>best used within early stages of exploratory analysis</strong>, supplemented by visualization (at minimum), pointing the way toward potential further analysis, and <strong>not as a final conclusion</strong>.</p>
 
 
 </section>

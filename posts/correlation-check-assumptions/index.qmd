@@ -1,11 +1,11 @@
 ---
 title: "Correlation is NOT Causation...It May Not Even Be Correlation"
 author: John Yuill
-date: '2024-03-03'
-categories: [analysis, r]
+date: '2024-03-24'
+categories: [analysis, r, statistics]
 description-meta: Calculating a correlation coefficient aka R value does not guarantee that the number is valid. Correlation calculation are based on key assumptions that should be checked to ensure that the linear correlation is providing relevant indication of relationship between two variables.
-draft: true
-#image: .png 
+draft: false
+image: img/resid-plot.png 
 toc: true
 toc-depth: 4
 toc-location: left
@@ -58,9 +58,9 @@ ans <- datasets::anscombe
 
 Most people recognize that **correlation does not imply causation**, and that if correlation between two variables is detected, further steps must be taken to determine if there is indeed a causal relationship.
 
-But before we even get to pinning down causation, there are some important steps to ensure that the correlation is valid. Correlation calculations are based on specific assumptions that, if not met, render the outcome of these calculations less than reliable. Proceeding without checking these assumptions can lead to erroneous conclusions and bad decisions.
+But before we even get to pinning down causation, there are **important** **steps to ensure that the correlation is valid**. Correlation calculations are based on specific assumptions that, if not met, render the outcome of these calculations less than reliable. Proceeding without checking these assumptions can lead to erroneous conclusions and bad decisions.
 
-So let's talk about how we can deal with this situation and at least check to understand how solid is the ground we are standing on.
+So let's talk about how we can dig into these assumptions and check how solid the ground is that we are standing on when referencing a correlation coefficient.
 
 ## The Point of Correlation
 
@@ -237,6 +237,8 @@ Breusch-Pagan is a statistical test that can be used to assess homoscedasticity.
 ```{r bptr_table}
 bptr_table <- bind_rows(hskt_01$bpt_row, hskt_02$bpt_row, 
                         hskt_03$bpt_row, hskt_04$bpt_row)
+bptr_table[] <- lapply(bptr_table, function(x)
+  if(is.numeric(x)) round(x,2) else (x))
 gt(bptr_table)
 ```
 
@@ -337,7 +339,7 @@ shap_wilk_table <- shap_wilk_table %>% mutate(
     conclusion=ifelse(p_value>0.05,"Norm. dist.: null hypothesis holds.","Norm. dist. issues: null hypotheis fails.")
   )
 shap_wilk_table[] <- lapply(shap_wilk_table, function(x)
-  if(is.numeric(x)) round(x,4) else (x))
+  if(is.numeric(x)) round(x,2) else (x))
 shap_wilk_table %>% select(-method) %>% gt()
 ```
 
@@ -412,22 +414,24 @@ notes:
 
 ## Is Correlation Valid for this Data Set?
 
-To review this quartet of variable combinations against the 6 assumptions:
+We know that Anscombe's Quartet is designed to show how summary statistics can be misleading. But for the sake of completion here, let's review whether quartet of variable combinations '**pass**' or '**fail'** against the 6 assumptions:
 
-1.  **Linearity**: case I (var x1 and y1) and case III (x3 and y3) make the grade.
+1.  **Linearity**: pass for **case I** (var x1 and y1), **case III** (x3 and y3); fail for case II and IV.
 
-2.  **Homoscedasticity**:
+2.  **Homoscedasticity**: leans toward fail for all, although hard to make solid conclusion on small sample size.
 
-3.  **Normality**:
+3.  **Normality**: pass for **case I**; fail for others, where at least one variable fails normality test
 
-4.  **Interval or Ratio Scale**:
+4.  **Interval or Ratio Scale**: pass for all.
 
-5.  **Absence of Outliers**:
+5.  **Absence of Outliers**: pass for **case I**; fail for others, where at least one variable has outliers.
 
-6.  **Independence of Observations**:
+6.  **Independence of Observations**: inconclusive - requires domain knowledge.
+
+In summary, **case I looks like a reasonable case for Pearson Correlation,** while others have one or more fatal flaws that make Pearson Correlation misleading. This is fairly obvious on initial view of the data, but further reinforced by examining the assumptions individually.
 
 ## Conclusion
 
-This is a manufactured case that may not reflect common real-world data situations, but is hopefully useful in understanding how to think critically about Pearson correlation - and to use statistical methods to determine how applicable/reliable/representative Pearson correlation may be in any given situation.
+This is a manufactured case that may not reflect common real-world data situations, but is hopefully useful in understanding how to **think critically about Pearson correlation** - including using visual and statistical methods to determine how applicable/reliable/representative Pearson correlation may be in any given situation.
 
-Beyond strength of applicability it hopefully highlights the importance of understanding correlation as a summary statistic that can only tell you so much about the relationships in the data. As such, it is best used within early stages of exploratory analysis, pointing the way toward further analysis, and not as a final conclusion.
+This highlights the importance of understanding **correlation as a summary statistic** that can only tell you so much about the relationships in the data - and in some cases, nothing at all. At the end of the day, if the correlation coefficient can't tell you something about what to expect from the dependent variable when the independent variable changes, it is not helpful. As such, it is **best used within early stages of exploratory analysis**, supplemented by visualization (at minimum), pointing the way toward potential further analysis, and **not as a final conclusion**.
