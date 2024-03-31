@@ -276,7 +276,7 @@ Looking at **litre consumption** for these 3 main categories:
 -   in % terms, litre market share for BC remained steady just under 80%, while **other provinces took their market share out of imports**.
 
 ```{r}
-#| echo: false
+#| echo: false # false because otherwise can't fold code (?)
 #| layout-ncol: 2 # for side-by-side charts
 #| fig-height: 3
 
@@ -316,8 +316,8 @@ ggplotly(plot_right, tooltip = "text")
 The year-over-year dynamics in litre consumption stand out even clearer when looking at % change:
 
 -   mostly stable for BC producers.
--   BIG gains by other provinces - as high as almost 40% growth in 2021. Pandemic effect?
--   Imports as the big losers, with over 30% loss in 2021. Possibly related to pandemic and related supply chain issues.
+-   **BIG gains by other Canadian provinces** - as high as almost 40% growth in 2021. Pandemic effect?
+-   **Imports as the big losers**, with over 30% loss in 2021. Possibly related to pandemic and related supply chain issues?
 
 ```{r}
 #| echo: false
@@ -376,11 +376,10 @@ As shown earlier, **BC-produced beer makes up almost 80%** of consumption, so be
 
 ### Regional View
 
-A look at BC beer sales by global region of production.
+In terms of litres of beer sold by region of origin, BC breweries are dominant, with over 75% share.
 
 ```{r}
-# need a new field for region
-# - have to go back to lmr_data
+# need a new field for region - need to go back to lmr_data
 lmr_data_reg <- lmr_data_cy %>% mutate(
   region=ifelse(str_detect(subcategory, 'Domestic - BC'),'Canada - BC',
                 ifelse(str_detect(subcategory, 'Domestic - Other'), 'Canada - Other', subcategory))
@@ -431,6 +430,8 @@ stack_col_chart <- function(title=ch_title, data, x_var, y_var, fill_var,
 ```
 
 ```{r}
+#| echo: false
+#| column: screen-inset-right
 #| layout-ncol: 2 # for side-by-side charts
 #| fig-height: 3
 
@@ -444,14 +445,25 @@ ggplotly(plot_left, tooltip = "text")
 ggplotly(plot_right, tooltip = "text")
 ```
 
+Some interesting dynamics show above:
+
+-   overall downward trend since 2017.
+-   Canadian provinces other than BC have been the gainers while other regions, including BC have declined in volume.
+-   BC share has held steady at just under 80%, with other Canadian provinces steadily capturing share to the point they are sitting around 14% of the remaining 20%.
+
 ### Regional breakout by litres, % change, \$/litre
 
 We can do a deeper dive on regional differences by comparing not only litre sales but also % change over time, and \$/litre (proxy for price):
 
--   **negative growth** over the period, with the **strong exception of 'Other Country'** and '**Canada - other provinces'** to lesser extent.
+-   **negative growth** over the period, with the **exception of** '**Canada - other provinces'**.
+
+::: callout-note
+'Canada - other' excluded for simplicity, due to tiny amount of sales.
+:::
 
 ```{r}
-plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year)) %>% 
+excl <- "Other Country" # excluding 'other country' as minimal
+plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year) & region!=excl) %>% 
   ggplot(aes(x=litres, y=pc_chg_lt_cum, color=region, size=dollar_per_litre))+
            geom_point()+
   scale_x_continuous(labels=label_comma())+
@@ -463,14 +475,13 @@ ggplotly(plot)
 ```
 
 -   BC beer is by far the most volume sold, and also by far the cheapest (smallest dot).
--   Fastest growth by far over the period (400%) is from 'Other Countries' and is also the highest price beer.
 -   Europe, Asia, Mexico, and the US (in that order) have all had decreases in litres sold.
 -   US decline is particularly noteworthy, dropping over 80%! Possibly due to more US brands being produced within Canada, such as Budweiser being brewed in Canada by Labatt (AB InBev) and Coors being brewed by Molson (now Molson Coors).
 
-Remove BC to zoom in on others.
+**Remove BC** to zoom in on others.
 
 ```{r}
-plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year) & region!='Canada - BC') %>% 
+plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year) & region!='Canada - BC' & region!=excl) %>% 
   ggplot(aes(x=litres, y=pc_chg_lt_cum, color=region, size=dollar_per_litre))+
            geom_point()+
   scale_x_continuous(labels=label_comma())+
@@ -481,15 +492,15 @@ plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year) & region!='Canada -
 ggplotly(plot)
 ```
 
-Patterns even more apparent with in zoomed-in view.
+Patterns even more apparent with in zoomed-in view, further emphasizing the growth of 'Canada - Other', with much lower price/litre than others.
 
-#### Animation of Regional Growth
+#### Changes in Regional Sales Over Time
 
-Animation showing the changes over time.
+Here's an animation showing the changes over time, for some extra insight:
 
 ```{r}
 #| fig-width: 10
-plot_anim <- trend_yr_reg %>% 
+plot_anim <- trend_yr_reg %>% filter(region!=excl) %>%
   ggplot(aes(x=litres, y=pc_chg_litres, color=region, size=dollar_per_litre))+
            geom_point()+
   transition_time(year)+
@@ -502,50 +513,9 @@ animate(plot_anim, duration=10, fps=5)
 #anim_save("animated_bubble_chart.gif")
 ```
 
-## questions
-
--   similar analysis but for:
-
-    -   \$
-
-    -   \$/litre
-
-    -   look at relationships between dollars/litre (price) and volume sold
-
-        -   does cheaper drive volume?
-
-        -   are declining prices associated with increase volume sales?
-
--   preview of region
-
-    -   group in BC, Other Canada Prov, import country
-
-        -   Canada
-
-        -   Asia and South Pacific
-
-        -   Europe
-
-        -   Mexico and Caribbean
-
-        -   USA
-
-        -   other country
-
-        -   BUBBLE CHART:
-
-            -   x=litres, y=growth rate, color = region, size=rev/litre
-
 ### Beer: Wrap-up and Next Up
 
-## == old info
-
-This concludes our look at quarter patterns, including quarters from mid-2015 to mid-2023.
-
-#### Next-up:
-
-1.  **Category trends and patterns:** closer look at each of the major beverage types, exploring categories and sub-categories within them, as reported in the Liquor Market Review.
-2.  **Category 1: Beer:** start with beer, because...beer. ;)
+Some interesting dynamics happening with beer sales in BC.
 
 ### Footnotes
 
