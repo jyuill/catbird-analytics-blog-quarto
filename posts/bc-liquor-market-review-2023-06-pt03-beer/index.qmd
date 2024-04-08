@@ -42,7 +42,8 @@ bar_col <- brewer.pal(n=9, name='YlGnBu')[9]
 # set colors for major category types
 bpal <- brewer.pal(n=9, name="YlOrRd")
 type_color <- c("Beer"=bpal[6], "Refresh Bev"=bpal[3], "Spirits"=bpal[4], "Wine"=bpal[8])
-
+# colors for positive or negative values
+posneg_col <- brewer.pal(n=100, name='RdYlGn')[c(1,11)]
 ```
 
 ```{r get_process_data}
@@ -329,10 +330,11 @@ trend_yr_cat$category <- fct_relevel(trend_yr_cat$category, levels(trend_yr_cat$
 ```{r}
 # YoY % chg chart
 ch_title <- "Year-over-Year % change in Litre Sales"
-plot <- trend_yr_cat %>% ggplot(aes(x=year, y=pc_chg_litres, fill=category,
+plot <- trend_yr_cat %>% ggplot(aes(x=year, y=pc_chg_litres,
                                     text=paste0(year,": ",
                                                 round(pc_chg_litres*100),"%")))+
-  geom_col(show.legend = FALSE)+
+  geom_col(aes(fill=pc_chg_litres>0), show.legend=FALSE)+
+  scale_fill_manual(values=c("TRUE"=posneg_col[2], "FALSE"=posneg_col[1]))+
   facet_grid(.~category)+
   scale_y_continuous(labels=percent_format())+
   geom_hline(yintercept=0)+
@@ -348,7 +350,7 @@ ggplotly(plot, tooltip="text")
 
 All these year-over-year changes add up - especially for Other Province beer and Imports:
 
--   Other Province beer **almost doubled** over the period!
+-   Other Province beer **almost doubled** over the period, with 90% growth!
 -   Imports **dropped in half**
 -   BC-produced beer saw modest decline.
 
@@ -356,27 +358,75 @@ All these year-over-year changes add up - especially for Other Province beer and
 #| fig-height: 2
 ch_title <- paste0("Total % chg: ", min(trend_yr_cat$year), " - ", max(trend_yr_cat$year))
 
-plot <- trend_yr_cat %>% ggplot(aes(x=fct_rev(category), y=pc_chg_lt_cum, label=))+geom_col()+
+plot <- trend_yr_cat %>% ggplot(aes(x=fct_rev(category), y=pc_chg_lt_cum, label=))+geom_col(aes(fill=pc_chg_litres>0), show.legend = FALSE)+
   geom_text(
       aes(label=percent(pc_chg_lt_cum, accuracy=1),
-      hjust=ifelse(pc_chg_lt_cum>0, -0.1, 1.1)),
+      hjust=0.5,
+      vjust=ifelse(pc_chg_lt_cum>0, -0.5, 1.2)),
       size=3)+
-  scale_y_continuous(limits=c(-1,1), expand=expansion(add=c(0.3,0.3)))+
+  scale_y_continuous(limits=c(-1,1), expand=expansion(add=c(0.2,0.2)),
+                     labels=percent_format(), breaks=c(-1,0,1))+
+  scale_fill_manual(values=c("TRUE"=posneg_col[2], "FALSE"=posneg_col[1]))+
   geom_hline(yintercept=0, linetype='solid')+
-  coord_flip()+
+  #coord_flip()+
   labs(title=ch_title, x="", y="")+
-  theme(axis.text.x = element_blank(),
-        axis.ticks = element_blank(),
+  theme(axis.ticks.x = element_blank(),
         axis.line = element_blank(),
         panel.border = element_rect(fill=NA, size=0.3))
 plot
 ```
 
-As shown earlier, **BC-produced beer makes up almost 80%** of consumption, so beer coming from Other Provinces or Imported from other countries are **fighting over the remaining 20%**. Clearly, breweries in other provinces are winning that battle over the imported beer.
+Clearly, b**reweries in other provinces are winning that battle** over imported beer for the roughly 20% of volume not accounted for by BC-produced beer.
+
+#### Where do the dollars go?
+
+Not surprisingly, the shift in volume from Imports to Other Provinces is reflected in dollar sales as well.
+
+```{r}
+#| echo: false # false because otherwise can't fold code (?)
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 3
+
+# reorder categories in order of litre sales
+trend_yr_cat$category <- fct_reorder(trend_yr_cat$category, trend_yr_cat$netsales)
+
+ch_title <- "Beer $ Sales by Cat."
+# text aesthetic used to set plotly tooltip -> combined with tooltip='text' in ggplotly
+plot_left <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), 
+                                         y=netsales, fill=category, 
+                                         text= paste("netsales:", 
+                                              format(netsales, big.mark=","), 
+                                                     "<br>cat:", category)))+
+  geom_col()+
+  scale_y_continuous(labels=comma_format(scale=1e-6,prefix="$", suffix="M"), 
+                     expand=expansion(add=c(0,0.1)))+
+  #scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
+
+ch_title <- "Beer % $ Sales by Cat."
+plot_right <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), 
+                                          y=netsales_pc, fill=category,
+                                          text= paste0("share: ", 
+                                                       round(netsales_pc*100,0),"%",
+                                                     "<br>cat: ", category)))+
+  geom_col(position='fill')+
+  scale_y_continuous(labels=percent_format(), 
+                     expand=expansion(add=c(0,0)))+
+  #scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
+ggplotly(plot_left, tooltip = "text")
+ggplotly(plot_right, tooltip = "text")
+```
+
+**BC breweries** have a similarly **stable share of dollar sales**, as with litre sales, although at a slightly lower % share: **\~75%**. Other provinces are progressively winning the battle for the remaining \~25%, more than doubling their share of \$ during the period.
 
 ### Regional View
 
-In terms of litres of beer sold by region of origin, BC breweries are dominant, with over 75% share.
+BC LDB provides data for importers by country, allowing us to take a closer look at dynamics within this segment, relative to Other Provinces.
 
 ```{r}
 # need a new field for region - need to go back to lmr_data
@@ -384,9 +434,12 @@ lmr_data_reg <- lmr_data_cy %>% mutate(
   region=ifelse(str_detect(subcategory, 'Domestic - BC'),'Canada - BC',
                 ifelse(str_detect(subcategory, 'Domestic - Other'), 'Canada - Other', subcategory))
 )
-
+# remove BC to focus on regions outside BC
+lmr_data_reg_xbc <- lmr_data_reg %>% filter(
+  region!='Canada - BC'
+)
 # summarize data by year and region
-trend_yr_reg <- fn_trend_yr_smry(data=lmr_data_reg, grp2=region)
+trend_yr_reg <- fn_trend_yr_smry(data=lmr_data_reg_xbc, grp2=region)
   
 ## remove 'beer' from region names for brevity
 trend_yr_reg <- trend_yr_reg %>% mutate(
