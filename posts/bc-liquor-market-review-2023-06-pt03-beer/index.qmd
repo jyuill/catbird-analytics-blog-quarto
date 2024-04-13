@@ -322,9 +322,10 @@ The year-over-year dynamics in litre consumption stand out even clearer when loo
 
 ```{r}
 #| echo: false
-trend_yr_cat$category <- fct_relevel(trend_yr_cat$category, levels(trend_yr_cat$category)[3],
-                                              levels(trend_yr_cat$category)[1],
-                                              levels(trend_yr_cat$category)[2])
+trend_yr_cat$category <- fct_relevel(trend_yr_cat$category, 
+                                     levels(trend_yr_cat$category)[3],
+                                     levels(trend_yr_cat$category)[1],
+                                     levels(trend_yr_cat$category)[2])
 ```
 
 ```{r}
@@ -454,35 +455,6 @@ trend_yr_reg$region <- fct_reorder(trend_yr_reg$region, trend_yr_reg$litres)
 ```
 
 ```{r}
-# function for stacked bar chart: absolute numbers and % 
-# assumes % metric available; hover text format based on values > or < 1
-stack_col_chart <- function(title=ch_title, data, x_var, y_var, fill_var, 
-                            sci_scale=1e-6, ylab_suffix='M') {
-  # convert vars
-  x_var <- enquo(x_var)
-  y_var <- enquo(y_var)
-  fill_var <- enquo(fill_var)
-
-  # plot
-  plot <- data %>% mutate(
-    # create formatted variable for hover text
-      var_f = ifelse(!!y_var>1, format(!!y_var, big.mark=","),
-                     paste0(round(!!y_var*100,0),"%"))
-    ) %>%
-    ggplot(aes(x=as.factor(!!x_var), y=!!y_var, fill=!!fill_var,
-                              text=paste0(var_f, "<br>", !!fill_var))) +
-      geom_col() +
-      scale_y_continuous(labels=comma_format(scale=sci_scale,suffix=ylab_suffix), 
-                       expand=expansion(add=c(0,0.1)))+
-      labs(title=ch_title, x="",y="")+
-      theme(axis.ticks.x = element_blank(),
-            axis.text.x = element_text(angle=45, vjust=0.5))
-  
-  return(plot)
-}
-```
-
-```{r}
 #| echo: false
 #| column: screen-inset-right
 #| layout-ncol: 2 # for side-by-side charts
@@ -501,8 +473,31 @@ ggplotly(plot_right, tooltip = "text")
 Some interesting dynamics show above:
 
 -   overall downward trend since 2017.
--   Canadian provinces other than BC have been the gainers while other regions, including BC have declined in volume.
--   BC share has held steady at just under 80%, with other Canadian provinces steadily capturing share to the point they are sitting around 14% of the remaining 20%.
+-   Canadian provinces other than BC have been the gainers while other regions, most notable Europe, Mexico, US have seen declines.
+
+ADJUST FOR REGIONAL
+
+```{r}
+#| fig-height: 2
+ch_title <- paste0("Total % chg: ", min(trend_yr_cat$year), " - ", max(trend_yr_cat$year))
+
+plot <- trend_yr_cat %>% ggplot(aes(x=fct_rev(category), y=pc_chg_lt_cum, label=))+geom_col(aes(fill=pc_chg_litres>0), show.legend = FALSE)+
+  geom_text(
+      aes(label=percent(pc_chg_lt_cum, accuracy=1),
+      hjust=0.5,
+      vjust=ifelse(pc_chg_lt_cum>0, -0.5, 1.2)),
+      size=3)+
+  scale_y_continuous(limits=c(-1,1), expand=expansion(add=c(0.2,0.2)),
+                     labels=percent_format(), breaks=c(-1,0,1))+
+  scale_fill_manual(values=c("TRUE"=posneg_col[2], "FALSE"=posneg_col[1]))+
+  geom_hline(yintercept=0, linetype='solid')+
+  #coord_flip()+
+  labs(title=ch_title, x="", y="")+
+  theme(axis.ticks.x = element_blank(),
+        axis.line = element_blank(),
+        panel.border = element_rect(fill=NA, size=0.3))
+plot
+```
 
 ### Regional breakout by litres, % change, \$/litre
 
