@@ -1,9 +1,9 @@
 ---
-title: "BC Liquor Sales Analysis: Beer 2016-2022"
+title: "BC Liquor Sales Analysis: Beer 2016-2023"
 author: John Yuill
 date: '2023-11-26'
 categories: [liquor stats, reporting, analysis]
-description-meta: BC Liquor Market Review beer sales data exploration and analysis covering the years 2016 to 2022 with trends, patterns and observations.
+description-meta: BC Liquor Market Review beer sales data exploration and analysis covering the years 2016 to 2023 with trends, patterns and observations.
 draft: true
 #image: .png 
 toc: true
@@ -44,6 +44,8 @@ bpal <- brewer.pal(n=9, name="YlOrRd")
 type_color <- c("Beer"=bpal[6], "Refresh Bev"=bpal[3], "Spirits"=bpal[4], "Wine"=bpal[8])
 # colors for positive or negative values
 posneg_col <- brewer.pal(n=100, name='RdYlGn')[c(1,11)]
+# call functions file
+source('funcs.R')
 ```
 
 ```{r get_process_data}
@@ -419,6 +421,7 @@ plot_right <- trend_yr_cat %>% ggplot(aes(x=as.factor(year),
   labs(title=ch_title, x="",y="")+
   theme(axis.ticks.x = element_blank(),
         axis.text.x = element_text(angle=45))
+
 ggplotly(plot_left, tooltip = "text")
 ggplotly(plot_right, tooltip = "text")
 ```
@@ -454,17 +457,20 @@ trend_yr_reg <- trend_yr_reg %>% mutate(
 trend_yr_reg$region <- fct_reorder(trend_yr_reg$region, trend_yr_reg$litres)
 ```
 
-```{r}
+```{r chart-sales-by-reg}
 #| echo: false
 #| column: screen-inset-right
 #| layout-ncol: 2 # for side-by-side charts
 #| fig-height: 3
 
 ch_title <- "Beer Litre Sales by Region"
-plot_left <- stack_col_chart(title=ch_title, data=trend_yr_reg, x_var=year, y_var=litres, fill_var=region)
+plot_left <- stacked_col_chart(title=ch_title, data=trend_yr_reg, x_var=year, y_var=litres, fill_var=region)
 
 ch_title <- "Beer Litre Sales % by Region"
-plot_right <- stack_col_chart(title=ch_title, data=trend_yr_reg, x_var=year, y_var=litres_pc, fill_var=region, sci_scale=1e+2, ylab_suffix="%")
+plot_right <- stacked_col_chart(title=ch_title, data=trend_yr_reg, 
+              x_var=year, y_var=litres_pc, fill_var=region, 
+              trans_fctr = 100, dec = 1, txt_suffix = "%",
+              sci_scale=1e+2, y_prefix_set = "", y_suffix="%", expd_up_set = 0.0)
 
 ggplotly(plot_left, tooltip = "text")
 ggplotly(plot_right, tooltip = "text")
@@ -478,7 +484,8 @@ Some interesting dynamics show above:
 ADJUST FOR REGIONAL
 
 ```{r}
-#| fig-height: 2
+#| fig-height: 4
+#| fig-width: 8
 ch_title <- paste0("Total % chg: ", min(trend_yr_cat$year), " - ", max(trend_yr_cat$year))
 
 plot <- trend_yr_cat %>% ggplot(aes(x=fct_rev(category), y=pc_chg_lt_cum, label=))+geom_col(aes(fill=pc_chg_litres>0), show.legend = FALSE)+
