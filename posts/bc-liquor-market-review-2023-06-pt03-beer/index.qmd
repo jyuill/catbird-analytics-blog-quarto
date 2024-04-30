@@ -2,10 +2,10 @@
 title: "BC Liquor Sales Analysis: Beer 2016-2023"
 author: John Yuill
 date: '2023-11-26'
-categories: [liquor stats, reporting, analysis]
+categories: [liquor stats, beer, reporting, analysis]
 description-meta: BC Liquor Market Review beer sales data exploration and analysis covering the years 2016 to 2023 with trends, patterns and observations.
 draft: false
-#image: .png 
+image: bc-ldb-beer.png 
 toc: true
 toc-depth: 4
 toc-location: left
@@ -510,7 +510,6 @@ ggplotly(plot)
 -   With BC producers removed, **Canada - Other** is by far the most litres sold, by far the cheapest (smallest dot), and **hugely positive growth** in litre sales over the period.
 -   All other producers have seen negative growth in litres sold, with **US** and **Mexico** particularly hard hit.
 -   US decline is particularly noteworthy, dropping over 90%! Possibly due to more US brands being produced within Canada, such as Budweiser being brewed in Canada by Labatt (AB InBev) and Coors being brewed by Molson (now Molson Coors).
-
 
 ```{r, animation}
 #| echo: false
