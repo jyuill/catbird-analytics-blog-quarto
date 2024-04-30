@@ -526,7 +526,18 @@ ggplotly(plot)
 #   geom_hline(yintercept = 0, linetype='solid') +
 #   labs(title = paste0(ch_title,' ({frame_time})'), y="% chg over period", 
 #        x=paste0("annual litres sold: {frame_time}"))
-# 
+# animate(plot_anim, duration=10, fps=5)
+
+# this one worked previously - main difference is labels
+# plot_anim <- trend_yr_reg %>% 
+#   ggplot(aes(x=litres, y=pc_chg_litres, color=region, size=dollar_per_litre))+
+#            geom_point()+
+#   transition_time(year)+
+#   scale_x_continuous(labels=label_comma())+
+#   scale_y_continuous(labels=percent_format())+
+#   geom_hline(yintercept = 0, linetype='solid')+
+#   theme(axis.line.x = element_blank())+
+#   labs(y="% chg over period", x="litres sold")
 # animate(plot_anim, duration=10, fps=5)
 ```
 
