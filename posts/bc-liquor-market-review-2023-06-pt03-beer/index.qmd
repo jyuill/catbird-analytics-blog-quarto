@@ -4,14 +4,12 @@ author: John Yuill
 date: '2023-11-26'
 categories: [liquor stats, reporting, analysis]
 description-meta: BC Liquor Market Review beer sales data exploration and analysis covering the years 2016 to 2023 with trends, patterns and observations.
-draft: true
+draft: false
 #image: .png 
 toc: true
 toc-depth: 4
 toc-location: left
 date-modified: '`r Sys.Date()`'
-fig-height: 4
-fig-width: 6
 code-fold: true
 execute:
   echo: true
@@ -45,7 +43,7 @@ type_color <- c("Beer"=bpal[6], "Refresh Bev"=bpal[3], "Spirits"=bpal[4], "Wine"
 # colors for positive or negative values
 posneg_col <- brewer.pal(n=100, name='RdYlGn')[c(1,11)]
 # call functions file
-source('funcs.R')
+source(here('functions','funcs_lmr.R'))
 ```
 
 ```{r get_process_data}
@@ -227,7 +225,7 @@ plot <- trend_yr_qtr %>% ggplot(aes(x=end_qtr_dt, y=litres, group=1))+
 ggplotly(plot)
 ```
 
-The flat trend/recent increase in net \$ sales vs downward trend in litre sales shows up in gradual uptrend in net \$ per litre sales. Brewers are selling fewer litres but getting more money for each of them (on average).
+The flat trend/recent increase in net \$ sales vs downward trend in litre sales shows up in gradual uptrend in **net \$ per litre** sales. Brewers are selling fewer litres but getting more money for each of them (on average).
 
 ```{r}
 ch_title <- "BC Beer: Net $/Litre trend"
@@ -245,7 +243,7 @@ plot <- trend_yr %>% ggplot(aes(x=as.factor(year), y=dollar_per_litre, group=1))
     axis.title.y = element_text(color = bar_col, size=13)
   )
 
-plot
+ggplotly(plot)
 ```
 
 ### Sales by Category
@@ -275,13 +273,13 @@ trend_yr_cat <- trend_yr_cat %>% mutate(
 
 Looking at **litre consumption** for these 3 main categories:
 
--   volume drops in the BC and Import beer, with **other province beer actually increasing**.
--   in % terms, litre market share for BC remained steady just under 80%, while **other provinces took their market share out of imports**.
+-   volume drops for BC and Import beer, with **other province beer actually increasing**.
+-   in % terms, litre market share for BC producers remained steady just under 80%, while **other provinces took their market share out of imports**.
 
 ```{r}
 #| echo: false # false because otherwise can't fold code (?)
 #| layout-ncol: 2 # for side-by-side charts
-#| fig-height: 3
+#| fig-height: 4
 
 # reorder categories in order of litre sales
 trend_yr_cat$category <- fct_reorder(trend_yr_cat$category, trend_yr_cat$litres)
@@ -330,14 +328,14 @@ trend_yr_cat$category <- fct_relevel(trend_yr_cat$category,
                                      levels(trend_yr_cat$category)[2])
 ```
 
-```{r}
+```{r yoy_chg}
 # YoY % chg chart
 ch_title <- "Year-over-Year % change in Litre Sales"
-plot <- trend_yr_cat %>% ggplot(aes(x=year, y=pc_chg_litres,
-                                    text=paste0(year,": ",
+plot <- trend_yr_cat %>% 
+  ggplot(aes(x=year, y=pc_chg_litres, text=paste0(year,": ",
                                                 round(pc_chg_litres*100),"%")))+
-  geom_col(aes(fill=pc_chg_litres>0), show.legend=FALSE)+
-  scale_fill_manual(values=c("TRUE"=posneg_col[2], "FALSE"=posneg_col[1]))+
+  geom_col(aes(fill=pc_chg_litres>0), show.legend=FALSE) +
+  scale_fill_manual(values=c("TRUE"=posneg_col[2], "FALSE"=posneg_col[1])) +
   facet_grid(.~category)+
   scale_y_continuous(labels=percent_format())+
   geom_hline(yintercept=0)+
@@ -357,21 +355,22 @@ All these year-over-year changes add up - especially for Other Province beer and
 -   Imports **dropped in half**
 -   BC-produced beer saw modest decline.
 
-```{r}
-#| fig-height: 2
+```{r cum_chg}
+#| fig-height: 4
+#| fig-width: 3.5
 ch_title <- paste0("Total % chg: ", min(trend_yr_cat$year), " - ", max(trend_yr_cat$year))
 
-plot <- trend_yr_cat %>% ggplot(aes(x=fct_rev(category), y=pc_chg_lt_cum, label=))+geom_col(aes(fill=pc_chg_litres>0), show.legend = FALSE)+
-  geom_text(
+plot <- trend_yr_cat %>% ggplot(aes(x=fct_rev(category), y=pc_chg_lt_cum)) +
+  geom_col(aes(fill=pc_chg_lt_cum > 0), show.legend = FALSE) +
+  scale_fill_manual(values = c("TRUE" = posneg_col[2], "FALSE" = posneg_col[1])) +
+   geom_text(
       aes(label=percent(pc_chg_lt_cum, accuracy=1),
       hjust=0.5,
       vjust=ifelse(pc_chg_lt_cum>0, -0.5, 1.2)),
       size=3)+
   scale_y_continuous(limits=c(-1,1), expand=expansion(add=c(0.2,0.2)),
-                     labels=percent_format(), breaks=c(-1,0,1))+
-  scale_fill_manual(values=c("TRUE"=posneg_col[2], "FALSE"=posneg_col[1]))+
-  geom_hline(yintercept=0, linetype='solid')+
-  #coord_flip()+
+                     labels=percent_format(), breaks=c(-1,0,1)) +
+  geom_hline(yintercept=0, linetype='solid') +
   labs(title=ch_title, x="", y="")+
   theme(axis.ticks.x = element_blank(),
         axis.line = element_blank(),
@@ -388,7 +387,7 @@ Not surprisingly, the shift in volume from Imports to Other Provinces is reflect
 ```{r}
 #| echo: false # false because otherwise can't fold code (?)
 #| layout-ncol: 2 # for side-by-side charts
-#| fig-height: 3
+#| fig-height: 4
 
 # reorder categories in order of litre sales
 trend_yr_cat$category <- fct_reorder(trend_yr_cat$category, trend_yr_cat$netsales)
@@ -430,7 +429,7 @@ ggplotly(plot_right, tooltip = "text")
 
 ### Regional View
 
-BC LDB provides data for importers by country, allowing us to take a closer look at dynamics within this segment, relative to Other Provinces.
+BC LDB provides data for importers by country, allowing us to take a closer look at dynamics within this segment, relative to Other Provinces. (**BC producers removed** to zoom in on external producers)
 
 ```{r}
 # need a new field for region - need to go back to lmr_data
@@ -461,7 +460,7 @@ trend_yr_reg$region <- fct_reorder(trend_yr_reg$region, trend_yr_reg$litres)
 #| echo: false
 #| column: screen-inset-right
 #| layout-ncol: 2 # for side-by-side charts
-#| fig-height: 3
+#| fig-height: 4
 
 ch_title <- "Beer Litre Sales by Region"
 plot_left <- stacked_col_chart(title=ch_title, data=trend_yr_reg, x_var=year, y_var=litres, fill_var=region)
@@ -481,96 +480,67 @@ Some interesting dynamics show above:
 -   overall downward trend since 2017.
 -   Canadian provinces other than BC have been the gainers while other regions, most notable Europe, Mexico, US have seen declines.
 
-ADJUST FOR REGIONAL
-
-```{r}
-#| fig-height: 4
-#| fig-width: 8
-ch_title <- paste0("Total % chg: ", min(trend_yr_cat$year), " - ", max(trend_yr_cat$year))
-
-plot <- trend_yr_cat %>% ggplot(aes(x=fct_rev(category), y=pc_chg_lt_cum, label=))+geom_col(aes(fill=pc_chg_litres>0), show.legend = FALSE)+
-  geom_text(
-      aes(label=percent(pc_chg_lt_cum, accuracy=1),
-      hjust=0.5,
-      vjust=ifelse(pc_chg_lt_cum>0, -0.5, 1.2)),
-      size=3)+
-  scale_y_continuous(limits=c(-1,1), expand=expansion(add=c(0.2,0.2)),
-                     labels=percent_format(), breaks=c(-1,0,1))+
-  scale_fill_manual(values=c("TRUE"=posneg_col[2], "FALSE"=posneg_col[1]))+
-  geom_hline(yintercept=0, linetype='solid')+
-  #coord_flip()+
-  labs(title=ch_title, x="", y="")+
-  theme(axis.ticks.x = element_blank(),
-        axis.line = element_blank(),
-        panel.border = element_rect(fill=NA, size=0.3))
-plot
-```
-
 ### Regional breakout by litres, % change, \$/litre
 
-We can do a deeper dive on regional differences by comparing not only litre sales but also % change over time, and \$/litre (proxy for price):
-
--   **negative growth** over the period, with the **exception of** '**Canada - other provinces'**.
+We can do a deeper dive on regional differences by comparing not only litre sales but also **% change in litre sales over time**, and **\$/litre** (proxy for price):
 
 ::: callout-note
-'Canada - other' excluded for simplicity, due to tiny amount of sales.
+BC producers excluded to zoom in on external producer dynamics.
+
+'Other Country' excluded for simplicity, due to tiny amount of sales.
 :::
 
 ```{r}
 excl <- "Other Country" # excluding 'other country' as minimal
+ch_title <- "% Change in Annual Litre Sales over Period vs Latest Yr Litres"
 plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year) & region!=excl) %>% 
   ggplot(aes(x=litres, y=pc_chg_lt_cum, color=region, size=dollar_per_litre))+
            geom_point()+
-  scale_x_continuous(labels=label_comma())+
+  scale_x_continuous(labels=label_comma(), expand=c(0.02,0.05))+
   scale_y_continuous(labels=percent_format())+
+  scale_size(range = c(1,6)) + 
   geom_hline(yintercept = 0, linetype='solid')+
   theme(axis.line.x = element_blank())+
-  labs(y="% chg over period", x="litres sold")
+  labs(title= ch_title,  
+       y="% chg in annual litre sales over period", 
+       x="litres sold in most recent year")
 ggplotly(plot)
 ```
 
--   BC beer is by far the most volume sold, and also by far the cheapest (smallest dot).
--   Europe, Asia, Mexico, and the US (in that order) have all had decreases in litres sold.
--   US decline is particularly noteworthy, dropping over 80%! Possibly due to more US brands being produced within Canada, such as Budweiser being brewed in Canada by Labatt (AB InBev) and Coors being brewed by Molson (now Molson Coors).
+-   With BC producers removed, **Canada - Other** is by far the most litres sold, by far the cheapest (smallest dot), and **hugely positive growth** in litre sales over the period.
+-   All other producers have seen negative growth in litres sold, with **US** and **Mexico** particularly hard hit.
+-   US decline is particularly noteworthy, dropping over 90%! Possibly due to more US brands being produced within Canada, such as Budweiser being brewed in Canada by Labatt (AB InBev) and Coors being brewed by Molson (now Molson Coors).
 
-**Remove BC** to zoom in on others.
 
-```{r}
-plot <- trend_yr_reg %>% filter(year==max(trend_yr_reg$year) & region!='Canada - BC' & region!=excl) %>% 
-  ggplot(aes(x=litres, y=pc_chg_lt_cum, color=region, size=dollar_per_litre))+
-           geom_point()+
-  scale_x_continuous(labels=label_comma())+
-  scale_y_continuous(labels=percent_format())+
-  geom_hline(yintercept = 0, linetype='solid')+
-  theme(axis.line.x = element_blank())+
-  labs(y="% chg over period", x="litres sold")
-ggplotly(plot)
-```
-
-Patterns even more apparent with in zoomed-in view, further emphasizing the growth of 'Canada - Other', with much lower price/litre than others.
-
-#### Changes in Regional Sales Over Time
-
-Here's an animation showing the changes over time, for some extra insight:
-
-```{r}
-#| fig-width: 10
-plot_anim <- trend_yr_reg %>% filter(region!=excl) %>%
-  ggplot(aes(x=litres, y=pc_chg_litres, color=region, size=dollar_per_litre))+
-           geom_point()+
-  transition_time(year)+
-  scale_x_continuous(labels=label_comma())+
-  scale_y_continuous(labels=percent_format())+
-  geom_hline(yintercept = 0, linetype='solid')+
-  theme(axis.line.x = element_blank())+
-  labs(y="% chg over period", x="litres sold")
-animate(plot_anim, duration=10, fps=5)
-#anim_save("animated_bubble_chart.gif")
+```{r, animation}
+#| echo: false
+# works beautifully in RStudio, but not in HTML output :(
+# ch_title <- "Year by Year Changes in Litres Sold"
+# plot_anim <- trend_yr_reg %>% filter(region!=excl) %>%
+#   ggplot(aes(x=litres, y=pc_chg_litres, color=region, size=dollar_per_litre))+
+#            geom_point()+
+#   transition_time(year)+
+#   scale_x_continuous(labels=label_comma()) +
+#   scale_y_continuous(labels=percent_format()) +
+#   scale_size(range = c(1,8)) +
+#   geom_hline(yintercept = 0, linetype='solid') +
+#   labs(title = paste0(ch_title,' ({frame_time})'), y="% chg over period", 
+#        x=paste0("annual litres sold: {frame_time}"))
+# 
+# animate(plot_anim, duration=10, fps=5)
 ```
 
 ### Beer: Wrap-up and Next Up
 
-Some interesting dynamics happening with beer sales in BC.
+Some interesting dynamics happening with beer sales in BC, with a couple of the main themes being:
+
+-   gradual downward trend in litre sales
+-   stable market share for BC producers, around 80%.
+-   strong growth (90%) in litre sales from producers in other Canadian provinces almost entirely at the expense of beer imported from outside Canada.
+
+#### Next Up
+
+Next article will drill into details of BC producer categories: Commercial beer, Regional beer, Microbrew beer.
 
 ### Footnotes
 
@@ -580,5 +550,3 @@ Notes on 'net \$ sales':
 -   calculating average **net dollar value per litre for beverage categories gives unrealistically low numbers** compared to retail prices in BC liquor stores. (*Beer at average \$4/litre? Not even the cheapest beer on the [BC Liquor Stores](https://www.bcliquorstores.com/product-catalogue?category=beer&sort=currentPrice:desc&page=1) website.*)
 -   there is likely additional factors related to BC LDB pricing structure, wholesaling, etc.
 -   best to **consider average net dollar value per litre referred to below as relative indicator**.
-
-## 
