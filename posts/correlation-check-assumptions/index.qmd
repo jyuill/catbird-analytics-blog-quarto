@@ -370,7 +370,7 @@ str(ans)
 
 -   **conclusion:** all variables are numeric, so we are on solid ground here.
 
-### **Absence of Outliers** 
+### **Absence of Outliers**
 
 -   **criteria:** ideally, no outliers, as they can have a disproportionate affect on the correlation coefficient.
 -   **method:** boxplot for visual inspection.

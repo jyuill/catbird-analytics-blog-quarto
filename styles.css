@@ -41,3 +41,9 @@
 .quarto-text-block-banner-color {
   /* color: white; */
 }
+
+/* for ggplotly plot size management - doesn't help */
+/* intended to remove gap below charts when custom height and width applied */
+.plot-container {
+  margin-bottom: 0 !important;
+}

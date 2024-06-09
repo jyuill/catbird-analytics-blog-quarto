@@ -1,7 +1,7 @@
 ---
 title: "BC Liquor Sales Analysis: Beer 2016-2023"
 author: John Yuill
-date: '2023-11-26'
+date: '2024-03-26'
 categories: [liquor stats, beer, reporting, analysis]
 description-meta: BC Liquor Market Review beer sales data exploration and analysis covering the years 2016 to 2023 with trends, patterns and observations.
 draft: false
@@ -105,9 +105,7 @@ This is a continuation of a previous analysis of [annual liquor sales in British
 
 Data shown here goes back to beginning of 2016 (BC LDB fiscal yr 2016 Q4).
 
-::: {.callout-note icon="false"}
 **As mentioned in previous articles:** *my expertise is in data analysis, not the liquor industry, so the emphasis is on exploring what the data can tell us. Industry-insider context may be lacking. In the interest of promoting data analysis and learning, I am sharing most of the R code used to process the data - hence the expandable 'Code' options.*
-:::
 
 ## Beer Sales Trends in BC
 
@@ -174,7 +172,10 @@ trend_yr <- fn_trend_yr_smry(data=lmr_data_cy)
 
 Beer sales have been pretty stable over the last few years, with net \$ sales peaking in 2017, recovering in 2022 in line with inflation. Overall **slight downward trend**, most noticeable in litre consumption.
 
-```{r, sales dual-axis}
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+# sizes not ideal BUT...setting smaller (3, 5) makes it out of sync with plotly plots below
 # dual axis - not usually recommended but works ok here 
 # - using ggplot because doesn't work well with ggplotly
 ch_title <- "BC Beer: Net Sales $ + Litre Sales trend"
@@ -213,6 +214,7 @@ trend_yr_qtr <- lmr_data_cy %>% group_by(end_qtr_dt) %>% summarize(
 Breaking out **litre sales** by quarter confirms the steady **downward trend** within seasonal cycles**.**
 
 ```{r}
+# plotly charts don't respond to in-line size settings
 ch_title <- "BC Beer Litre Sales by Qtr, with Trend"
 plot <- trend_yr_qtr %>% ggplot(aes(x=end_qtr_dt, y=litres, group=1))+
   geom_line(color=bar_col, size=1.4)+
@@ -223,11 +225,17 @@ plot <- trend_yr_qtr %>% ggplot(aes(x=end_qtr_dt, y=litres, group=1))+
                      limits=c(0,max(trend_yr_qtr$litres)))+
   labs(title=ch_title, x="")
 ggplotly(plot)
+# tried to use this code suggested by chatgpt for more appropriate sizing
+# size worked but left gap below; layout settings didn't do anything
+ggplotly(plot, width=440, height=260) %>% 
+  layout(autosize = TRUE, margin = list(l = 0, r = 0, b = 0, t = 0, pad = 0))
+
 ```
 
 The flat trend/recent increase in net \$ sales vs downward trend in litre sales shows up in gradual uptrend in **net \$ per litre** sales. Brewers are selling fewer litres but getting more money for each of them (on average).
 
 ```{r}
+
 ch_title <- "BC Beer: Net $/Litre trend"
 plot <- trend_yr %>% ggplot(aes(x=as.factor(year), y=dollar_per_litre, group=1))+
   geom_line(color=bar_col, size=2)+
@@ -484,11 +492,9 @@ Some interesting dynamics show above:
 
 We can do a deeper dive on regional differences by comparing not only litre sales but also **% change in litre sales over time**, and **\$/litre** (proxy for price):
 
-::: callout-note
 BC producers excluded to zoom in on external producer dynamics.
 
 'Other Country' excluded for simplicity, due to tiny amount of sales.
-:::
 
 ```{r}
 excl <- "Other Country" # excluding 'other country' as minimal
@@ -538,6 +544,26 @@ ggplotly(plot)
 #   theme(axis.line.x = element_blank())+
 #   labs(y="% chg over period", x="litres sold")
 # animate(plot_anim, duration=10, fps=5)
+```
+
+For a year-by-year view...
+
+```{r facet_yr}
+#| fig-height: 6
+#| fig-width: 10
+# faceted view by year since animation doesn't work
+ch_title <- "Year by Year Changes in Litres Sold"
+plot_yr <- trend_yr_reg %>% filter(region!=excl) %>%
+   ggplot(aes(x=litres, y=pc_chg_litres, color=region, size=dollar_per_litre))+
+            geom_point()+
+   facet_wrap(~year)+
+   scale_x_continuous(labels=label_comma()) +
+   scale_y_continuous(labels=percent_format()) +
+   scale_size(range = c(1,8)) +
+   geom_hline(yintercept = 0, linetype='solid') +
+   labs(title = ch_title, y="% chg over period", 
+        x=paste0("annual litres sold: {frame_time}"))
+plot_yr
 ```
 
 ### Beer: Wrap-up and Next Up
