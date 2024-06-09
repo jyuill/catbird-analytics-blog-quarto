@@ -227,8 +227,8 @@ plot <- trend_yr_qtr %>% ggplot(aes(x=end_qtr_dt, y=litres, group=1))+
 ggplotly(plot)
 # tried to use this code suggested by chatgpt for more appropriate sizing
 # size worked but left gap below; layout settings didn't do anything
-ggplotly(plot, width=440, height=260) %>% 
-  layout(autosize = TRUE, margin = list(l = 0, r = 0, b = 0, t = 0, pad = 0))
+#ggplotly(plot, width=440, height=260) %>% 
+#  layout(autosize = TRUE, margin = list(l = 0, r = 0, b = 0, t = 0, pad = 0))
 
 ```
 
