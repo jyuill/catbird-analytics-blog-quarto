@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.547">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="John Yuill">
+<meta name="dcterms.date" content="2024-03-24">
+<meta name="description" content="Calculating a correlation coefficient aka R value does not guarantee that the number is valid. Correlation calculation are based on key assumptions that should be checked to ensure that the linear correlation is providing relevant indication of relationship between two variables.">
+
+<title>Catbird Analytics - Correlation is NOT Causation…It May Not Even Be Correlation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-5XF0SHH0KW"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-5XF0SHH0KW', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"implied",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary","functionality","tracking","targeting"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Catbird Analytics - Correlation is NOT Causation…It May Not Even Be Correlation">
+<meta property="og:description" content="">
+<meta property="og:image" content="img/resid-plot.png">
+<meta property="og:site_name" content="Catbird Analytics">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Catbird Analytics</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/johnyuill/"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jyuill"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/johnyuill"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">Intro</a></li>
+  <li><a href="#the-point-of-correlation" id="toc-the-point-of-correlation" class="nav-link" data-scroll-target="#the-point-of-correlation">The Point of Correlation</a></li>
+  <li><a href="#the-six-assumptions" id="toc-the-six-assumptions" class="nav-link" data-scroll-target="#the-six-assumptions">The Six Assumptions</a></li>
+  <li><a href="#look-at-the-data" id="toc-look-at-the-data" class="nav-link" data-scroll-target="#look-at-the-data">Look at the Data</a></li>
+  <li><a href="#checking-assumptions" id="toc-checking-assumptions" class="nav-link" data-scroll-target="#checking-assumptions">Checking Assumptions</a>
+  <ul>
+  <li><a href="#linearity-of-relationship" id="toc-linearity-of-relationship" class="nav-link" data-scroll-target="#linearity-of-relationship">Linearity of relationship</a></li>
+  <li><a href="#homoscedasticity" id="toc-homoscedasticity" class="nav-link" data-scroll-target="#homoscedasticity"><strong>Homoscedasticity</strong></a>
+  <ul class="collapse">
+  <li><a href="#residuals-plots" id="toc-residuals-plots" class="nav-link" data-scroll-target="#residuals-plots">Residuals Plots</a></li>
+  <li><a href="#breusch-pagan-test" id="toc-breusch-pagan-test" class="nav-link" data-scroll-target="#breusch-pagan-test">Breusch-Pagan Test</a></li>
+  </ul></li>
+  <li><a href="#normality" id="toc-normality" class="nav-link" data-scroll-target="#normality"><strong>Normality</strong></a>
+  <ul class="collapse">
+  <li><a href="#qq-plots" id="toc-qq-plots" class="nav-link" data-scroll-target="#qq-plots">QQ Plots</a></li>
+  <li><a href="#shapiro-wilk-test" id="toc-shapiro-wilk-test" class="nav-link" data-scroll-target="#shapiro-wilk-test">Shapiro-Wilk Test</a></li>
+  </ul></li>
+  <li><a href="#interval-or-ratio-scale" id="toc-interval-or-ratio-scale" class="nav-link" data-scroll-target="#interval-or-ratio-scale"><strong>Interval or Ratio Scale</strong></a></li>
+  <li><a href="#absence-of-outliers" id="toc-absence-of-outliers" class="nav-link" data-scroll-target="#absence-of-outliers"><strong>Absence of Outliers</strong></a>
+  <ul class="collapse">
+  <li><a href="#boxplot" id="toc-boxplot" class="nav-link" data-scroll-target="#boxplot">Boxplot</a></li>
+  </ul></li>
+  <li><a href="#independence-of-observations" id="toc-independence-of-observations" class="nav-link" data-scroll-target="#independence-of-observations"><strong>Independence of Observations</strong></a></li>
+  </ul></li>
+  <li><a href="#is-correlation-valid-for-this-data-set" id="toc-is-correlation-valid-for-this-data-set" class="nav-link" data-scroll-target="#is-correlation-valid-for-this-data-set">Is Correlation Valid for this Data Set?</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
+  <ul>
+  <li><a href="#bonus-what-to-do-when-pearson-correlation-fails" id="toc-bonus-what-to-do-when-pearson-correlation-fails" class="nav-link" data-scroll-target="#bonus-what-to-do-when-pearson-correlation-fails">Bonus: What to do when Pearson Correlation fails?</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Correlation is NOT Causation…It May Not Even Be Correlation</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">analysis</div>
+    <div class="quarto-category">r</div>
+    <div class="quarto-category">statistics</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>John Yuill </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 24, 2024</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">March 24, 2024</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="intro" class="level2">
+<h2 class="anchored" data-anchor-id="intro">Intro</h2>
+<p>Most people recognize that <strong>correlation does not imply causation</strong>, and that if correlation between two variables is detected, further steps must be taken to determine if there is indeed a causal relationship.</p>
+<p>But before we even get to pinning down causation, there are <strong>important</strong> <strong>steps to ensure that the correlation is valid</strong>. Correlation calculations are based on specific assumptions that, if not met, render the outcome of these calculations less than reliable. Proceeding without checking these assumptions can lead to erroneous conclusions and bad decisions.</p>
+<p>So let’s talk about how we can dig into these assumptions and check how solid the ground is that we are standing on when referencing a correlation coefficient.</p>
+</section>
+<section id="the-point-of-correlation" class="level2">
+<h2 class="anchored" data-anchor-id="the-point-of-correlation">The Point of Correlation</h2>
+<p>A correlation coefficient is intended to <strong>summarize the presence, strength and direction</strong> of a relationship between two variables. This has a variety of applications, including <strong>predictive analysis</strong>. While you can’t predict the value of one variable from another based on a correlation coefficient alone - you need linear regression (or related method) for that - you can form an expectation of how one variable will change (or not) based on changes in the other.</p>
+<p>For example, if you have a strong correlation between variables (say greater than 0.5) you can:</p>
+<ul>
+<li>make decisions based on expectation that as one variable rises, the other will as well, even in the absence of direct causality.</li>
+<li>take actions to influence one variable in hopes of influencing the other, possibly as a test of causality.</li>
+<li>use this information to include or exclude a variable in a statistical model, such as linear regression, causal impact, and more.</li>
+</ul>
+<p>If the correlation coefficient is not a reliable summary of the relationship, this can lead to <strong>incorrect assumptions, wasted time and effort, and unexpected negative consequences</strong> due to decision-making based on faulty information.</p>
+<p>So this is why it is important to understand when we can rely on a correlation calculation, and when we can’t.</p>
+</section>
+<section id="the-six-assumptions" class="level2">
+<h2 class="anchored" data-anchor-id="the-six-assumptions">The Six Assumptions</h2>
+<p>There are different ways to calculate correlation, but by far the most common is the <a href="https://en.wikipedia.org/wiki/Pearson_correlation_coefficient">Pearson Correlation Coefficient</a> for linear correlation. This is the formula that results in the famous ‘r’ value, ranging from 1 to -1, where 1 is perfect positive correlation (same direction), -1 is perfect negative correlation (opposite direction) and 0 is no correlation. Importantly, the accuracy of this calculation depends on <strong>several key assumptions</strong>, nicely described by chatGPT:</p>
+<p>“For the Pearson correlation coefficient to provide meaningful and reliable results, several key assumptions must be met:</p>
+<ol type="1">
+<li><p><strong>Linearity</strong>: The relationship between the two variables is linear, meaning the best-fit line through the data points is a straight line. This implies that as one variable increases or decreases, the other variable does so in a consistent manner.</p></li>
+<li><p><strong>Homoscedasticity</strong>: The variances along the line of best fit remain similar as we move along the line. This means that the spread (variance) of data points around the line of best fit is roughly constant across all levels of the independent variable.</p></li>
+<li><p><strong>Normality</strong>: The Pearson correlation assumes that both variables are normally distributed. More specifically, the assumption is about the normality of the distribution of values for each variable, and ideally, the joint normality of the two variables. However, in practice, it’s the distribution of the variables themselves that’s most scrutinized.</p></li>
+<li><p><strong>Interval or Ratio Scale</strong>: Both variables should be measured on either an interval or ratio scale. This means that the variables should represent numeric values where meaningful amounts of differences between measurements can be determined.</p></li>
+<li><p><strong>Absence of Outliers</strong>: Outliers can have a disproportionate effect on the correlation coefficient, pulling the line of best fit and therefore the correlation measure in their direction. It’s important that there are no outliers in the data, or that their impact is minimized, perhaps through robust statistical techniques.</p></li>
+<li><p><strong>Independence of Observations</strong>: Each pair of observations is independent of each other pair. This means the data points collected do not influence each other, which is particularly relevant in time-series data where this assumption might be violated due to autocorrelation.</p></li>
+</ol>
+<p>When these assumptions are not met, the Pearson correlation coefficient might not be the appropriate measure of association between two variables.”</p>
+</section>
+<section id="look-at-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="look-at-the-data">Look at the Data</h2>
+<p>First and foremost: <strong>look at the data</strong>. This is the beautifully illustrated with <strong>Anscombe’s quartet</strong>, where each data set has the same Pearson’s correlation value (among other summary metrics).</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">## put functions here</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>ans_cor <span class="ot">&lt;-</span> <span class="cf">function</span>(data, x, y, anum) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  xe <span class="ot">&lt;-</span> <span class="fu">enquo</span>(x) <span class="co"># convert var reference</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  ye <span class="ot">&lt;-</span> <span class="fu">enquo</span>(y) <span class="co"># convert var reference</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  xes <span class="ot">&lt;-</span> <span class="fu">as.character</span>(xe)[<span class="dv">2</span>] <span class="co"># convert to string for use in annotation</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  yes <span class="ot">&lt;-</span> <span class="fu">as.character</span>(ye)[<span class="dv">2</span>] </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  x_lab <span class="ot">&lt;-</span> <span class="fu">max</span>(data[[xes]])<span class="sc">*</span><span class="fl">0.75</span> <span class="co"># set x location for annotation</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  y_lab <span class="ot">&lt;-</span> <span class="fu">max</span>(data[[yes]]<span class="sc">*</span><span class="fl">1.05</span>) <span class="co"># set y location for annotation</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="sc">!!</span>xe, <span class="at">y=</span><span class="sc">!!</span>ye))<span class="sc">+</span><span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">se=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'loess'</span>, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">color=</span><span class="st">'green'</span>, <span class="at">linetype=</span><span class="st">'dashed'</span>, <span class="at">size=</span><span class="fl">0.8</span>)<span class="sc">+</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_cor</span>()<span class="sc">+</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">annotate</span>(<span class="at">geom=</span><span class="st">'text'</span>,<span class="at">y=</span>y_lab, <span class="at">x=</span>x_lab, <span class="at">label=</span>anum, <span class="at">size=</span><span class="dv">8</span>, <span class="at">color=</span><span class="st">'red'</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  plot</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># run functions to get info</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>a1 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x1, <span class="at">y=</span>y1, <span class="at">anum=</span><span class="st">'I'</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>a2 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x2, <span class="at">y=</span>y2, <span class="at">anum=</span><span class="st">'II'</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>a3 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x3, <span class="at">y=</span>y3, <span class="at">anum=</span><span class="st">'III'</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>a4 <span class="ot">&lt;-</span> <span class="fu">ans_cor</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x4, <span class="at">y=</span>y4, <span class="at">anum=</span><span class="st">'IV'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Here are the Anscombe quartet charts - blue line is linear regression, green line is a loess smoothed line as reference. Ideally, it should track close to the blue line if linearity is strong.</p>
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/ans_qt-1.png" class="img-fluid" width="336"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/ans_qt-2.png" class="img-fluid" width="336"></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/ans_qt-3.png" class="img-fluid" width="336"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/ans_qt-4.png" class="img-fluid" width="336"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="checking-assumptions" class="level2">
+<h2 class="anchored" data-anchor-id="checking-assumptions">Checking Assumptions</h2>
+<p>So clearly some reason for skepticism about whether the assumptions hold up in most of these cases. Let’s take a closer look, one at a time:</p>
+<section id="linearity-of-relationship" class="level3">
+<h3 class="anchored" data-anchor-id="linearity-of-relationship">Linearity of relationship</h3>
+<ul>
+<li><strong>criteria:</strong> relationship between the two variables is linear, best-fit line through the data points is a straight line, as one variable increases or decreases, other variable does so in a consistent manner.</li>
+<li><strong>method:</strong> visual inspection via scatterplot, preferably with linear regression line.</li>
+<li><strong>conclusion:</strong>
+<ul>
+<li><strong>I:</strong> <em>somewhat</em>.</li>
+<li><strong>II:</strong> <strong>no;</strong> at lower x values but then inverts.</li>
+<li><strong>III:</strong> <em>yes</em> - except outlier.</li>
+<li><strong>IV:</strong> <strong>no.</strong></li>
+</ul></li>
+</ul>
+<p>So right away that knocks out <strong>cases II and IV</strong>:</p>
+<ul>
+<li>Pearson correlation coefficient between variables is <strong>NOT going to be a useful, reliable statistic</strong> for understanding the relationship between the variables involved.</li>
+</ul>
+<p>Let’s continue on with testing further assumptions <strong>focusing on cases I and III</strong> (with cases II and IV for additional reference).</p>
+</section>
+<section id="homoscedasticity" class="level3">
+<h3 class="anchored" data-anchor-id="homoscedasticity"><strong>Homoscedasticity</strong></h3>
+<ul>
+<li><strong>criteria:</strong> variances along the line of best fit remain similar as we move along the line; spread (variance) of data points around the line of best fit is roughly constant.</li>
+<li><strong>method:</strong> residuals plot, Breusch-Pagan test</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>homoScedTest <span class="ot">&lt;-</span> <span class="cf">function</span>(data, x, y, anum) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  xe <span class="ot">&lt;-</span> <span class="fu">enquo</span>(x) <span class="co"># convert var reference</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  ye <span class="ot">&lt;-</span> <span class="fu">enquo</span>(y) <span class="co"># convert var reference</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  xes <span class="ot">&lt;-</span> <span class="fu">as.character</span>(xe)[<span class="dv">2</span>] <span class="co"># convert to string for use in annotation</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  yes <span class="ot">&lt;-</span> <span class="fu">as.character</span>(ye)[<span class="dv">2</span>] </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  x_lab <span class="ot">&lt;-</span> <span class="fu">max</span>(data[[xes]])<span class="sc">*</span><span class="fl">0.75</span> <span class="co"># set x location for annotation</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  y_lab <span class="ot">&lt;-</span> <span class="fu">max</span>(data[[yes]]) <span class="co"># set y location for annotation</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  formula <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="fu">quo_name</span>(ye), <span class="st">" ~ "</span>, <span class="fu">quo_name</span>(xe))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># calculate model</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  model <span class="ot">&lt;-</span> <span class="fu">lm</span>(formula, <span class="at">data=</span>data)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># add residuals and fitted values to the data for plotting</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  data<span class="sc">$</span>residuals <span class="ot">&lt;-</span> <span class="fu">residuals</span>(model)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  data<span class="sc">$</span>fitted <span class="ot">&lt;-</span> <span class="fu">fitted</span>(model)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  x_lab <span class="ot">&lt;-</span> <span class="fu">min</span>(data<span class="sc">$</span>fitted)<span class="sc">+</span><span class="fl">0.5</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  y_lab <span class="ot">&lt;-</span> <span class="fu">max</span>(data<span class="sc">$</span>residuals)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="do">## generate plot</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>fitted, <span class="at">y=</span>residuals))<span class="sc">+</span><span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>, <span class="at">linetype=</span><span class="st">'dashed'</span>, <span class="at">color=</span><span class="st">'red'</span>)<span class="sc">+</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend=</span>fitted, <span class="at">yend=</span><span class="dv">0</span>), <span class="at">alpha=</span><span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">annotate</span>(<span class="at">geom=</span><span class="st">'text'</span>,<span class="at">y=</span>y_lab, <span class="at">x=</span>x_lab, <span class="at">label=</span>anum, <span class="at">size=</span><span class="dv">8</span>, <span class="at">color=</span><span class="st">'red'</span>)<span class="sc">+</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">labs</span>(<span class="at">x=</span><span class="st">'Fitted Values'</span>, <span class="at">y=</span><span class="st">'Residuals'</span>, <span class="at">title=</span><span class="st">'Residual Plot'</span>)<span class="sc">+</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_minimal</span>()</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Breusch-Pagan test for homoscedasticity</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  bpt_results <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># put results in table</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  bpt_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">case=</span>anum, <span class="at">BP_statistic=</span>bpt_results<span class="sc">$</span>statistic, <span class="at">p_value=</span>bpt_results<span class="sc">$</span>p.value)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row.names</span>(bpt_row) <span class="ot">&lt;-</span> anum</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  bpt_row <span class="ot">&lt;-</span> bpt_row <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">conclusion=</span><span class="fu">ifelse</span>(p_value<span class="sc">&gt;</span><span class="fl">0.05</span>,<span class="st">"Homoscedasticity: null hypothesis holds."</span>,<span class="st">"Homoscedasticity issues: null hypotheis fails."</span>)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return results from plot and BP test</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">plot=</span>plot, <span class="at">bpt=</span>bpt_results,<span class="at">bpt_row=</span>bpt_row)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co">#anss &lt;- homoScedTest(ans, x1, y1, 'I')</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co">#anss$plot</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="co">#anss$bpt</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hskt_01 <span class="ot">&lt;-</span> <span class="fu">homoScedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x1, <span class="at">y=</span>y1, <span class="at">anum=</span><span class="st">'I'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>hskt_02 <span class="ot">&lt;-</span> <span class="fu">homoScedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x2, <span class="at">y=</span>y2, <span class="at">anum=</span><span class="st">'II'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>hskt_03 <span class="ot">&lt;-</span> <span class="fu">homoScedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x3, <span class="at">y=</span>y3, <span class="at">anum=</span><span class="st">'III'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>hskt_04 <span class="ot">&lt;-</span> <span class="fu">homoScedTest</span>(<span class="at">data=</span>ans, <span class="at">x=</span>x4, <span class="at">y=</span>y4, <span class="at">anum=</span><span class="st">'IV'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="residuals-plots" class="level4">
+<h4 class="anchored" data-anchor-id="residuals-plots">Residuals Plots</h4>
+<p>Let’s take a look at residuals plotted over the fitted values y volumes. In other words, using a simple linear regression model to predict the y-values based on x-values, what are the differences between the predicted values vs actual values provided? These are the residuals. In context of homoscedasticity, is there a <strong>balanced pattern in the residuals,</strong> OR are they changing (in particular growing) as we move to higher values of prediction?</p>
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/resid_plot-1.png" class="img-fluid" width="384"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/resid_plot-2.png" class="img-fluid" width="384"></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/resid_plot-3.png" class="img-fluid" width="384"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/resid_plot-4.png" class="img-fluid" width="384"></p>
+</div>
+</div>
+</div>
+<p>None of these look very good from a residuals point of view. Case I is the closest although residuals seem to be increasing as we move along the y-axis. This is especially important if we want to understand if the correlation will hold over larger values.</p>
+</section>
+<section id="breusch-pagan-test" class="level4">
+<h4 class="anchored" data-anchor-id="breusch-pagan-test">Breusch-Pagan Test</h4>
+<p>Breusch-Pagan is a statistical test that can be used to assess homoscedasticity. The <strong>NULL hypothesis is that the residuals have homoscedasticity</strong> (consistency in residuals), and the test evaluates how well the dataset supports this hypothesis. A p-value is used to estimate the likelihood that the current dataset is consistent with the NULL hypothesis. Low p-value (&lt;0.05) indicates that the NULL hypothesis is not supported and the data is likely NOT homoscedastic and the assumption required for Pearson Correlation does not hold.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>bptr_table <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(hskt_01<span class="sc">$</span>bpt_row, hskt_02<span class="sc">$</span>bpt_row, </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                        hskt_03<span class="sc">$</span>bpt_row, hskt_04<span class="sc">$</span>bpt_row)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>bptr_table[] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(bptr_table, <span class="cf">function</span>(x)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">is.numeric</span>(x)) <span class="fu">round</span>(x,<span class="dv">2</span>) <span class="cf">else</span> (x))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(bptr_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="rfligglrcy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rfligglrcy table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#rfligglrcy thead, #rfligglrcy tbody, #rfligglrcy tfoot, #rfligglrcy tr, #rfligglrcy td, #rfligglrcy th {
+  border-style: none;
+}
+
+#rfligglrcy p {
+  margin: 0;
+  padding: 0;
+}
+
+#rfligglrcy .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#rfligglrcy .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#rfligglrcy .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#rfligglrcy .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#rfligglrcy .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#rfligglrcy .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rfligglrcy .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#rfligglrcy .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#rfligglrcy .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#rfligglrcy .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#rfligglrcy .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#rfligglrcy .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#rfligglrcy .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#rfligglrcy .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#rfligglrcy .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#rfligglrcy .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#rfligglrcy .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#rfligglrcy .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#rfligglrcy .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rfligglrcy .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#rfligglrcy .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#rfligglrcy .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#rfligglrcy .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rfligglrcy .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#rfligglrcy .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#rfligglrcy .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rfligglrcy .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rfligglrcy .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#rfligglrcy .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rfligglrcy .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#rfligglrcy .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rfligglrcy .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#rfligglrcy .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rfligglrcy .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#rfligglrcy .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rfligglrcy .gt_left {
+  text-align: left;
+}
+
+#rfligglrcy .gt_center {
+  text-align: center;
+}
+
+#rfligglrcy .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#rfligglrcy .gt_font_normal {
+  font-weight: normal;
+}
+
+#rfligglrcy .gt_font_bold {
+  font-weight: bold;
+}
+
+#rfligglrcy .gt_font_italic {
+  font-style: italic;
+}
+
+#rfligglrcy .gt_super {
+  font-size: 65%;
+}
+
+#rfligglrcy .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#rfligglrcy .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#rfligglrcy .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#rfligglrcy .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#rfligglrcy .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#rfligglrcy .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#rfligglrcy .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="case" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">case</th>
+<th id="BP_statistic" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">BP_statistic</th>
+<th id="p_value" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">p_value</th>
+<th id="conclusion" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">conclusion</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="case">I</td>
+<td class="gt_row gt_right" headers="BP_statistic">0.66</td>
+<td class="gt_row gt_right" headers="p_value">0.42</td>
+<td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="case">II</td>
+<td class="gt_row gt_right" headers="BP_statistic">0.00</td>
+<td class="gt_row gt_right" headers="p_value">1.00</td>
+<td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="case">III</td>
+<td class="gt_row gt_right" headers="BP_statistic">2.72</td>
+<td class="gt_row gt_right" headers="p_value">0.10</td>
+<td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="case">IV</td>
+<td class="gt_row gt_right" headers="BP_statistic">1.18</td>
+<td class="gt_row gt_right" headers="p_value">0.28</td>
+<td class="gt_row gt_left" headers="conclusion">Homoscedasticity: null hypothesis holds.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Results here are interesting: NULL hypothesis of homoscedasticity is upheld, to varying degrees for each case, including case 2 where p-value = 1.</p>
+<ul>
+<li><strong>Homoscedasticity conclusion:</strong>
+<ul>
+<li><p>Based on residuals plots, there are clearly <strong>issues with homoscedasticity</strong> to varying degrees with all the datasets.</p></li>
+<li><p>Visual inspection of residuals charts in these cases seems much more reliable than the Breusch-Pagan test.</p></li>
+<li><p><strong>Small sample size</strong> affects reliability of Breusch-Pagan test: at least 30 observations recommended for reliable BP test, and at least 50 is even better. Here we are dealing with only 11 observations.</p></li>
+</ul></li>
+</ul>
+<p>The homoscedasticity testing gives more reasons to be skeptical about the value of Pearson correlation for this data.</p>
+</section>
+</section>
+<section id="normality" class="level3">
+<h3 class="anchored" data-anchor-id="normality"><strong>Normality</strong></h3>
+<ul>
+<li><strong>criteria:</strong> Pearson correlation assumes that each variable is normally distributed.</li>
+<li><strong>methodology:</strong> QQ plot, Shapiro-Wilk test</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>normalTest <span class="ot">&lt;-</span> <span class="cf">function</span>(data, var, vars) {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># specify variables covered - for chart title</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  vars <span class="ot">&lt;-</span> <span class="fu">paste0</span>(vars, <span class="at">collapse=</span><span class="st">', '</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert variable name</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  vare <span class="ot">&lt;-</span> <span class="fu">enquo</span>(var)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert to string for use with shapiro-wilk</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  vare_char <span class="ot">&lt;-</span> <span class="fu">as.character</span>(vare)[[<span class="dv">2</span>]]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create plot</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">sample=</span><span class="sc">!!</span>vare))<span class="sc">+</span><span class="fu">stat_qq</span>()<span class="sc">+</span><span class="fu">stat_qq_line</span>()<span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Variable "</span>,vars,<span class="st">": Q-Q Plot"</span>))<span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># check shapiro-wilk test</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  sw_test <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(data[[vare_char]])</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  sw_test_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">dataset=</span>vars,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                            <span class="at">method=</span>sw_test<span class="sc">$</span>method,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                            <span class="at">w=</span>sw_test<span class="sc">$</span>statistic,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>                            <span class="at">p_value=</span>sw_test<span class="sc">$</span>p.value)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row.names</span>(sw_test_row) <span class="ot">&lt;-</span> vare_char</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return plot and sw test results</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">plot=</span>plot, <span class="at">sw_test=</span>sw_test, <span class="at">sw_test_row=</span>sw_test_row)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># first 3 vars are same</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>norm_01 <span class="ot">&lt;-</span> <span class="fu">normalTest</span>(<span class="at">data=</span>ans, <span class="at">var=</span>x1, <span class="at">vars=</span><span class="fu">c</span>(<span class="st">'x1'</span>,<span class="st">'x2'</span>,<span class="st">'x3'</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>norm_04 <span class="ot">&lt;-</span> <span class="fu">normalTest</span>(<span class="at">data=</span>ans, <span class="at">var=</span>x4, <span class="at">vars=</span><span class="fu">c</span>(<span class="st">'x4'</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>norm_01a <span class="ot">&lt;-</span> <span class="fu">normalTest</span>(<span class="at">data=</span>ans, <span class="at">var=</span>y1, <span class="at">vars=</span><span class="fu">c</span>(<span class="st">'y1'</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>norm_02a <span class="ot">&lt;-</span> <span class="fu">normalTest</span>(<span class="at">data=</span>ans, <span class="at">var=</span>y2, <span class="at">vars=</span><span class="st">'y2'</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>norm_03a <span class="ot">&lt;-</span> <span class="fu">normalTest</span>(<span class="at">data=</span>ans, <span class="at">var=</span>y3, <span class="at">vars=</span><span class="st">'y3'</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>norm_04a <span class="ot">&lt;-</span> <span class="fu">normalTest</span>(<span class="at">data=</span>ans, <span class="at">var=</span>y4, <span class="at">vars=</span><span class="st">'y4'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="qq-plots" class="level4">
+<h4 class="anchored" data-anchor-id="qq-plots">QQ Plots</h4>
+<p>QQ (Quantile-Quantile) Plots show how well a given variable fits with a Normal distribution (can be used with other distributions, but we’re focused on Normal). The key thing to know for interpretation is that <strong>if the data follows a Normal distribution, the</strong> <strong>points will approximately lie along the line</strong> shown in the chart. Large or consistent deviations from the line suggest deviations from the theoretical distribution, meaning that the Normality assumption required for Pearson correlation is not being met.</p>
+<p>There are a total of 8 variables in the dataset, but the first three (x1, x2, x3) have the same values, so there is just one Q-Q plot for these variables. So six plots cover all the variables.</p>
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="384"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/unnamed-chunk-1-2.png" class="img-fluid" width="384"></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/unnamed-chunk-1-3.png" class="img-fluid" width="384"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/unnamed-chunk-1-4.png" class="img-fluid" width="384"></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/unnamed-chunk-1-5.png" class="img-fluid" width="384"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="index_files/figure-html/unnamed-chunk-1-6.png" class="img-fluid" width="384"></p>
+</div>
+</div>
+</div>
+<p>From these six plots we see:</p>
+<ul>
+<li>variables x1/x2/x3 &amp; y1: looks like a fit with Normality for the most part.</li>
+<li>x4, y2: no</li>
+<li>y3, y4: yes, BUT with outliers that are cause for concern.</li>
+</ul>
+</section>
+<section id="shapiro-wilk-test" class="level4">
+<h4 class="anchored" data-anchor-id="shapiro-wilk-test">Shapiro-Wilk Test</h4>
+<p>So we have some initial conclusions from Q-Q plots, which provide a quick visual guide. Let’s compare to results from Shapiro-Wilkes test.</p>
+<p>Shapiro-Wilkes works similar to to Breusch-Pagan test, but with reference to Normal distribution:</p>
+<ul>
+<li><strong>NULL hypothesis is Normality</strong>, p-value indicates likelihood of the dataset being consistent with the Normality null hypothesis.</li>
+<li>Low p-value indicates lack of support for the NULL hypothesis and suggests data set may not fit Normal distribution.</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create table of results from all shapiro-wilk tests</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>shap_wilk_table <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(norm_01<span class="sc">$</span>sw_test_row,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                       norm_04<span class="sc">$</span>sw_test_row,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                       norm_01a<span class="sc">$</span>sw_test_row,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                       norm_02a<span class="sc">$</span>sw_test_row,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                       norm_03a<span class="sc">$</span>sw_test_row,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                       norm_04a<span class="sc">$</span>sw_test_row)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>shap_wilk_table <span class="ot">&lt;-</span> shap_wilk_table <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">conclusion=</span><span class="fu">ifelse</span>(p_value<span class="sc">&gt;</span><span class="fl">0.05</span>,<span class="st">"Norm. dist.: null hypothesis holds."</span>,<span class="st">"Norm. dist. issues: null hypotheis fails."</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>shap_wilk_table[] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(shap_wilk_table, <span class="cf">function</span>(x)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">is.numeric</span>(x)) <span class="fu">round</span>(x,<span class="dv">2</span>) <span class="cf">else</span> (x))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>shap_wilk_table <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>method) <span class="sc">%&gt;%</span> <span class="fu">gt</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="imqbxrsouf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#imqbxrsouf table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#imqbxrsouf thead, #imqbxrsouf tbody, #imqbxrsouf tfoot, #imqbxrsouf tr, #imqbxrsouf td, #imqbxrsouf th {
+  border-style: none;
+}
+
+#imqbxrsouf p {
+  margin: 0;
+  padding: 0;
+}
+
+#imqbxrsouf .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#imqbxrsouf .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#imqbxrsouf .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#imqbxrsouf .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#imqbxrsouf .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#imqbxrsouf .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#imqbxrsouf .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#imqbxrsouf .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#imqbxrsouf .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#imqbxrsouf .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#imqbxrsouf .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#imqbxrsouf .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#imqbxrsouf .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#imqbxrsouf .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#imqbxrsouf .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#imqbxrsouf .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#imqbxrsouf .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#imqbxrsouf .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#imqbxrsouf .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#imqbxrsouf .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#imqbxrsouf .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#imqbxrsouf .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#imqbxrsouf .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#imqbxrsouf .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#imqbxrsouf .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#imqbxrsouf .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#imqbxrsouf .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#imqbxrsouf .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#imqbxrsouf .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#imqbxrsouf .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#imqbxrsouf .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#imqbxrsouf .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#imqbxrsouf .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#imqbxrsouf .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#imqbxrsouf .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#imqbxrsouf .gt_left {
+  text-align: left;
+}
+
+#imqbxrsouf .gt_center {
+  text-align: center;
+}
+
+#imqbxrsouf .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#imqbxrsouf .gt_font_normal {
+  font-weight: normal;
+}
+
+#imqbxrsouf .gt_font_bold {
+  font-weight: bold;
+}
+
+#imqbxrsouf .gt_font_italic {
+  font-style: italic;
+}
+
+#imqbxrsouf .gt_super {
+  font-size: 65%;
+}
+
+#imqbxrsouf .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#imqbxrsouf .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#imqbxrsouf .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#imqbxrsouf .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#imqbxrsouf .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#imqbxrsouf .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#imqbxrsouf .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="dataset" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">dataset</th>
+<th id="w" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">w</th>
+<th id="p_value" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">p_value</th>
+<th id="conclusion" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">conclusion</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="dataset">x1, x2, x3</td>
+<td class="gt_row gt_right" headers="w">0.97</td>
+<td class="gt_row gt_right" headers="p_value">0.87</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist.: null hypothesis holds.</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="dataset">x4</td>
+<td class="gt_row gt_right" headers="w">0.34</td>
+<td class="gt_row gt_right" headers="p_value">0.00</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist. issues: null hypotheis fails.</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="dataset">y1</td>
+<td class="gt_row gt_right" headers="w">0.98</td>
+<td class="gt_row gt_right" headers="p_value">0.95</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist.: null hypothesis holds.</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="dataset">y2</td>
+<td class="gt_row gt_right" headers="w">0.83</td>
+<td class="gt_row gt_right" headers="p_value">0.02</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist. issues: null hypotheis fails.</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="dataset">y3</td>
+<td class="gt_row gt_right" headers="w">0.83</td>
+<td class="gt_row gt_right" headers="p_value">0.03</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist. issues: null hypotheis fails.</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="dataset">y4</td>
+<td class="gt_row gt_right" headers="w">0.88</td>
+<td class="gt_row gt_right" headers="p_value">0.09</td>
+<td class="gt_row gt_left" headers="conclusion">Norm. dist.: null hypothesis holds.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Based on Shapiro-Wilk test, we have a mix of Normal and non-Normal distributions.</p>
+<ul>
+<li><p><strong>Normality conclusions</strong></p>
+<ul>
+<li><p>Overall similar results between Q-Q plots and Shapiro-Wilk.</p></li>
+<li><p>x1/x2/x3/y1: look close to Normal in Q-Q plots and also pass Shapiro-Wilk test.</p></li>
+<li><p>x4/y2: doesn’t fit with Normal on Q-Q plot or Shapiro-Wilk test.</p></li>
+<li><p>y3: borderline based on Q-Q plot due to outliers, fails Shapiro-Wilk test.</p></li>
+<li><p>y4: borderline based on Q-Q plot due to outliers, passes Shapiro-Wilk test.</p></li>
+</ul></li>
+</ul>
+<p>So as far as the Normal distribution assumption for Pearson correlation, it depends on the combination of variables being used from this data set.</p>
+</section>
+</section>
+<section id="interval-or-ratio-scale" class="level3">
+<h3 class="anchored" data-anchor-id="interval-or-ratio-scale"><strong>Interval or Ratio Scale</strong></h3>
+<ul>
+<li><strong>criteria:</strong> Pearson correlation only works on numeric values.</li>
+<li><strong>methodology:</strong> check class of variables.</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ans)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   11 obs. of  8 variables:
+ $ x1: num  10 8 13 9 11 14 6 4 12 7 ...
+ $ x2: num  10 8 13 9 11 14 6 4 12 7 ...
+ $ x3: num  10 8 13 9 11 14 6 4 12 7 ...
+ $ x4: num  8 8 8 8 8 8 8 19 8 8 ...
+ $ y1: num  8.04 6.95 7.58 8.81 8.33 ...
+ $ y2: num  9.14 8.14 8.74 8.77 9.26 8.1 6.13 3.1 9.13 7.26 ...
+ $ y3: num  7.46 6.77 12.74 7.11 7.81 ...
+ $ y4: num  6.58 5.76 7.71 8.84 8.47 7.04 5.25 12.5 5.56 7.91 ...</code></pre>
+</div>
+</div>
+<ul>
+<li><strong>conclusion:</strong> all variables are numeric, so we are on solid ground here.</li>
+</ul>
+</section>
+<section id="absence-of-outliers" class="level3">
+<h3 class="anchored" data-anchor-id="absence-of-outliers"><strong>Absence of Outliers</strong></h3>
+<ul>
+<li><strong>criteria:</strong> ideally, no outliers, as they can have a disproportionate affect on the correlation coefficient.</li>
+<li><strong>method:</strong> boxplot for visual inspection.</li>
+</ul>
+<section id="boxplot" class="level4">
+<h4 class="anchored" data-anchor-id="boxplot">Boxplot</h4>
+<p>A boxplot can be simple way to see if outliers exist in the variables. The interpretation is:</p>
+<ul>
+<li><strong>mid-line</strong> is median.</li>
+<li><strong>box</strong> covers the IQR (inter-quartlie range) from 25th percentile to 75th percentile, covering the middle 50% of the data.</li>
+<li><strong>whiskers</strong> reach out to values that are 1.5 below/above the 25th and 75th percentiles, respectively.</li>
+<li><strong>DOTS represent outliers</strong>: data points beyond the whiskers represent outliers - these are what we are watching for.</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ans %&gt;% ggplot(aes(x=x1))+geom_boxplot()</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ans_long <span class="ot">&lt;-</span> ans <span class="sc">%&gt;%</span> <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">everything</span>(), <span class="at">names_to=</span><span class="st">"variable"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>ans_long <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>value, <span class="at">y=</span>variable))<span class="sc">+</span><span class="fu">geom_boxplot</span>(<span class="at">fill=</span><span class="st">'grey'</span>)<span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The variables with dots are sure signs of outliers.</p>
+<ul>
+<li><p><strong>Outlier conclusions:</strong></p>
+<ul>
+<li>x4, y2, y3, y4 all have outliers: use caution with Pearson correlation involving these metrics.</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="independence-of-observations" class="level3">
+<h3 class="anchored" data-anchor-id="independence-of-observations"><strong>Independence of Observations</strong></h3>
+<ul>
+<li><strong>criteria:</strong> each pair of observations in the data set is independent of each other, do not influence each other.</li>
+<li><strong>method:</strong> knowledge of the origin and meaning of the data.</li>
+</ul>
+<p>Domain knowledge is needed for this one. We can’t make any conclusions on the Anscombe dataset because we don’t know anything about the origin of the data or what it represents.</p>
+<p>notes:</p>
+<ul>
+<li><p>check assumptions</p></li>
+<li><p>state if they are violated</p></li>
+<li><p>what to do if not met? other options</p></li>
+</ul>
+</section>
+</section>
+<section id="is-correlation-valid-for-this-data-set" class="level2">
+<h2 class="anchored" data-anchor-id="is-correlation-valid-for-this-data-set">Is Correlation Valid for this Data Set?</h2>
+<p>We know that Anscombe’s Quartet is designed to show how summary statistics can be misleading. But for the sake of completion here, let’s review whether quartet of variable combinations ‘<strong>pass</strong>’ or ’<strong>fail’</strong> against the 6 assumptions:</p>
+<ol type="1">
+<li><p><strong>Linearity</strong>: pass for <strong>case I</strong> (var x1 and y1), <strong>case III</strong> (x3 and y3); fail for case II and IV.</p></li>
+<li><p><strong>Homoscedasticity</strong>: leans toward fail for all, although hard to make solid conclusion on small sample size.</p></li>
+<li><p><strong>Normality</strong>: pass for <strong>case I</strong>; fail for others, where at least one variable fails normality test</p></li>
+<li><p><strong>Interval or Ratio Scale</strong>: pass for all.</p></li>
+<li><p><strong>Absence of Outliers</strong>: pass for <strong>case I</strong>; fail for others, where at least one variable has outliers.</p></li>
+<li><p><strong>Independence of Observations</strong>: inconclusive - requires domain knowledge.</p></li>
+</ol>
+<p>In summary, <strong>case I looks like a reasonable case for Pearson Correlation,</strong> while others have one or more fatal flaws that make Pearson Correlation misleading. This is fairly obvious on initial view of the data, but further reinforced by examining the assumptions individually.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This is a manufactured case that may not reflect common real-world data situations, but is hopefully useful in understanding how to <strong>think critically about Pearson correlation</strong> - including using visual and statistical methods to determine how applicable/reliable/representative Pearson correlation may be in any given situation.</p>
+<p>This highlights the importance of understanding <strong>correlation as a summary statistic</strong> that can only tell you so much about the relationships in the data - and in some cases, nothing at all. At the end of the day, if the correlation coefficient can’t tell you something about what to expect from the dependent variable when the independent variable changes, it is not helpful. As such, it is <strong>best used within early stages of exploratory analysis</strong>, supplemented by visualization (at minimum), pointing the way toward potential further analysis, and <strong>not as a final conclusion</strong>.</p>
+<section id="bonus-what-to-do-when-pearson-correlation-fails" class="level3">
+<h3 class="anchored" data-anchor-id="bonus-what-to-do-when-pearson-correlation-fails">Bonus: What to do when Pearson Correlation fails?</h3>
+<p>If visualization and/or addition assumption checks suggest that Pearson Correlation is not a good statistic for your dataset, what to do? It depends on the characteristics of the data, and is a more involved conversation for another day, but here are some thought-starters:</p>
+<ul>
+<li><strong>Data transformation, such as log</strong>: transforming the data can be a way to bring it more into line with the required assumptions of Pearson Correlation (or other technique being used). Log, Square Root, Inverse, Box-Cox are among potential transformations to try, although they tend to make interpretation more complex.</li>
+<li><strong>Spearman’s Rank Correlation</strong>: doesn’t assume linear relationship; can be useful when both variables tend to increase, but not necessarily constant rate.</li>
+<li><strong>Kendall’s Tau:</strong> similar to Spearman’s but more robust for small sample sizes.</li>
+<li><strong>Mutual information</strong>: measures amount of information obtained about one variable through the other; applies beyond linear relationships.</li>
+<li><strong>Generalized Additive Models (GAMs)</strong>: allow for flexibility in specifying the form of relationship between variables, accomodating complex patterns.</li>
+<li><strong>Quantile Regression</strong>: can be relevant for exploring how variables vary across different points of the distribution of the dependent variable.</li>
+<li><strong>Regression Trees / Random Forests</strong>: can be effective in identifying complex interactions and non-linear relationships, handling multiple predictors and their interactions.</li>
+<li>data transformation:</li>
+</ul>
+<p>Of course, each of these come with their own set of assumptions and conditions to take into account before making a selection.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

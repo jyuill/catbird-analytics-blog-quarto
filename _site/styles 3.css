@@ -1,0 +1,43 @@
+/* css styles */
+/* these don't always apply well with themes -> use custom-style.scss
+
+/* original colors from bootstrap theme */
+/* top nav background-color: */
+
+/* styling navigation bar */
+.navbar {
+  /* background-color: "#1E53FA"; */
+  /* background-color: navy; */
+  /* height: 50px;
+  padding-top: 9px; */
+}
+
+/* style titles of blog posts: works sometimes; doesn't override theme */
+.quarto-title { 
+  /* color: #f58422; */
+  /* color: navy; */ /* will override .quarto-title-banner color */
+  font-size: 1.5em;
+}
+
+.quarto-title-block .quarto-title-banner {
+  /* trying to get header image - this works in principal but needs work (resizing etc) */
+  /*background-image: url(banner-barcharts-noise-1080-440.png); */
+  /*background-size: 1200px; */
+  background-position: center;
+  background-repeat: no-repeat;
+  padding-top: 18px; /* works */
+  /* padding-left: 10px; */ /* works */
+  /*padding-bottom: 40px;*/ /* does nothing */
+  /*margin-bottom: 4px; */ /* does nothing */
+  /* background-origin: content-box; */ /* ? */
+  /* background-color: #446e9b; */ /* spacelab theme primary color */
+  /* border-bottom: solid 3px black; */ /* works */
+  /* prefer tighter heading */
+  height: 120px; /* works */
+  /* color: white; */ /* affects subtitle only */
+}
+
+/* does nothing: https://quarto.org/docs/authoring/title-blocks.html#foreground-color */
+.quarto-text-block-banner-color {
+  /* color: white; */
+}
