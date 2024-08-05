@@ -113,7 +113,7 @@ lmr_data <- lmr_data %>% rename(
 
 ## Intro
 
-This is a continuation of a previous analysis of [annual liquor sales in British Columbia](../bc-liquor-market-review-2023-06-pt01-annual-trends) and [quarter-of-year patterns in BC liquor sales](../bc-liquor-market-review-2023-06-pt02-quarterly-trends), and [BC Liquor Sales Analysis: Beer](../bc-liquor-market-review-2023-06-pt03-beer/). These are all based on data from **British Columbia Liquor Distribution Board** '[**Liquor Market Review**](https://www.bcldb.com/publications/liquor-market-review)', a quarterly report on sales across major alcoholic beverage categories. Focus for this analysis is specifically on the **categories of beer produced by Canadian breweries**, as broken out in the report:
+A look at data on BC beer sales by **brewery type for Canadian breweries,** taken from the quarterly **British Columbia Liquor Distribution Board** '[**Liquor Market Review**](https://www.bcldb.com/publications/liquor-market-review)'. This is a continuation of a previous analysis of [annual liquor sales in British Columbia](../bc-liquor-market-review-2023-06-pt01-annual-trends) and [quarter-of-year patterns in BC liquor sales](../bc-liquor-market-review-2023-06-pt02-quarterly-trends), and [BC Liquor Sales Analysis: Beer](../bc-liquor-market-review-2023-06-pt03-beer/). Focus for this analysis is specifically on the **brewery categories** broken out in the report:
 
 -   'commercial'
 -   'regional'
@@ -127,7 +127,7 @@ Data shown here goes back to beginning of 2016 (BC LDB fiscal yr 2016 Q4).
 
 ## Beer Sales Trends: Canadian Beer by Category
 
-BC LDB breaks out Canadian beer into two general categories based on location of production: **BC-produced** beer and **'Other province'-produced** beer. Then for each of these provides further breakdown by brewery size. Here are the definitions, taken from the 'Glossary' section of the report:
+BC LDB LMR breaks out Canadian beer based on location of production: **BC-produced** beer and **'Other province'-produced** beer. For each of these, it provides further breakdown by brewery size. Here are the definitions, taken from the 'Glossary' section of the report:
 
 -   **Commercial Beer:** Breweries with Annual Production **over 350,000HL**
 -   **Regional Beer:** Breweries with Annual Production over **15,000HL and up to 350,000HL**
