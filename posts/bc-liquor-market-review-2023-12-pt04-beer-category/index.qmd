@@ -1,0 +1,430 @@
+---
+title: "BC Beer Sales Analysis: Commercial, Regional, Micro Brew  2016-2023"
+author: John Yuill
+date: '2024-06-30'
+categories: [liquor stats, reporting, analysis]
+description-meta: BC Liquor Market Review data exploration and analysis covering the categories of beer producers during years 2016 to 2023, focusing on quarter-level trends, patterns and observations.
+draft: false
+image: beer_src_cat_chg.png 
+toc: true
+toc-depth: 4
+toc-location: left
+date-modified: '`r Sys.Date()`'
+fig-height: 4
+fig-width: 6
+code-fold: true
+execute:
+  echo: true
+  error: false
+  warning: false
+---
+
+```{r setup, include=FALSE}
+#| echo: FALSE
+#| warning: FALSE
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(glue)
+library(ggrepel)
+library(readr) ## for easy conversion of $ characters to numeric
+library(RMariaDB) ## best way to access MySQL from R
+library(RColorBrewer)
+library(here)
+library(plotly)
+library(gridExtra)
+# set default theme
+theme_set(theme_classic())
+
+# chart parameters
+bar_col <- brewer.pal(n=9, name='YlGnBu')[9]
+# set colors for major category types
+bpal <- brewer.pal(n=9, name="YlOrRd")
+type_color <- c("Beer"=bpal[6], "Refresh Bev"=bpal[3], "Spirits"=bpal[4], "Wine"=bpal[8])
+
+```
+
+```{r get_process_data}
+#| echo: FALSE
+# if no data available - fetch
+# temp fix for qmd render -> doesn't recognize lmr_data
+if(exists('lmr_data', envir = globalenv(), inherits=TRUE)){
+  lmr_data <- lmr_data
+} else { # get from MySQL database on AWS
+  ## TEMP FIX FOR QMD RENDER -> doesn't recognize availability of lmr_data
+  ## - db connection depends on location (IP address has to be added to AWS security rules)
+    #lmr_data <- read_csv(here('data','lmr-data.csv'))
+  ## REGULAR PROCESS
+    source(here('credo.R'))
+    # # local server
+    #con <- dbConnect(RMariaDB::MariaDB(), user='root', password=mypwd, dbname='bcbg')
+    # aws
+    con_aws <- dbConnect(RMariaDB::MariaDB(),
+                       host=endpt,
+                       user='admin',
+                       password=apwd,
+                       port=aport)
+    lmr_data <- dbGetQuery(con_aws, "SELECT * FROM bcbg.tblLDB_lmr lmr
+                           LEFT JOIN bcbg.tblLDB_quarter qtr ON lmr.fy_qtr=qtr.fy_qtr;")
+    dbDisconnect(con_aws)
+    ## clean-up
+    lmr_data <- lmr_data %>% select(-fy_qtr..8) ## remove redundant col after join
+    lmr_data <- lmr_data %>% mutate(
+      ## shorten refreshment beverages for space consideration
+      cat_type = ifelse(cat_type=='Refreshment Beverages','Refresh Bev',cat_type),
+      ## set start mth for quarters for more intuitive reference
+      start_qtr_dt =floor_date(end_qtr_dt, unit="months")
+    ) %>% rename( ## change 'cyr' to 'year' and 'cat_type' to 'type' for simplicity
+      year=cyr,
+      type=cat_type
+    )
+    ## convert integer64 from database to numeric for ease of use in R
+    lmr_data$netsales <- as.numeric(lmr_data$netsales)
+    lmr_data$litres <- as.numeric(lmr_data$litres)
+    lmr_data_all <- lmr_data # backup of all data
+    ## filter for BEER - keep lmr_data to minimize need to change references in code
+    lmr_data <- lmr_data %>% filter(type=='Beer')
+}
+```
+
+```{r}
+# refine data for current purposes
+# save orig lmr_data
+lmr_data_orig <- lmr_data
+# add filter for Canadian categorized beer only
+lmr_data <- lmr_data %>% filter(str_starts(category, 'Domestic'))
+# clean-up, simplify cat/subcat names
+lmr_data <- lmr_data %>% mutate(
+  category = str_remove_all(category, "Domestic - "),
+  category = str_remove(category, " Beer"),
+  subcategory = str_remove_all(subcategory, "Domestic - "),
+  subcategory = str_remove_all(subcategory, "BC "),
+  subcategory = str_remove(subcategory, "Other Province "),
+  subcategory = str_remove_all(subcategory, " Beer")
+) 
+# further renaming for simplification - easier to work with category code carried 
+# over from previous (and arguably 'source' and 'category' more applicable)
+lmr_data <- lmr_data %>% rename(
+  source = category,
+  category = subcategory
+)
+
+```
+
+## Intro
+
+This is a continuation of a previous analysis of [annual liquor sales in British Columbia](../bc-liquor-market-review-2023-06-pt01-annual-trends) and [quarter-of-year patterns in BC liquor sales](../bc-liquor-market-review-2023-06-pt02-quarterly-trends), and [BC Liquor Sales Analysis: Beer](../bc-liquor-market-review-2023-06-pt03-beer/). These are all based on data from **British Columbia Liquor Distribution Board** '[**Liquor Market Review**](https://www.bcldb.com/publications/liquor-market-review)', a quarterly report on sales across major alcoholic beverage categories. Focus for this analysis is specifically on the **categories of beer produced by Canadian breweries**, as broken out in the report:
+
+-   'commercial'
+-   'regional'
+-   'micro brew'
+
+Data shown here goes back to beginning of 2016 (BC LDB fiscal yr 2016 Q4).
+
+::: {.callout-note icon="false"}
+**As mentioned in previous articles:** *my expertise is in data analysis, not the liquor industry, so the emphasis is on exploring what the data can tell us. Industry-insider context may be lacking. In the interest of promoting data analysis and learning, I am sharing most of the R code used to process the data - hence the expandable 'Code' options.*
+:::
+
+## Beer Sales Trends: Canadian Beer by Category
+
+BC LDB breaks out Canadian beer into two general categories based on location of production: **BC-produced** beer and **'Other province'-produced** beer. Then for each of these provides further breakdown by brewery size. Here are the definitions, taken from the 'Glossary' section of the report:
+
+-   **Commercial Beer:** Breweries with Annual Production **over 350,000HL**
+-   **Regional Beer:** Breweries with Annual Production over **15,000HL and up to 350,000HL**
+-   **Micro Brew Beer:** Breweries with Annual Production up to **15,000HL** (aka 'craft' beer)
+
+As you can see, these categories are based strictly on production volume, which seems a bit of a crude measurement. I believe this is for determining tax rates. In any case, we work with what we have. ;)
+
+### Sales by Category
+
+```{r}
+# remove partial yrs by counting qtrs and identifying those with 4
+yr_qtr <- lmr_data %>% group_by(year, qtr) %>% summarize(count=1)
+yr_qtr <- yr_qtr %>% group_by(year) %>% summarize(count=n()) %>% filter(count==4)
+# remove partials yrs
+lmr_data <- lmr_data %>% filter(year %in% yr_qtr$year)
+
+# calculate annual ttls for % of ttl calculations later
+trend_yr_ttl <- lmr_data %>% group_by(year) %>% summarize(
+  ttl_netsales=sum(netsales),
+  ttl_litres=sum(litres)
+)
+```
+
+```{r}
+# summarize data by year and category
+trend_yr_cat <- lmr_data %>% group_by(year, category) %>% summarize(
+  netsales=sum(netsales),
+  litres=sum(litres)
+) %>% filter(year %in% yr_qtr$year) 
+
+# join with trend_yr_cat to get yr total cols
+trend_yr_cat <- left_join(trend_yr_cat, trend_yr_ttl, by='year')
+# calc %
+trend_yr_cat <- trend_yr_cat %>% mutate(
+  litres_pc=litres/ttl_litres,
+  netsales_pc=netsales/ttl_netsales
+)
+
+# add % chg YoY, $/l
+# ungroup first; use n=3 to lag 3 rows to match categories
+trend_yr_cat <- trend_yr_cat %>% ungroup() %>% mutate(
+  pc_chg_sales=netsales/lag(netsales, n=3)-1,
+  pc_chg_litres=litres/lag(litres, n=3)-1,
+  dollar_per_litre=netsales/litres,
+  pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=3)-1
+)
+```
+
+#### Litre sales
+
+Looking at **litre consumption** for these 3 main categories:
+
+-   as noted previously in [BC Liquor Sales Analysis: Beer](../bc-liquor-market-review-2023-06-pt03-beer/), overall beer sales are fairly stable (including imported beer not shown here), with slow downward trend.
+-   most of the downward trend in volume sales is accounted for by **lower commercial (big brewery) beer sales**.
+-   in % terms, litre market share has **picked up for regional breweries** (16% to 20%) at the expense of commercial beer, while the smaller **micro brew category has stabilized** in recent yrs at \~12%.
+
+```{r}
+#| echo: false
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 3
+
+# reorder categories in order of litre sales
+trend_yr_cat$category <- fct_reorder(trend_yr_cat$category, trend_yr_cat$litres)
+
+ch_title <- "Beer Litre Sales by Cat."
+# text aesthetic used to set plotly tooltip -> combined with tooltip='text' in ggplotly
+plot_left <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), y=litres, fill=category, 
+                                         text= paste("litres:", format(litres, big.mark=","), 
+                                                     "<br>cat:", category)))+
+  geom_col()+
+  scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M"), 
+                     expand=expansion(add=c(0,0.1)))+
+  #scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
+
+ch_title <- "Beer % Litre Sales by Cat."
+plot_right <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), y=litres_pc, fill=category,
+                                          text= paste0("share: ", round(litres_pc*100,0),"%",
+                                                     "<br>cat: ", category)))+
+  geom_col(position='fill')+
+  scale_y_continuous(labels=percent_format(), 
+                     expand=expansion(add=c(0,0)))+
+  #scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
+ggplotly(plot_left, tooltip = "text")
+ggplotly(plot_right, tooltip = "text")
+```
+
+#### Net \$ Sales
+
+Net \$ sales tells a pretty similar story, in terms of breakdown and trends, especially when considering:
+
+-   inflation is bound to account for upward drift in overall \$ sales (all things equal).
+-   slightly higher share of \$ sales for regional and micro brews, since these beers are more expensive than commercial brewery beer.
+
+It is interesting to note that commercial breweries have stayed level, in \$ terms, despite litre volume decreases. Price increases have almost exactly offset the volume declines.
+
+```{r}
+#| echo: false
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 3
+
+# reorder categories in order of litre sales
+trend_yr_cat$category <- fct_reorder(trend_yr_cat$category, trend_yr_cat$netsales)
+
+ch_title <- "Beer Net $ Sales by Cat."
+# text aesthetic used to set plotly tooltip -> combined with tooltip='text' in ggplotly
+plot_left <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), y=netsales, fill=category, 
+                                         text= paste("$:", format(netsales, big.mark=","), 
+                                                     "<br>cat:", category)))+
+  geom_col()+
+  scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M", prefix = "$"), 
+                     expand=expansion(add=c(0,0.1)))+
+  #scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
+
+ch_title <- "Beer % Litre Sales by Cat."
+plot_right <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), y=netsales_pc, fill=category,
+                                          text= paste0("share: ", round(netsales_pc*100,0),"%",
+                                                     "<br>cat: ", category)))+
+  geom_col(position='fill')+
+  scale_y_continuous(labels=percent_format(), 
+                     expand=expansion(add=c(0,0)))+
+  #scale_fill_manual(values=type_color)+
+  labs(title=ch_title, x="",y="")+
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_text(angle=45))
+ggplotly(plot_left, tooltip = "text")
+ggplotly(plot_right, tooltip = "text")
+```
+
+## Sales by Category by Source
+
+Let's see how things break-out by source (BC or other province) for these categories.
+
+```{r}
+## % share of categories by src -> see what composition is by source
+## get annual ttls by src (all categories)
+trend_yr_src_ttl <- lmr_data %>% group_by(year, source) %>% summarize(
+    ttl_src_netsales=sum(netsales),
+    ttl_src_litres=sum(litres)
+    )
+
+## get data for category by source
+trend_yr_src_cat <- lmr_data %>% 
+  group_by(year, source, category) %>% summarize(
+    netsales=sum(netsales),
+    litres=sum(litres))
+
+# calc % of yr sales by category
+# join with trend_yr_cat to get yr total cols
+trend_yr_src_cat <- left_join(trend_yr_src_cat, trend_yr_src_ttl, 
+                              by=c('year','source'))
+# calc %
+trend_yr_src_cat <- trend_yr_src_cat %>% mutate(
+  litres_pc=litres/ttl_src_litres,
+  netsales_pc=netsales/ttl_src_netsales
+)
+
+# ungroup for % chg calcs over lag
+# set lag based on how far to look back for comp
+lag <- 6
+trend_yr_src_cat <- trend_yr_src_cat %>% ungroup %>% mutate(
+  pc_chg_sales=netsales/lag(netsales, n=lag)-1,
+  pc_chg_litres=litres/lag(litres, n=lag)-1,
+  dollar_per_litre=netsales/litres,
+  pc_chg_d_per_l=dollar_per_litre/lag(dollar_per_litre, n=lag)-1
+)
+```
+
+### Category Breakdown by Source
+
+**Sales in all the categories are driven by BC producers**, with out-of-province producers only having an noticeable impact on commercial brewery sales.
+
+-   Notably, beer from other province commercial breweries appears to have taken share from BC commercial breweries.
+-   Presumably due to geographical reallocation of production by large multi-national breweries?
+
+```{r}
+#| echo: false
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 4
+
+# reorder categories in order of litre sales
+trend_yr_src_cat$category <- fct_reorder(trend_yr_src_cat$category,
+                                         trend_yr_src_cat$litres)
+
+ch_title <- "BC Beer Litre Sales by Category by Source"
+# text aesthetic used to set plotly tooltip -> combined with tooltip='text' in ggplotly
+plot_left <- trend_yr_src_cat %>% ggplot(aes(x=as.factor(year), y=litres, 
+                                            fill=category,
+                                        text= paste0(category, 
+                                               "<br>litres: ", 
+                                               format(litres, big.mark=","))))+
+                  geom_col()+
+                  facet_grid(source~.)+ # scales='free_y' an option
+                  scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M"), 
+                                     expand=expansion(add=c(0,0.1)))+
+                  #scale_fill_manual(values=type_color)+
+                  labs(title=ch_title, x="",y="")+
+                  theme(axis.ticks.x = element_blank(),
+                        axis.text.x = element_text(angle=45, vjust=0.5))
+
+ch_title <- "BC Beer % Litres by Cat. by Src."
+plot_right <- trend_yr_src_cat %>% 
+              ggplot(aes(x=as.factor(year), y=litres_pc,fill=category,
+                                            text= paste0(category,": ", 
+                                                         round(litres_pc*100,0),"%")))+
+                      geom_col(position='fill')+
+                      facet_grid(source~.)+
+                      scale_y_continuous(labels=percent_format(), 
+                                         expand=expansion(add=c(0,0)))+
+                      #scale_fill_manual(values=type_color)+
+                      labs(title=ch_title, x="",y="")+
+                      theme(axis.ticks.x = element_blank(),
+                            axis.text.x = element_text(angle=45, vjust=0.5))
+ggplotly(plot_left, tooltip="text")
+ggplotly(plot_right, tooltip="text")
+```
+
+### Year-over-Year % Changes by Category, Source
+
+Breaking out the year-over-year % changes, we see that:
+
+-   BC commercial beer has small but steady declines.
+-   Other province commercial beer has had some surges in recent yrs, although stabilized in the last couple of years.
+-   BC regional breweries have had some good growth years without much negative growth.
+-   BC micro brews had some strong years in 2017-18 and 2021 (after 2020 pandemic) and growth has slowed/ended.
+-   Other province regional and micro brews have had some large swings (mostly declines), but these are relative to a base too small to matter.
+
+```{r}
+trend_yr_src_cat %>% ggplot(aes(x=year, y=pc_chg_litres, fill=category))+
+  geom_col(show.legend = FALSE)+
+  facet_grid(source~.~category)+
+  scale_y_continuous(labels=percent_format())+
+  geom_hline(yintercept=0)+
+  labs(title='Year-over-Year % change in Litre Sales', x="", y="Litre sales - % chg")+
+  theme_bw()+
+  theme(panel.grid = element_blank(),
+        strip.background = element_rect(fill="lightblue"))
+```
+
+### Cumulative % Change over the Years
+
+```{r cumulative chg}
+# calculate cumulative change across available yrs
+# need to lag by n yrs in dataset x n categories (or items to be more general)
+n_yrs <- max(trend_yr_src_cat$year)-min(trend_yr_src_cat$year)
+n_items <- length(unique(trend_yr_src_cat$category)) # no. of categories
+n_items <- n_items*length(unique(trend_yr_src_cat$source)) # x no. of sources
+# lag calculation based on n_yrs x n_items
+trend_yr_src_cat <- trend_yr_src_cat %>% mutate(
+  pc_chg_lt_cum =  litres/lag(litres, n=(n_yrs*n_items))-1
+)
+```
+
+Here we see the biggest cumulative change in **other province commercial beer, more than doubling in litre sales** during the period, accompanied by **drop-off in BC commercial beer** volume.
+
+-   meanwhile, strong growth overall for BC regional and micro brew beers.
+
+```{r}
+#| fig.width: 3
+#| fig.height: 4
+
+ch_title <- paste0("Total % chg: ", min(trend_yr_src_cat$year), " - ", 
+                   max(trend_yr_src_cat$year))
+# bar chart
+trend_yr_src_cat %>% ggplot(aes(x=category, y=pc_chg_lt_cum, fill=category))+geom_col()+
+  scale_y_continuous(labels=percent_format())+
+  geom_hline(yintercept=0, linetype='solid')+
+  facet_grid(source~.)+
+  #coord_flip()+
+  labs(title=ch_title, x="", y="")+
+  theme(axis.ticks.x = element_blank(),
+        legend.position = "none")
+```
+
+## Conclusion
+
+Nothing too surprising or dramatic here, but a good overview of the dynamics of the BC beer market across 3 categories identified by BC LDB for Canadian producers.
+
+### Next
+
+No further plans to explore the BC LDB data in this format, at least not for a while. Planning to turn my attention to a more interactive, sustainable dashboard that folks can use to explore the LDB Quarterly Market Review as they see fit. Stay tuned!
+
+### Footnotes
+
+Notes on 'net \$ sales':
+
+-   the report says "**Net dollar value is based on the price paid by the customer** and excludes any applicable taxes."
+-   calculating average **net dollar value per litre for beverage categories gives unrealistically low numbers** compared to retail prices in BC liquor stores. (*Beer at average \$4/litre? Not even the cheapest beer on the [BC Liquor Stores](https://www.bcliquorstores.com/product-catalogue?category=beer&sort=currentPrice:desc&page=1) website.*)
+-   there is likely additional factors related to BC LDB pricing structure, wholesaling, etc.
+-   best to **consider average net dollar value per litre referred to below as relative indicator**.
+
+## 
