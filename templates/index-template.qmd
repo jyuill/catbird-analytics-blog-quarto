@@ -1,0 +1,51 @@
+---
+title: "<title here>"
+author: John Yuill
+date: '<date here>'
+categories: [categories in sq brackets, no quotes, comma separated]
+description-meta: <concise description>.
+draft: true # chg to false for publishing
+image: generic-image.png # image in same folder as post
+toc: true
+toc-depth: 4
+toc-location: left
+date-modified: '`r Sys.Date()`'
+code-fold: true
+execute:
+  echo: true
+  error: false
+  warning: false
+---
+
+```{r setup, include=FALSE}
+#| echo: FALSE
+#| warning: FALSE
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(glue)
+library(ggrepel)
+library(readr) ## for easy conversion of $ characters to numeric
+library(RMariaDB) ## best way to access MySQL from R
+library(RColorBrewer)
+library(here)
+library(plotly)
+library(gridExtra)
+library(gganimate)
+# set default theme
+theme_set(theme_classic())
+
+# additional settings as needed
+# - may include: color palettes, source calls to functions, etc
+```
+
+```{r}
+# R code
+```
+
+```{r}
+# code examples for managing visualizations - '#|' identifies the line as a setting
+#| layout-ncol: 2 # for side-by-side charts
+#| fig-height: 4
+#| fig-width: 6
+```
