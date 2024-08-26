@@ -133,6 +133,7 @@ There are a couple of ways to interact with chattr:
 
 #### Inline chattr
 
+-   works best if you want to interact from a Quarto or RMarkdown doc, since you add prompts to your code chunks and get the code built out there for use.
 -   enter **chattr(prompt = "\<prompt here\>")** in your code block - works from Visual mode in Quarto (unlike Copilot).
 -   move cursor to a separate line in the code block and run the code block to generate the code to answer your question.
 -   to get the actual results, comment out the original chattr prompt and run the new code provided.
@@ -254,13 +255,49 @@ library(lubridate)
 
 The main selling point for chattr is intended to be the **interactive app accessed via the Viewer window**. You can access this through **Addins \> CHATTR \>** '**Open Chat**' option.
 
+With this approach, you can get more running conversation and can copy/paste code as needed into your R file. It is text-based only, so no matter what model you are using, you can't upload files for analysis or have direction interaction between the data in your R session and the LLM.
+
+Overall, maybe keeps things cleaner and is more flexible than accessing in-line, although:
+
+-   a\) you have to jump back and forth to some degree (although having the Viewer window available helps),
+-   b\) you don't have a built-in reference for future (if needed),
+-   c\) you can't interact with your console or run any code while the app is running - it is a Shiny app, so the normal situation applies.
+
 ##### Prompt 4 (via chat window):
 
 Here's the results using the same prompt as above. As you can see, very similar results, in this case with the prompt below and then the text + code provided.
 
 ![](chattr_prompt_viewer.png){width="800"}
 
-With this approach, you can get more running conversation and can copy/paste code as needed into your R file. Maybe keeps things cleaner, although a) you have to jump back and forth, and b) you don't have a built-in reference for future (if needed).
+One advantage over something like Copilot is that you have access to a LOT more information that you can use to answer broader questions, beyond just code, that can help with your analysis.
+
+\[provide screenshot from more sophisticated conversation with Viewer window\]
+
+code provided by prompt below - fails on calculating subcategory change: all NA
+
+![](chattr_viewer_prompt.png){width="300"}
+
+```{r}
+# Load the necessary library
+library(dplyr)
+
+# Assuming your data frame is named 'data' and it has columns 'year', 'subcategory', and 'revenue'
+
+# Calculate annual total revenue for each subcategory
+annual_revenue <- data_co %>%
+  group_by(cyr, subcategory) %>%
+  summarise(netsales = sum(netsales, na.rm = TRUE))
+
+# Calculate annual total revenue change for each subcategory
+annual_revenue_change <- annual_revenue %>%
+  arrange(cyr, subcategory) %>%
+  group_by(subcategory) %>%
+  mutate(revenue_change = netsales - lag(netsales))
+
+# View the data
+head(annual_revenue_change)
+
+```
 
 ### gptstudio
 

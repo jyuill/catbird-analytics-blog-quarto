@@ -28,4 +28,7 @@ data_co %>% group_by(cat_type, cyr) %>% summarize(netsales=sum(netsales)) %>%
   labs(title = "Total Net Sales by Category Type in 2020", x = "Category Type", y = "Net Sales") +
   theme(legend.position = "none", axis.ticks.x = element_blank())
 
-
+### chattr test
+library(chattr)
+chattr(prompt="can you access the data_co data frame in the current session?")
+chattr(prompt="can you access the data_co data frame in the current session?", data=data_co)
