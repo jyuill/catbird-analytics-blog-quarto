@@ -1,0 +1,90 @@
+---
+title: "Working with LLMs inside RStudio, part 1"
+author: John Yuill
+date: '2024-08-25'
+categories: [analysis]
+description-meta: Exploring options for integrating LLMs into RStudio workflows.
+draft: true
+image:  dalle2-2024-08-26-llm-data-analysis_sm2.png
+toc: true
+toc-depth: 4
+toc-location: left
+date-modified: '`r Sys.Date()`'
+code-fold: true
+execute:
+  echo: true
+  error: false
+  warning: false
+---
+
+```{r setup, include=FALSE}
+#| echo: FALSE
+#| warning: FALSE
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(glue)
+library(ggrepel)
+library(readr) ## for easy conversion of $ characters to numeric
+library(RMariaDB) ## best way to access MySQL from R
+library(RColorBrewer)
+library(here)
+library(plotly)
+library(gridExtra)
+library(gganimate)
+
+# set default theme
+theme_set(theme_classic())
+
+# additional settings as needed
+# may include: color palettes, source calls to functions, etc
+```
+
+## Exploration of Using Large Language Model Tools in R Studio
+
+Part 1 of exploring integration of LLM tools into R Studio for more efficient data analysis and faster speed to insights.
+
+-   Copilot
+
+### Github Copilot
+
+Copilot is pretty much a must-have to help with your coding, imo. That is, of course, as long as you're willing to pay for it, since it **requires a Copilot subscription**.
+
+Posit has a [GitHub Copilot guide](https://docs.posit.co/ide/user/ide/guide/tools/copilot.html) that gives you pretty much everything you need to get going.
+
+-   easy integratiion with RStudio via **Tools \> Global Options**.
+-   real-time code suggestions -\> way beyond traditional autocomplete offers.
+-   suggestions can even provide good practices for coding efficiency or other techniques that you may not be aware of.
+
+![](github-copilot-r-settings.png){fig-align="center" width="400"}
+
+```{r}
+#here()
+data <- read_csv('data/lmr-data.csv')
+#data <- read_csv('lmr-data.csv')
+#data <- read_csv('lmr-data.csv')
+# q: how is ARIMA used for time-series modeling?
+
+
+Your request doesn't specify a task for me to execute and format for a .qmd file. Please provide the specific task you'd like me to complete.
+```
+
+### gptstudio
+
+```{r}
+library(gptstudio)
+```
+
+#### Addin: Chat
+
+-   real-time prompting in Viewer pane with text responses
+-   provides code suggestions based on prompts that you can then copy/paste into your R file
+-   doesn't have visibility into your code in your R file
+-   clunky interface in Viewer pane
+
+```{}
+```
+
+```{r}
+
+```
