@@ -198,7 +198,7 @@ cookieconsent.run({
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#what-theme-to-use-a-sample-of-themes-to-help" id="toc-what-theme-to-use-a-sample-of-themes-to-help" class="nav-link active" data-scroll-target="#what-theme-to-use-a-sample-of-themes-to-help">What Theme to Use? A Sample of Themes to Help</a></li>
+  <li><a href="#so-many-themes-what-theme-to-use" id="toc-so-many-themes-what-theme-to-use" class="nav-link active" data-scroll-target="#so-many-themes-what-theme-to-use">So Many Themes! What Theme to Use?</a></li>
   <li><a href="#first-the-data" id="toc-first-the-data" class="nav-link" data-scroll-target="#first-the-data">First, the data</a></li>
   <li><a href="#function-to-take-chart-info-and-process-themes" id="toc-function-to-take-chart-info-and-process-themes" class="nav-link" data-scroll-target="#function-to-take-chart-info-and-process-themes">Function to take chart info and process themes</a></li>
   <li><a href="#histograms" id="toc-histograms" class="nav-link" data-scroll-target="#histograms">Histograms</a></li>
@@ -239,7 +239,8 @@ cookieconsent.run({
 <div class="quarto-title">
 <h1 class="title">GGplot Theme Sampler: Choosing a Theme</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">analysis</div>
+    <div class="quarto-category">dataviz</div>
+    <div class="quarto-category">r</div>
   </div>
   </div>
 
@@ -275,16 +276,24 @@ cookieconsent.run({
 </header>
 
 
-<section id="what-theme-to-use-a-sample-of-themes-to-help" class="level3">
-<h3 class="anchored" data-anchor-id="what-theme-to-use-a-sample-of-themes-to-help">What Theme to Use? A Sample of Themes to Help</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="multi-charts-themes.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<section id="so-many-themes-what-theme-to-use" class="level3">
+<h3 class="anchored" data-anchor-id="so-many-themes-what-theme-to-use">So Many Themes! What Theme to Use?</h3>
+<section id="a-sample-of-themes-to-help-in-selecting-the-right-one" class="level4">
+<h4 class="anchored" data-anchor-id="a-sample-of-themes-to-help-in-selecting-the-right-one">A Sample of Themes to Help in Selecting the Right One</h4>
 <p>Here is a collection of ggplot charts with different themes applied, designed to provide some useful comparisons and help with choosing the best option for the situation.</p>
 <p>The focus is on themes that come with the ggplot package, but have also included some examples from ‘ggthemes’ and ‘ggpubr’ packages. Could be extended to other packages like ‘hrbrthemes’, ‘ggthemr’, ‘themetron’ or others. Although, realistically, many of these are small variations on existing themes/concepts and may be just as easy to work with a built-in theme and add your own desired flavour.</p>
+</section>
 <section id="theme-sources" class="level4">
 <h4 class="anchored" data-anchor-id="theme-sources">Theme sources:</h4>
 <ul>
-<li>ggplot built-in: if none of the below specified.</li>
-<li>ggthemes: identified by ‘ggt’ in title.</li>
-<li>ggpubr: identified by ‘ggp’ in title.
+<li><strong>ggplot built-in</strong>: if none of the below specified.</li>
+<li><strong>ggthemes library</strong>: identified by ‘ggt’ in chart titles below.</li>
+<li><strong>ggpubr library</strong>: identified by ‘ggp’ in chart titles below.
 <ul>
 <li>the ‘transparent’ theme suppresses title by default, so extra modification was needed. if used ‘out of the box’, will not have a title, even if title is specified.</li>
 </ul></li>
@@ -363,11 +372,10 @@ cookieconsent.run({
 </section>
 <section id="histograms" class="level2">
 <h2 class="anchored" data-anchor-id="histograms">Histograms</h2>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set chart for target style</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set up chart for applying themes</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>chart_example <span class="ot">&lt;-</span> chart_data_select <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Growth))<span class="sc">+</span><span class="fu">geom_histogram</span>()</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># use function to get collection of charts with different themes</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># prints charts in accordance with size and layout settings</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chartThemeSampler</span>(chart_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># use function to apply themes to the charts and display</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">chartThemeSampler</span>(chart_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -437,11 +445,8 @@ cookieconsent.run({
 </section>
 <section id="line-charts" class="level2">
 <h2 class="anchored" data-anchor-id="line-charts">Line Charts</h2>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set chart for target style</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>chart_example <span class="ot">&lt;-</span> chart_data_single <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Year, <span class="at">y=</span>Growth))<span class="sc">+</span><span class="fu">geom_line</span>()</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># use function to get collection of charts with different themes</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># prints charts in accordance with size and layout settings</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chartThemeSampler</span>(chart_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>chart_example <span class="ot">&lt;-</span> chart_data_single <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Year, <span class="at">y=</span>Growth))<span class="sc">+</span><span class="fu">geom_line</span>()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chartThemeSampler</span>(chart_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -582,10 +587,8 @@ cookieconsent.run({
 </section>
 <section id="column-bar-charts" class="level2">
 <h2 class="anchored" data-anchor-id="column-bar-charts">Column (Bar) Charts</h2>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set chart for target style</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>chart_example <span class="ot">&lt;-</span> chart_data_single <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Year, <span class="at">y=</span>Growth))<span class="sc">+</span><span class="fu">geom_col</span>()</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># print charts in different themes</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">chartThemeSampler</span>(chart_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>chart_example <span class="ot">&lt;-</span> chart_data_single <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Year, <span class="at">y=</span>Growth))<span class="sc">+</span><span class="fu">geom_col</span>()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chartThemeSampler</span>(chart_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -654,10 +657,11 @@ cookieconsent.run({
 </div>
 <section id="column-charts---facets" class="level3">
 <h3 class="anchored" data-anchor-id="column-charts---facets">Column Charts - Facets</h3>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>chart_example <span class="ot">&lt;-</span> chart_data_select <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span> <span class="sc">&amp;</span> Code <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"BRA"</span>,<span class="st">"CAN"</span>,<span class="st">"IND"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Year, <span class="at">y=</span>Growth))<span class="sc">+</span><span class="fu">geom_col</span>()<span class="sc">+</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(Code<span class="sc">~</span>.)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">chartThemeSampler</span>(chart_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>chart_example <span class="ot">&lt;-</span> chart_data_select <span class="sc">%&gt;%</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">2000</span> <span class="sc">&amp;</span> Code <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"BRA"</span>,<span class="st">"CAN"</span>,<span class="st">"IND"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Year, <span class="at">y=</span>Growth))<span class="sc">+</span><span class="fu">geom_col</span>()<span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(Code<span class="sc">~</span>.)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chartThemeSampler</span>(chart_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -800,11 +804,8 @@ cookieconsent.run({
 </section>
 <section id="scatterplots" class="level2">
 <h2 class="anchored" data-anchor-id="scatterplots">Scatterplots</h2>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set chart for target style</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>chart_example <span class="ot">&lt;-</span> chart_data_single <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>GDP_per_cap, <span class="at">y=</span>Growth))<span class="sc">+</span><span class="fu">geom_point</span>()</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># use function to get collection of charts with different themes</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># prints charts in accordance with size and layout settings</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chartThemeSampler</span>(chart_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>chart_example <span class="ot">&lt;-</span> chart_data_single <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>GDP_per_cap, <span class="at">y=</span>Growth))<span class="sc">+</span><span class="fu">geom_point</span>()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chartThemeSampler</span>(chart_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -980,12 +981,11 @@ cookieconsent.run({
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># takes list of chart settings plus additional theme definition as inputs and combines</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>chartMod <span class="ot">&lt;-</span> <span class="cf">function</span>(charts, chart_mods, theme_def) {</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#theme_def &lt;- theme_light() + theme(panel.grid = element_blank())</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(c <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(charts)) {</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    chart_modo <span class="ot">&lt;-</span> charts[[c]] <span class="sc">+</span> chart_mods <span class="sc">+</span> theme_def</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(chart_modo)</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(c <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(charts)) {</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    chart_modo <span class="ot">&lt;-</span> charts[[c]] <span class="sc">+</span> chart_mods <span class="sc">+</span> theme_def</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(chart_modo)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1035,18 +1035,13 @@ cookieconsent.run({
 <section id="light-wth-major-gridlines-only" class="level3">
 <h3 class="anchored" data-anchor-id="light-wth-major-gridlines-only">Light wth major gridlines only</h3>
 <p>Major gridlines for reference with color lightened and size reduced. 0 line for extra context, distinguished from gridlines.</p>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># use same chart definitions as above</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># set list of charts</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>charts <span class="ot">&lt;-</span> <span class="fu">list</span>(chart_line, chart_col, chart_scat, </span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>               chart_box, chart_col_facet, chart_scat_facet)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># set chart mods to apply</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>chart_mods <span class="ot">&lt;-</span> <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">'grey60'</span>) </span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># set theme to apply</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>theme_def <span class="ot">&lt;-</span> <span class="fu">theme_light</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">panel.grid.major =</span> </span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                                     <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">'grey80'</span>, <span class="at">linewidth =</span> <span class="fl">0.1</span>),</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>())</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># run function to show charts</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="fu">chartMod</span>(charts, chart_mods, theme_def)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>charts <span class="ot">&lt;-</span> <span class="fu">list</span>(chart_line, chart_col, chart_scat, </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>               chart_box, chart_col_facet, chart_scat_facet)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>chart_mods <span class="ot">&lt;-</span> <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">'grey60'</span>) </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>theme_def <span class="ot">&lt;-</span> <span class="fu">theme_light</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">panel.grid.major =</span> </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">'grey80'</span>, <span class="at">linewidth =</span> <span class="fl">0.1</span>),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">chartMod</span>(charts, chart_mods, theme_def)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -1080,16 +1075,11 @@ cookieconsent.run({
 <li>Reference line at 0 for context.</li>
 <li>Essentially same as ‘Light’ without gridlines, above, but has some cleaner labelling, notable on facets.</li>
 </ul>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># use same chart definitions as above</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># set list of charts</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>charts <span class="ot">&lt;-</span> <span class="fu">list</span>(chart_line, chart_col, chart_scat, </span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>               chart_box, chart_col_facet, chart_scat_facet)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># set chart mods to apply</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>chart_mods <span class="ot">&lt;-</span> <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">'grey70'</span>) </span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># set theme to apply</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>theme_def <span class="ot">&lt;-</span> <span class="fu">theme_few</span>()</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co"># run function to show charts</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">chartMod</span>(charts, chart_mods, theme_def)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>charts <span class="ot">&lt;-</span> <span class="fu">list</span>(chart_line, chart_col, chart_scat, </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>               chart_box, chart_col_facet, chart_scat_facet)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>chart_mods <span class="ot">&lt;-</span> <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">'grey70'</span>) </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>theme_def <span class="ot">&lt;-</span> <span class="fu">theme_few</span>()</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chartMod</span>(charts, chart_mods, theme_def)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -1123,16 +1113,11 @@ cookieconsent.run({
 <li>Extremely minimal, could be useful in showing general pattern, without details.</li>
 <li>Border may help to provide some sense of ‘boundary area’</li>
 </ul>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># use same chart definitions as above</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># set list of charts</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>charts <span class="ot">&lt;-</span> <span class="fu">list</span>(chart_line, chart_col, chart_scat, </span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>               chart_box, chart_col_facet, chart_scat_facet)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># set chart mods to apply</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>chart_mods <span class="ot">&lt;-</span> <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"grey90"</span>) </span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># set theme to apply</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>theme_def <span class="ot">&lt;-</span> <span class="fu">theme_transparent</span>()<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">size=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">'grey90'</span>, <span class="at">fill=</span><span class="cn">NA</span>))</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co"># run function to show charts</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="fu">chartMod</span>(charts, chart_mods, theme_def)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>charts <span class="ot">&lt;-</span> <span class="fu">list</span>(chart_line, chart_col, chart_scat, </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>               chart_box, chart_col_facet, chart_scat_facet)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>chart_mods <span class="ot">&lt;-</span> <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"grey90"</span>) </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>theme_def <span class="ot">&lt;-</span> <span class="fu">theme_transparent</span>()<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">size=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">'grey90'</span>, <span class="at">fill=</span><span class="cn">NA</span>))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chartMod</span>(charts, chart_mods, theme_def)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -1163,16 +1148,11 @@ cookieconsent.run({
 <section id="solarized_2-with-major-grid-only" class="level3">
 <h3 class="anchored" data-anchor-id="solarized_2-with-major-grid-only">Solarized_2 with major grid only</h3>
 <p>‘0’ line highlighted.</p>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># use same chart definitions as above</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># set list of charts</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>charts <span class="ot">&lt;-</span> <span class="fu">list</span>(chart_line, chart_col, chart_scat, </span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>               chart_box, chart_col_facet, chart_scat_facet)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># set chart mods to apply</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>chart_mods <span class="ot">&lt;-</span> <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color=</span><span class="st">"white"</span>) </span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># set theme to apply</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>theme_def <span class="ot">&lt;-</span> <span class="fu">theme_solarized_2</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>())</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co"># run function to show charts</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">chartMod</span>(charts, chart_mods, theme_def)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>charts <span class="ot">&lt;-</span> <span class="fu">list</span>(chart_line, chart_col, chart_scat, </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>               chart_box, chart_col_facet, chart_scat_facet)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>chart_mods <span class="ot">&lt;-</span> <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color=</span><span class="st">"white"</span>) </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>theme_def <span class="ot">&lt;-</span> <span class="fu">theme_solarized_2</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chartMod</span>(charts, chart_mods, theme_def)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">

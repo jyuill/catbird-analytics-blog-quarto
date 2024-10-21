@@ -31,15 +31,21 @@ library(ggpubr)
 
 ```
 
-### What Theme to Use? A Sample of Themes to Help
+### So Many Themes! Which One to Use? 
 
-Here is a collection of ggplot charts with different themes applied, designed to provide some useful comparisons and help with choosing the best option for the situation.
+![A small selection of themes available for ggplot2](multi-charts-themes.png){fig-align="center"}
 
-The focus is on themes that come with the ggplot package, but have also included some examples from 'ggthemes' and 'ggpubr' packages. Could be extended to other packages like 'hrbrthemes', 'ggthemr', 'themetron' or others. Although, realistically, many of these are small variations on existing themes/concepts and may be just as easy to work with a built-in theme and add your own desired flavour.
+#### A Sample of Themes to Help in Selecting the Right One
 
-#### Theme sources:
+Sooner or later, the times comes to move beyond the default ggplot2 grey theme and explore other options. But which theme to use? And When?
 
--   **ggplot built-in**: if none of the below specified.
+Here is a collection of ggplot charts with different themes applied, intended to provide some helpful comparisons and make it easier to choose the best option for the situation.
+
+The focus is on themes that come with the ggplot package, but also included are some examples from 'ggthemes' and 'ggpubr' packages. Consideration could be extended to other packages like 'hrbrthemes', 'ggthemr', 'themetron' or others. Although the possibilities are endless, realistically, many of the themes are variations on existing themes/concepts and it may be just as easy to work with a built-in theme and tweak it to your own desired flavour. Some examples and thoughts on this at the end.
+
+#### Theme sources used:
+
+-   **ggplot2 built-in**: if none of the below specified.
 -   **ggthemes library**: identified by 'ggt' in chart titles below.
 -   **ggpubr library**: identified by 'ggp' in chart titles below.
     -   the 'transparent' theme suppresses title by default, so extra modification was needed. if used 'out of the box', will not have a title, even if title is specified.
