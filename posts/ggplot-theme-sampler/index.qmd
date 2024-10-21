@@ -1,0 +1,314 @@
+---
+title: "GGplot Theme Sampler: Choosing a Theme"
+author: John Yuill
+date: '2024-10-20'
+categories: [dataviz, r]
+description-meta: A selection of charts with different ggplot themes to help in choosing which to use.
+draft: false
+image: boxplot-9.png  
+toc: true
+toc-depth: 3
+toc-location: left
+date-modified: '`r Sys.Date()`'
+execute:
+  echo: true
+  error: false
+  warning: false
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  fig.width = 4,
+  fig.height = 3
+)
+
+library(tidyverse)
+library(scales)
+library(lubridate)
+library(RColorBrewer)
+library(ggthemes)
+library(ggpubr)
+
+```
+
+### What Theme to Use? A Sample of Themes to Help
+
+Here is a collection of ggplot charts with different themes applied, designed to provide some useful comparisons and help with choosing the best option for the situation.
+
+The focus is on themes that come with the ggplot package, but have also included some examples from 'ggthemes' and 'ggpubr' packages. Could be extended to other packages like 'hrbrthemes', 'ggthemr', 'themetron' or others. Although, realistically, many of these are small variations on existing themes/concepts and may be just as easy to work with a built-in theme and add your own desired flavour.
+
+#### Theme sources:
+
+-   **ggplot built-in**: if none of the below specified.
+-   **ggthemes library**: identified by 'ggt' in chart titles below.
+-   **ggpubr library**: identified by 'ggp' in chart titles below.
+    -   the 'transparent' theme suppresses title by default, so extra modification was needed. if used 'out of the box', will not have a title, even if title is specified.
+
+#### Colors:
+
+Default ggplot colors used for expediency - exploring color palettes is another adventure altogether.
+
+### First, the data
+
+Using **global_economy** data set from **tsibbledata package** because it is characteristics of data I typically work with:
+
+-   time series
+-   additional dimension (category, product, traffic source, region...)
+-   multiple measures on different scales, for variety
+
+Of course, this is not exhaustive exploration of the variations, but intended as an illustrative cross-section.
+
+```{r get_data}
+#| code-fold: true
+# data set with time dimension, at least one other dimension, at least one metric
+chart_data <- tsibbledata::global_economy
+# add metric for GDP per capita
+chart_data <- chart_data %>% mutate(
+  GDP_per_cap = GDP / Population
+)
+# isolate country for use case
+chart_data_single <- chart_data %>% filter(Code=='CAN')
+# filter for select countries to make manageable for use cases
+chart_data_select <- chart_data %>% filter(Code %in% c("CAN","USA","BRA","JPN","IND","NGA")) 
+```
+
+## Function to take chart info and process themes
+
+A reusable function for ease of sampling different themes with different chart types.
+
+```{r chart-themes}
+#| code-fold: true
+# function to take chart info as input, apply themes, return variations with themes
+chartThemeSampler <- function(chart_example) {
+  c_dflt <- chart_example + labs(title = "Default (aka Gray/Grey)")
+  c_m <- chart_example + labs(title = "Minimal") + theme_minimal()
+  c_l <- chart_example + labs(title = "Light") + theme_light()
+  c_drk <- chart_example + labs(title = "Dark") + theme_dark()
+  c_c <- chart_example + labs(title = "Classic") + theme_classic()
+  c_bw <- chart_example + labs(title = "BW") + theme_bw()
+  # ggthemes
+  c_econw <- chart_example + labs(title = "economist_white (ggt)")+
+            theme_economist_white()
+  c_few <- chart_example + labs(title = "Few (ggt)") + theme_few()
+  c_five <- chart_example + labs(title = "FiveThirtyEight (ggt)") + theme_fivethirtyeight()
+  c_gdoc <- chart_example + labs(title = "GDocs (ggt)") + theme_gdocs()
+  c_hc <- chart_example + labs(title = "HC (ggt)") + theme_hc()
+  c_sol2 <- chart_example + labs(title = "Solarized  2(ggt)") + theme_solarized_2()
+  c_tufte <- chart_example + labs(title = "theme_tufte (ggthemes)") + theme_tufte()
+  c_wsj <- chart_example + labs(title = "WSJ (ggt)") + theme_wsj()
+  ## ggpubr
+  c_clev <- chart_example + labs(title = "Cleveland (ggp)") + theme_cleveland()
+    # theme_transparent requires extra code to display title
+  c_transp <- chart_example + labs(title = "Transparent (ggp)") + theme_transparent() + 
+    theme(plot.title = element_text())
+  
+  # combine
+  cts <- list(c_dflt, c_m, c_l, c_drk, c_c, c_bw, 
+              c_econw, c_few, c_five, c_gdoc, c_hc, c_sol2, c_tufte, c_wsj,
+              c_clev, c_transp)
+  for(i in 1:length(cts)) {
+    print(cts[[i]])
+  }
+}
+```
+
+## Histograms
+
+```{r}
+#| layout-ncol: 2
+# set up chart for applying themes
+chart_example <- chart_data_select %>% ggplot(aes(x=Growth))+geom_histogram()
+# use function to apply themes to the charts and display
+chartThemeSampler(chart_example)
+```
+
+## Line Charts
+
+```{r}
+#| layout-ncol: 2
+chart_example <- chart_data_single %>% ggplot(aes(x=Year, y=Growth))+geom_line()
+chartThemeSampler(chart_example)
+```
+
+### Line charts w/Legend
+
+```{r}
+#| layout-ncol: 2
+chart_example <- chart_data_select %>% ggplot(aes(x=Year, y=Growth, col=Code))+geom_line()
+chartThemeSampler(chart_example)
+```
+
+## Column (Bar) Charts
+
+```{r}
+#| layout-ncol: 2
+chart_example <- chart_data_single %>% ggplot(aes(x=Year, y=Growth))+geom_col()
+chartThemeSampler(chart_example)
+```
+
+### Column Charts - Facets
+
+```{r}
+#| layout-ncol: 2
+#| fig-height: 6
+chart_example <- chart_data_select %>% 
+  filter(Year >= 2000 & Code %in% c("BRA","CAN","IND")) %>%
+  ggplot(aes(x=Year, y=Growth))+geom_col()+
+  facet_grid(Code~.)
+chartThemeSampler(chart_example)
+```
+
+## Boxplots
+
+```{r}
+#| layout-ncol: 2
+chart_example <- chart_data_select %>% 
+  ggplot(aes(x=Code, y=Growth))+geom_boxplot()
+chartThemeSampler(chart_example)
+```
+
+## Scatterplots
+
+```{r}
+#| layout-ncol: 2
+chart_example <- chart_data_single %>% ggplot(aes(x=GDP_per_cap, y=Growth))+geom_point()
+chartThemeSampler(chart_example)
+```
+
+### Scatterplots - Facets
+
+```{r}
+#| layout-ncol: 2
+#| fig-height: 6
+chart_example <- chart_data_select %>% filter(Code %in% c("BRA","CAN","IND")) %>%
+  ggplot(aes(x=Exports, y=Imports))+geom_point()+
+  facet_grid(Code~.)
+chartThemeSampler(chart_example)
+```
+
+## Mods / Experiments
+
+Clearly, there are lots of options readily available to suit most situations. All of these themes have their strengths and limitations.
+
+Still, it is entirely possible that none of the 'out-of-the-box' themes may fit exactly with what you want. Here are some examples of minor modifications to built-in themes to see how they play out across different chart types.
+
+### Chart Setup & Function for mods
+
+#### Chart setup
+
+A collection of charts to apply themes to, as opposed to applying various themes to a specific chart, as above.
+
+```{r}
+#| code-fold: true
+chart_line <- chart_data_single %>% ggplot(aes(x=Year, y=GDP)) + geom_line()
+chart_col <- chart_data_single %>% ggplot(aes(x=Year, y=GDP)) + geom_col()
+chart_scat <- chart_data_select %>% ggplot(aes(x=Exports, y=Growth)) + geom_point()
+chart_box <- chart_data_select %>% ggplot(aes(x=Code, y=Growth)) + geom_boxplot()
+# facets
+chart_col_facet <- chart_data_select %>% 
+  filter(Year >= 2000 & Code %in% c("JPN","NGA","USA")) %>%
+  ggplot(aes(x=Year, y=Growth))+
+  geom_col()+
+  facet_grid(Code~.)
+chart_scat_facet <- chart_data_select %>% filter(Code %in% c("BRA","CAN","IND")) %>%
+  ggplot(aes(x=Imports, y=Growth)) + geom_point() +
+  facet_grid(Code~.)
+```
+
+#### Function for processing themes
+
+```{r}
+#| code-fold: true
+# takes list of chart settings plus additional theme definition as inputs and combines
+chartMod <- function(charts, chart_mods, theme_def) {
+  for(c in 1:length(charts)) {
+    chart_modo <- charts[[c]] + chart_mods + theme_def
+    print(chart_modo)
+  }
+}
+```
+
+### Light without grid lines
+
+-   theme_light, with border
+-   no gridlines
+-   geom_hline for line at 0 on y-axis
+
+```{r}
+#| layout-ncol: 2
+# set list of charts
+charts <- list(chart_line, chart_col, chart_scat, chart_box, chart_col_facet, chart_scat_facet)
+# add chart modifications
+chart_mods <- geom_hline(yintercept = 0, color='grey90')
+# set theme to apply
+theme_def <- theme_light() + theme(panel.grid = element_blank())
+# run function to show charts
+chartMod(charts, chart_mods, theme_def)
+```
+
+### Light wth major gridlines only
+
+Major gridlines for reference with color lightened and size reduced. 0 line for extra context, distinguished from gridlines.
+
+```{r}
+#| layout-ncol: 2
+charts <- list(chart_line, chart_col, chart_scat, 
+               chart_box, chart_col_facet, chart_scat_facet)
+chart_mods <- geom_hline(yintercept = 0, color = 'grey60') 
+theme_def <- theme_light() + theme(panel.grid.major = 
+                                     element_line(color = 'grey80', linewidth = 0.1),
+                                  panel.grid.minor = element_blank())
+chartMod(charts, chart_mods, theme_def)
+```
+
+### Few with reference line
+
+-   Reference line at 0 for context.
+-   Essentially same as 'Light' without gridlines, above, but has some cleaner labelling, notable on facets.
+
+```{r}
+#| layout-ncol: 2
+charts <- list(chart_line, chart_col, chart_scat, 
+               chart_box, chart_col_facet, chart_scat_facet)
+chart_mods <- geom_hline(yintercept = 0, color = 'grey70') 
+theme_def <- theme_few()
+chartMod(charts, chart_mods, theme_def)
+```
+
+### Transparent with border
+
+-   Extremely minimal, could be useful in showing general pattern, without details.
+-   Border may help to provide some sense of 'boundary area'
+
+```{r}
+#| layout-ncol: 2
+charts <- list(chart_line, chart_col, chart_scat, 
+               chart_box, chart_col_facet, chart_scat_facet)
+chart_mods <- geom_hline(yintercept = 0, color = "grey90") 
+theme_def <- theme_transparent()+theme(panel.border = element_rect(size=1, color='grey90', fill=NA))
+chartMod(charts, chart_mods, theme_def)
+```
+
+### Solarized_2 with major grid only
+
+'0' line highlighted.
+
+```{r}
+#| layout-ncol: 2
+charts <- list(chart_line, chart_col, chart_scat, 
+               chart_box, chart_col_facet, chart_scat_facet)
+chart_mods <- geom_hline(yintercept = 0, color="white") 
+theme_def <- theme_solarized_2() + theme(panel.grid.minor = element_blank())
+chartMod(charts, chart_mods, theme_def)
+```
+
+## Closing suggestions
+
+-   consider your objectives, audience and priorities:
+    -   if time is of the essence, a built-in chart or even default may be good enough
+    -   if design is important to your audience, you may want to go the extra distance to craft something more specialized
+    -   if looking to create a personal or professional brand, may want to create your own template that you can use repeatedly over time and different situations
+-   keep things as simple as possible, *but no simpler:* provide enough guidance to direct and assist the eye
+-   consider reference lines in addition to / instead of gridlines to provide easier anchoring
+
+Above all else, for the sake of your data consumers...***keep on visualizing***!
