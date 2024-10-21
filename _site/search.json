@@ -362,5 +362,12 @@
     "title": "About",
     "section": "",
     "text": "Who am I?\nI’m John Yuill. I have close to 20 years of working with data to improve decision-making, in agency, consulting, and in-house roles. Most recently managing a marketing analytics team at EA in Vancouver, BC.\n\n\nWhat is Catbird Analytics?\nBeing a catbird is all about operating from the proverbial ‘catbird seat’: a vantage point that is far enough above the fray to see the big picture, while being close enough to the action to understand the details, maybe even swoop down to ground level once in a while, then return back to a perch to survey the situation.\nAnd when you combine that with the power of data & analysis, you get Catbird Analytics."
+  },
+  {
+    "objectID": "posts/ggplot-theme-sampler/index.html",
+    "href": "posts/ggplot-theme-sampler/index.html",
+    "title": "GGplot Theme Sampler: Choosing a Theme",
+    "section": "",
+    "text": "A small selection of themes available for ggplot2\n\n\n\n\nSooner or later, the times comes to move beyond the default ggplot2 grey theme and explore other options. But which theme to use? And When?\nHere is a collection of ggplot charts with different themes applied, intended to provide some helpful comparisons and make it easier to choose the best option for the situation.\nThe focus is on themes that come with the ggplot package, but also included are some examples from ‘ggthemes’ and ‘ggpubr’ packages. Consideration could be extended to other packages like ‘hrbrthemes’, ‘ggthemr’, ‘themetron’ or others. Although the possibilities are endless, realistically, many of the themes are variations on existing themes/concepts and it may be just as easy to work with a built-in theme and tweak it to your own desired flavour. Some examples and thoughts on this at the end.\n\n\n\n\nggplot2 built-in: if none of the below specified.\nggthemes library: identified by ‘ggt’ in chart titles below.\nggpubr library: identified by ‘ggp’ in chart titles below.\n\nthe ‘transparent’ theme suppresses title by default, so extra modification was needed. if used ‘out of the box’, will not have a title, even if title is specified.\n\n\n\n\n\nDefault ggplot colors used for expediency - exploring color palettes is another adventure altogether."
   }
 ]

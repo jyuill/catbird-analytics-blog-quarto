@@ -33,7 +33,7 @@ library(ggpubr)
 
 ### So Many Themes! Which One to Use? 
 
-![A small selection of themes available for ggplot2](multi-charts-themes.png){fig-align="center"}
+![A small selection of themes available for ggplot2](multi-charts-themes.png){style="border: 1px solid purple" fig-align="center"}
 
 #### A Sample of Themes to Help in Selecting the Right One
 
