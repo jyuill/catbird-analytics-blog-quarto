@@ -239,8 +239,9 @@ trend_yr_cat$category <- fct_reorder(trend_yr_cat$category, trend_yr_cat$netsale
 
 ch_title <- "Beer Net $ Sales by Cat."
 # text aesthetic used to set plotly tooltip -> combined with tooltip='text' in ggplotly
-plot_left <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), y=netsales, fill=category, 
-                                         text= paste("$:", format(netsales, big.mark=","), 
+plot_left <- trend_yr_cat %>% ggplot(aes(x=as.factor(year), y=netsales, fill=category,
+                                         text= paste("$:", format(netsales, 
+                                                                  big.mark=","), 
                                                      "<br>cat:", category)))+
   geom_col()+
   scale_y_continuous(labels=comma_format(scale=1e-6,suffix="M", prefix = "$"), 
