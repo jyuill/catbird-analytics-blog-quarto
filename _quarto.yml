@@ -8,6 +8,7 @@ website:
     left: 
       - text: "Home"
         file: index.qmd
+      - portfolio.qmd
       - about.qmd
     right:
       - icon: linkedin
