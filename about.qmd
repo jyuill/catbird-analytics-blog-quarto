@@ -1,6 +1,8 @@
 ---
 title: "About"
+subtitle: "Catbird Analytics: background & contact info"
 image: avatar.jpg
+title-block-banner: "#446e9b;"
 about:
   template: trestles
   image-width: 10em

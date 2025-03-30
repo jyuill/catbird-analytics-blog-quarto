@@ -1,0 +1,44 @@
+---
+title: "Portfolio"
+subtitle: "A sampling of Catbird Analytics projects"
+format: html
+editor: source
+page-layout: full
+title-block-banner: "#446e9b;"
+---
+<p class="porto">Data products and other projects from Catbird Analytics.</p>
+
+<h2>R Shiny apps</h2>
+
+::: portfolio-container
+<a href="https://catbird.shinyapps.io/BC-Liquor-Market-Review/" class="card"> 
+<img src="images/bc-liquor-stats.png" alt="BC Liquor Market Statistics" class="card-img"/>
+<h3>BC Liquor Market Statistics</h3>
+<p>Interactive multi-faceted dashboard for exploring trends and patterns in British Columbia liquor sales.</p>
+</a>
+
+<a href="https://www.bcbeer.ca" class="card"> 
+<img src="images/bc-beer-sales.png" alt="BC Beer Sales" class="card-img"/>
+<h3>BC Beer Sales</h3>
+<p>Website with BC beer sales interactive dashboard.</p>
+</a>
+
+<a href="https://catbird.shinyapps.io/burndown-sim-app-v2/" class="card"> 
+<img src="images/savings-burndown-sim.png" alt="Savings Burndown Calculator" class="card-img"/>
+<h3>Savings Burndown Calculator</h3>
+<p>How long will your savings last if you quit your job!? Interactive app for entering various parameters and simulating various potential outcomes to understand probabilities of savings lasting for different periods.</p>
+</a>
+
+<a href="https://catbird.shinyapps.io/stock-comparisons/" class="card"> 
+<img src="images/stock-comparisons.png" alt="Stock Comparison App" class="card-img"/>
+<h3>Stock Market Comparisons</h3>
+<p>Make better investment decisions: get stock market performance comparisons for companies of interest on various dimensions. </p>
+</a>
+
+<a href="https://www.bcbeer.ca" class="card"> 
+<img src="images/placeholder-01-dalle2.png" alt="Coming Soon" class="card-img"/>
+<h3>Coming Soon</h3>
+<p>More coming soon.</p>
+</a>
+:::
+

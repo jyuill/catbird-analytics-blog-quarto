@@ -42,6 +42,20 @@
   /* color: white; */
 }
 
+/* trying to reduce headspace at top of page */
+/* esp for Portfolio but good for Home pg too *
+/* not great for articles */
+main {
+  margin-top: 0px !important;
+}
+/* this works great for portfolio but not for articles */
+/*
+main.content {
+  margin-top: 0rem !importantimportant;
+  padding-top: 0rem !important;
+}
+*/
+
 /* for ggplotly plot size management - doesn't help */
 /* intended to remove gap below charts when custom height and width applied */
 .plot-container {
@@ -74,10 +88,15 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* PORTFOLIO STYLES (HTML version) */
+/* PORTFOLIO STYLES (HTML flexbox version) */
 /* pure html with help from ChatGPT */
 /* uses flexbox instead of grid */
-
+/* p at top of pg */
+/* trying to reduce headspace - doesn't work */
+.porto {
+  margin-top: 0px;
+  padding-top: 0px;
+}
 /* Portfolio container */
 .portfolio-container {
   display: flex;
@@ -92,7 +111,7 @@
   display: flex;
   flex-wrap: nowrap; /* reduces size to fit avail space, no wrap */
   justify-content: center;
-  gap: 24px;
+  gap: 12px;
   padding: 0px 0;
 }
 
@@ -101,9 +120,9 @@
 .card {
   display: flex;
   flex-direction: column;
-  flex: 1 1 280px;
+  flex: 1 1 300px;
   align-items: center; /* may want to change to left if layout gets weird */
-  max-width: 300px;
+  max-width: 320px;
   text-align: center;
   text-decoration: none;
   background-color: #fff;
@@ -112,8 +131,9 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.08); 
   transition: transform 0.2s ease, box-shadow 0.3s ease;
   color: inherit;
+  /* if border not set will inherit from style */
   /*border: 1px solid #446e9b;*/
-  border: none;
+  /*border: none;*/
 }
 
 .card:hover {
