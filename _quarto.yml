@@ -26,5 +26,6 @@ format:
     - spacelab
     - custom-style.scss
     css: styles.css
+    include-after-body: "footer.html"
 editor: visual
 
