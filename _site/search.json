@@ -369,5 +369,40 @@
     "title": "GGplot Theme Sampler: Choosing a Theme",
     "section": "",
     "text": "A small selection of themes available for ggplot2\n\n\n\n\nSooner or later, the times comes to move beyond the default ggplot2 grey theme and explore other options. But which theme to use? And When?\nHere is a collection of ggplot charts with different themes applied, intended to provide some helpful comparisons and make it easier to choose the best option for the situation.\nThe focus is on themes that come with the ggplot package, but also included are some examples from ‘ggthemes’ and ‘ggpubr’ packages. Consideration could be extended to other packages like ‘hrbrthemes’, ‘ggthemr’, ‘themetron’ or others. Although the possibilities are endless, realistically, many of the themes are variations on existing themes/concepts and it may be just as easy to work with a built-in theme and tweak it to your own desired flavour. Some examples and thoughts on this at the end.\n\n\n\n\nggplot2 built-in: if none of the below specified.\nggthemes library: identified by ‘ggt’ in chart titles below.\nggpubr library: identified by ‘ggp’ in chart titles below.\n\nthe ‘transparent’ theme suppresses title by default, so extra modification was needed. if used ‘out of the box’, will not have a title, even if title is specified.\n\n\n\n\n\nDefault ggplot colors used for expediency - exploring color palettes is another adventure altogether."
+  },
+  {
+    "objectID": "portfolio.html",
+    "href": "portfolio.html",
+    "title": "Portfolio",
+    "section": "",
+    "text": "Examples of the types of projects I work on.\n\n\n\nProject One\nThis is the thing you are looking for, I’m sure. The title is good style.\n\n\n\n\nAnother Thing\nThis is another thing you are probably looking for. It is quite interesting if you look at it. More to come on this. H4 is brash but enables linking more easily than non-header.\n\n\n\n\n\nThisTitlehere Here\nThis is what it is called and what it does."
+  },
+  {
+    "objectID": "portfolio-html.html",
+    "href": "portfolio-html.html",
+    "title": "Portfolio",
+    "section": "",
+    "text": "Here are some projects representing the types of things I work on:\n\n\n\n\n\n\nThis You Need to See\n\n\nNot only that it has everything.\n\n\n\n\n\n\n\nSerious This\n\n\nThis one you really need to see to believe. Please.\n\n\n\n\n\n\n\nTime Capsule\n\n\nLike under the bridge\n\n\n\n\n\n\n\nTime Capsule\n\n\nLike under the bridge\n\n\n\n\n\n\n\nTime Capsule Again\n\n\nLike under the bridge but not as much as before."
+  },
+  {
+    "objectID": "portfolio-html2.html",
+    "href": "portfolio-html2.html",
+    "title": "Portfolio Test",
+    "section": "",
+    "text": "Testing for portfolio page. Uses pure HTML and CSS with flexbox styles.\n\n\n\nin quarto, spacing can matter in HTML code\n\n\nswitching back and forth from Source to Visual can mees things up!\n\n\nusing style names like ‘card’ that may be used by boostrap or other framework can produce unexpected effects (but these can be overridden in CSS)\n\n\n\n\ncategory 1\n\n\n \n\nProject 1\n\n\nthis is the thing\n\n\n \n\nProject 2\n\n\nthis is the only thing\n\n\n \n\nProject 3\n\n\nthis is the other thing\n\n\n \n\nProject 4\n\n\nthis is thing using card\n\n\n \n\nProject 5\n\n\nthis is thing using card2\n\n\n \n\nProject 6\n\n\nthis is the other thing with car\n\n\n\n\nthis category 2\n\n\n \n\nProject 1\n\n\nthis is the thing\n\n\n \n\nProject 2\n\n\nthis is the only thing\n\n\n \n\nProject 3\n\n\nthis is the other thing\n\n\n\n\nSmaller cards more cols\n\n\nSmaller size automatically fills up space avail.:\n\n\n \n\nProject 1\n\n\nShort description here.\n\n\n \n\nProject 2\n\n\nAnother brief detail.\n\n\n \n\nProject 3\n\n\nSomething cool about this one.\n\n\n \n\nProject 4\n\n\nSome description text.\n\n\n \n\nProject 5\n\n\nAnother fun project summary.\n\n\n\n\n\nStraight HTML\n\n\nuses portfolio-container and card-img but no style on link.\n\n\n \n\nProject 1\n\n\nthis is the thing\n\n\n \n\nProject 2\n\n\nthis is the only thing\n\n\n \n\nProject 3\n\n\nthis is the other thing\n\n\n \n\nProject 1\n\n\nShort description here.\n\n\n \n\nProject 4\n\n\nthis is the other thing again"
+  },
+  {
+    "objectID": "portfolio-test.html",
+    "href": "portfolio-test.html",
+    "title": "Portfolio Test",
+    "section": "",
+    "text": "Testing for portfolio page. Uses pure HTML and CSS with flexbox styles.\n\n\n\nin quarto, spacing can matter in HTML code\n\n\nswitching back and forth from Source to Visual can mess up spacing / layout!\n\n\n!IMPORTANT: use Source and remove line-spacing with link tags\n\n\nusing style names like ‘card’ that may be used by boostrap or other framework can produce unexpected effects (but these can be overridden in CSS)\n\n\n\n\ncategory 1\n\n\n \n\nProject 1\n\n\nthis is the thing\n\n\n \n\nProject 2\n\n\nthis is the only thing\n\n\n \n\nProject 3\n\n\nthis is the other thing\n\n\n \n\nProject 4\n\n\nthis is thing using card\n\n\n \n\nProject 5\n\n\nthis is thing using card\n\n\n \n\nProject 6\n\n\nthis is the other thing with card\n\n\n\n\nthis category 2\n\n\nwith only two items - if spacing is off, remove blank lines from HTML code in Source view.\n\n\n \n\nProject 1\n\n\nthis is the thing\n\n\n \n\nProject 2\n\n\nthis is the only thing\n\n\n\n\nSmaller cards more cols\n\n\nSmaller size automatically fills up space avail.:\n\n\n \n\nProject 1\n\n\nShort description here.\n\n\n \n\nProject 2\n\n\nAnother brief detail.\n\n\n \n\nProject 3\n\n\nSomething cool about this one.\n\n\n \n\nProject 4\n\n\nSome description text.\n\n\n \n\nProject 5\n\n\nAnother fun project summary.\n\n\n\n\n\nUnstyled card\n\n\nuses portfolio-container and card-img but no style on link.\n\n\n \n\nProject 1\n\n\nthis is the thing\n\n\n \n\nProject 2\n\n\nthis is the only thing\n\n\n \n\nProject 3\n\n\nthis is the other thing\n\n\n \n\nProject 1\n\n\nShort description here.\n\n\n \n\nProject 4\n\n\nthis is the other thing again\n\n\n\n\nUnstyled with diff container\n\n\nuses portfolio-container-alt: no wrap, adjusts card size to fill space. also justify-content: center but not sure if that does anything.\n\n\n \n\nProject 1\n\n\nthis is the thing\n\n\n \n\nProject 2\n\n\nthis is the only thing\n\n\n \n\nProject 3\n\n\nthis is the other thing\n\n\n \n\nProject 4\n\n\nthis is the other thing"
+  },
+  {
+    "objectID": "portfolio-test-bu.html",
+    "href": "portfolio-test-bu.html",
+    "title": "Portfolio Test",
+    "section": "",
+    "text": "Testing for portfolio page. Uses pure HTML and CSS with flexbox styles.\n\n\n\nin quarto, spacing can matter in HTML code\n\n\nswitching back and forth from Source to Visual can mees things up!\n\n\nusing style names like ‘card’ that may be used by boostrap or other framework can produce unexpected effects (but these can be overridden in CSS)\n\n\n\n\ncategory 1\n\n\n \n\nProject 1\n\n\nthis is the thing\n\n\n \n\nProject 2\n\n\nthis is the only thing\n\n\n \n\nProject 3\n\n\nthis is the other thing\n\n\n \n\nProject 4\n\n\nthis is thing using card\n\n\n \n\nProject 5\n\n\nthis is thing using card2\n\n\n \n\nProject 6\n\n\nthis is the other thing with car\n\n\n\n\nthis category 2\n\n\n \n\nProject 1\n\n\nthis is the thing\n\n\n \n\nProject 2\n\n\nthis is the only thing\n\n\n \n\nProject 3\n\n\nthis is the other thing\n\n\n\n\nSmaller cards more cols\n\n\nSmaller size automatically fills up space avail.:\n\n\n \n\nProject 1\n\n\nShort description here.\n\n\n \n\nProject 2\n\n\nAnother brief detail.\n\n\n \n\nProject 3\n\n\nSomething cool about this one.\n\n\n \n\nProject 4\n\n\nSome description text.\n\n\n \n\nProject 5\n\n\nAnother fun project summary.\n\n\n\n\n\nStraight HTML\n\n\nuses portfolio-container and card-img but no style on link.\n\n\n \n\nProject 1\n\n\nthis is the thing\n\n\n \n\nProject 2\n\n\nthis is the only thing\n\n\n \n\nProject 3\n\n\nthis is the other thing\n\n\n \n\nProject 1\n\n\nShort description here.\n\n\n \n\nProject 4\n\n\nthis is the other thing again"
   }
 ]
