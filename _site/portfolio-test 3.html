@@ -130,8 +130,10 @@ cookieconsent.run({
     <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="dropdown-header">
- <span class="menu-text">portfolio.qmd</span></li>
+  <li class="nav-item">
+    <a class="nav-link" href="./portfolio.html"> 
+<span class="menu-text">Portfolio</span></a>
+  </li>  
   <li class="nav-item">
     <a class="nav-link" href="./about.html"> 
 <span class="menu-text">About</span></a>
@@ -198,7 +200,10 @@ Testing for portfolio page. Uses pure HTML and CSS with flexbox styles.
 in quarto, spacing can matter in HTML code
 </li>
 <li>
-switching back and forth from Source to Visual can mees things up!
+switching back and forth from Source to Visual can mess up spacing / layout!
+</li>
+<li>
+!IMPORTANT: use Source and remove line-spacing with link tags
 </li>
 <li>
 using style names like ‘card’ that may be used by boostrap or other framework can produce unexpected effects (but these can be overridden in CSS)
@@ -209,83 +214,78 @@ using style names like ‘card’ that may be used by boostrap or other framewor
 category 1
 </h2>
 <div class="portfolio-container">
-<p><a href="project1.qmd" class="card"> <img src="avatar.jpg" alt="Project 1" class="card-img"></a></p><a href="project1.qmd" class="card">
+<a href="./about.html" class="card"> <img src="avatar.jpg" alt="Project 1" class="card-img">
 <h3 class="anchored">
 Project 1
 </h3>
 <p>
 this is the thing
 </p>
-</a><p><a href="project1.qmd" class="card"></a></p>
-<p><a href="project2.qmd" class="card"> <img src="avatar.jpg" alt="Project 2" class="card-img"></a></p><a href="project2.qmd" class="card">
+</a><p><a href="./about.html" class="card"></a></p>
+<a href="./index.html" class="card"> <img src="avatar.jpg" alt="Project 2" class="card-img">
 <h3 class="anchored">
 Project 2
 </h3>
 <p>
 this is the only thing
 </p>
-</a><p><a href="project2.qmd" class="card"></a></p>
-<p><a href="project3.qmd" class="card"> <img src="avatar.jpg" alt="Project 3" class="card-img"></a></p><a href="project3.qmd" class="card">
+</a><p><a href="./index.html" class="card"></a></p>
+<a href="https://www.bcbeer.ca" class="card"> <img src="avatar.jpg" alt="Project 3" class="card-img">
 <h3 class="anchored">
 Project 3
 </h3>
 <p>
 this is the other thing
 </p>
-</a><p><a href="project3.qmd" class="card"></a></p>
-<p><a href="project4.qmd" class="card"> <img src="avatar.jpg" alt="Project 4" class="card-img"></a></p><a href="project4.qmd" class="card">
+</a><p><a href="https://www.bcbeer.ca" class="card"></a></p>
+<a href="https://www.bcbeer.ca" class="card"> <img src="avatar.jpg" alt="Project 4" class="card-img">
 <h3 class="anchored">
 Project 4
 </h3>
 <p>
 this is thing using card
 </p>
-</a><p><a href="project4.qmd" class="card"></a></p>
-<p><a href="project5.qmd" class="card"> <img src="avatar.jpg" alt="Project 5" class="card-img"></a></p><a href="project5.qmd" class="card">
+</a><p><a href="https://www.bcbeer.ca" class="card"></a></p>
+<a href="https://www.bcbeer.ca" class="card"> <img src="avatar.jpg" alt="Project 5" class="card-img">
 <h3 class="anchored">
 Project 5
 </h3>
 <p>
-this is thing using card2
+this is thing using card
 </p>
-</a><p><a href="project5.qmd" class="card"></a></p>
-<p><a href="project6.qmd" class="card"> <img src="avatar.jpg" alt="Project 6" class="card-img"></a></p><a href="project6.qmd" class="card">
+</a><p><a href="https://www.bcbeer.ca" class="card"></a></p>
+<a href="https://www.bcbeer.ca" class="card"> <img src="avatar.jpg" alt="Project 6" class="card-img">
 <h3 class="anchored">
 Project 6
 </h3>
 <p>
-this is the other thing with car
+this is the other thing with card
 </p>
-</a><p><a href="project6.qmd" class="card"></a></p>
+</a><p><a href="https://www.bcbeer.ca" class="card"></a></p>
 </div>
 <h2 class="anchored">
 this category 2
 </h2>
+<p>
+with only two items - if spacing is off, remove blank lines from HTML code in Source view.
+</p>
 <div class="portfolio-container">
-<p><a href="project1.qmd" class="card"> <img src="avatar.jpg" alt="Project 1" class="card-img"></a></p><a href="project1.qmd" class="card">
+<a href="https://www.bcbeer.ca" class="card"> <img src="avatar.jpg" alt="Project 1" class="card-img">
 <h3 class="anchored">
 Project 1
 </h3>
 <p>
 this is the thing
 </p>
-</a><p><a href="project1.qmd" class="card"></a></p>
-<p><a href="project2.qmd" class="card"> <img src="avatar.jpg" alt="Project 2" class="card-img"></a></p><a href="project2.qmd" class="card">
+</a><p><a href="https://www.bcbeer.ca" class="card"></a></p>
+<a href="https://www.bcbeer.ca" class="card"> <img src="avatar.jpg" alt="Project 2" class="card-img">
 <h3 class="anchored">
 Project 2
 </h3>
 <p>
 this is the only thing
 </p>
-</a><p><a href="project2.qmd" class="card"></a></p>
-<p><a href="project3.qmd" class="card"> <img src="avatar.jpg" alt="Project 3" class="card-img"></a></p><a href="project3.qmd" class="card">
-<h3 class="anchored">
-Project 3
-</h3>
-<p>
-this is the other thing
-</p>
-</a><p><a href="project3.qmd" class="card"></a></p>
+</a><p><a href="https://www.bcbeer.ca" class="card"></a></p>
 </div>
 <h2 class="anchored">
 Smaller cards more cols
@@ -294,7 +294,7 @@ Smaller cards more cols
 Smaller size automatically fills up space avail.:
 </p>
 <div class="portfolio-container">
-<p><a href="https://bcbeer.ca" class="card-small"> <img src="avatar.jpg" alt="Project 1" class="card-img"></a></p><a href="https://bcbeer.ca" class="card-small">
+<a href="https://bcbeer.ca" class="card-small"> <img src="avatar.jpg" alt="Project 1" class="card-img">
 <h4 class="anchored">
 Project 1
 </h4>
@@ -302,72 +302,72 @@ Project 1
 Short description here.
 </p>
 </a><p><a href="https://bcbeer.ca" class="card-small"></a></p>
-<p><a href="https://tile2.com" class="card-small"> <img src="avatar.jpg" alt="Project 2" class="card-img"></a></p><a href="https://tile2.com" class="card-small">
+<a href="https://www.bcbeer.ca" class="card-small"> <img src="avatar.jpg" alt="Project 2" class="card-img">
 <h4 class="anchored">
 Project 2
 </h4>
 <p>
 Another brief detail.
 </p>
-</a><p><a href="https://tile2.com" class="card-small"></a></p>
-<p><a href="project3.qmd" class="card-small"> <img src="avatar.jpg" alt="Project 3" class="card-img"></a></p><a href="project3.qmd" class="card-small">
+</a><p><a href="https://www.bcbeer.ca" class="card-small"></a></p>
+<a href="https://www.bcbeer.ca" class="card-small"> <img src="avatar.jpg" alt="Project 3" class="card-img">
 <h4 class="anchored">
 Project 3
 </h4>
 <p>
 Something cool about this one.
 </p>
-</a><p><a href="project3.qmd" class="card-small"></a></p>
-<p><a href="project4.qmd" class="card-small"> <img src="avatar.jpg" alt="Project 4" class="card-img"></a></p><a href="project4.qmd" class="card-small">
+</a><p><a href="https://www.bcbeer.ca" class="card-small"></a></p>
+<a href="https://www.bcbeer.ca" class="card-small"> <img src="avatar.jpg" alt="Project 4" class="card-img">
 <h4 class="anchored">
 Project 4
 </h4>
 <p>
 Some description text.
 </p>
-</a><p><a href="project4.qmd" class="card-small"></a></p>
-<p><a href="project5.qmd" class="card-small"> <img src="avatar.jpg" alt="Project 5" class="card-img"></a></p><a href="project5.qmd" class="card-small">
+</a><p><a href="https://www.bcbeer.ca" class="card-small"></a></p>
+<a href="https://www.bcbeer.ca" class="card-small"> <img src="avatar.jpg" alt="Project 5" class="card-img">
 <h4 class="anchored">
 Project 5
 </h4>
 <p>
 Another fun project summary.
 </p>
-</a><p><a href="project5.qmd" class="card-small"></a></p>
+</a><p><a href="https://www.bcbeer.ca" class="card-small"></a></p>
 </div>
 <!-- end portfolio flex -->
 <h2 class="anchored">
-Straight HTML
+Unstyled card
 </h2>
 <p>
 uses portfolio-container and card-img but no style on link.
 </p>
 <div class="portfolio-container">
-<p><a href="project1.qmd" class=""> <img src="avatar.jpg" alt="Project 1" class="card-img"></a></p><a href="project1.qmd" class="">
+<a href="https://www.bcbeer.ca" class=""> <img src="avatar.jpg" alt="Project 1" class="card-img">
 <h3 class="anchored">
 Project 1
 </h3>
 <p>
 this is the thing
 </p>
-</a><p><a href="project1.qmd" class=""></a></p>
-<p><a href="project2.qmd" class=""> <img src="avatar.jpg" alt="Project 2" class="card-img"></a></p><a href="project2.qmd" class="">
+</a><p><a href="https://www.bcbeer.ca" class=""></a></p>
+<a href="https://www.bcbeer.ca" class=""> <img src="avatar.jpg" alt="Project 2" class="card-img">
 <h3 class="anchored">
 Project 2
 </h3>
 <p>
 this is the only thing
 </p>
-</a><p><a href="project2.qmd" class=""></a></p>
-<p><a href="project3.qmd" class=""> <img src="avatar.jpg" alt="Project 3" class="card-img"></a></p><a href="project3.qmd" class="">
+</a><p><a href="https://www.bcbeer.ca" class=""></a></p>
+<a href="https://www.bcbeer.ca" class=""> <img src="avatar.jpg" alt="Project 3" class="card-img">
 <h3 class="anchored">
 Project 3
 </h3>
 <p>
 this is the other thing
 </p>
-</a><p><a href="project3.qmd" class=""></a></p>
-<p><a href="https://bcbeer.ca" class=""> <img src="avatar.jpg" alt="Project 1" class="card-img"></a></p><a href="https://bcbeer.ca" class="">
+</a><p><a href="https://www.bcbeer.ca" class=""></a></p>
+<a href="https://bcbeer.ca" class=""> <img src="avatar.jpg" alt="Project 1" class="card-img">
 <h3 class="anchored">
 Project 1
 </h3>
@@ -375,19 +375,66 @@ Project 1
 Short description here.
 </p>
 </a><p><a href="https://bcbeer.ca" class=""></a></p>
-<p><a href="project4.qmd" class=""> <img src="avatar.jpg" alt="Project 4" class="card-img"></a></p><a href="project4.qmd" class="">
+<a href="https://www.bcbeer.ca" class=""> <img src="avatar.jpg" alt="Project 4" class="card-img">
 <h3 class="anchored">
 Project 4
 </h3>
 <p>
 this is the other thing again
 </p>
-</a><p><a href="project4.qmd" class=""></a></p>
+</a><p><a href="https://www.bcbeer.ca" class=""></a></p>
+</div>
+<h2 class="anchored">
+Unstyled with diff container
+</h2>
+<p>
+uses portfolio-container-alt: no wrap, adjusts card size to fill space. also justify-content: center but not sure if that does anything.
+</p>
+<div class="portfolio-container-alt">
+<a href="https://www.bcbeer.ca" class=""> <img src="avatar.jpg" alt="Project 1" class="card-img">
+<h3 class="anchored">
+Project 1
+</h3>
+<p>
+this is the thing
+</p>
+</a><p><a href="https://www.bcbeer.ca" class=""></a></p>
+<a href="https://www.bcbeer.ca" class=""> <img src="avatar.jpg" alt="Project 2" class="card-img">
+<h3 class="anchored">
+Project 2
+</h3>
+<p>
+this is the only thing
+</p>
+</a><p><a href="https://www.bcbeer.ca" class=""></a></p>
+<a href="https://www.bcbeer.ca" class=""> <img src="avatar.jpg" alt="Project 3" class="card-img">
+<h3 class="anchored">
+Project 3
+</h3>
+<p>
+this is the other thing
+</p>
+</a><p><a href="https://www.bcbeer.ca" class=""></a></p>
+<a href="https://www.bcbeer.ca" class=""> <img src="avatar.jpg" alt="Project 4" class="card-img">
+<h3 class="anchored">
+Project 4
+</h3>
+<p>
+this is the other thing
+</p>
+</a><p><a href="https://www.bcbeer.ca" class=""></a></p>
 </div>
 
 
 
 </main> <!-- /main -->
+
+<div class="custom-footer" style="text-align: center; padding: 1rem 0; font-size: 0.9em;">
+  <hr>
+  <p>© 2025 <a href="https://catbird-analytics.com">Catbird Analytics</a> • Built with <a href="https://quarto.org">Quarto</a></p>
+</div>
+
+
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
