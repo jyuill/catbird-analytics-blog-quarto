@@ -1,0 +1,314 @@
+---
+title: "Working with LLM AI inside RStudio, part 1"
+author: John Yuill
+date: '2024-08-25'
+categories: [analysis]
+description-meta: Exploring options for integrating LLMs into RStudio workflows.
+draft: true
+image:  dalle2-2024-08-26-llm-data-analysis_sm2.png
+toc: true
+toc-depth: 3
+toc-location: left
+date-modified: '`r Sys.Date()`'
+execute:
+  echo: true
+  error: false
+  warning: false
+---
+
+```{r setup, include=FALSE}
+#| echo: FALSE
+#| warning: FALSE
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(glue)
+library(ggrepel)
+library(readr) ## for easy conversion of $ characters to numeric
+library(RMariaDB) ## best way to access MySQL from R
+library(RColorBrewer)
+library(here)
+library(plotly)
+library(gridExtra)
+library(gganimate)
+
+# set default theme
+theme_set(theme_classic())
+
+# additional settings as needed
+# - may include: color palettes, source calls to functions, etc
+```
+
+## Large Language Model AI Tools in R Studio
+
+Part 1 of exploring integration of LLM tools into R Studio for more efficient data analysis and faster speed to insights.
+
+Looking at some of the more well-known options, with relatively simple examples that give an idea of some, but by no means all, of the capabilities.
+
+1.  GitHub Copilot
+2.  chattr package
+3.  gptstudio package
+
+### First, some data
+
+Here's the data set we'll use throughout these examples:
+
+```{r load_data}
+data <- read_csv(here('data','lmr-data.csv'), show_col_types = FALSE)
+glimpse(data, width=80)
+```
+
+### Github Copilot
+
+Copilot is pretty much a must-have to help with your coding, imo. That is, of course, as long as you're willing to pay for it, since it **requires a Copilot subscription**.
+
+Posit has a [GitHub Copilot guide](https://docs.posit.co/ide/user/ide/guide/tools/copilot.html) that gives you pretty much everything you need to get going.
+
+-   easy integratiion with RStudio via **Tools \> Global Options**.
+-   real-time code suggestions -\> way beyond traditional autocomplete offers.
+-   suggestions can even provide good practices for coding efficiency or other techniques that you may not be aware of.
+-   doesn't work well in 'Visual' mode, so you'll need to switch to 'Source' mode to get the most out of it.
+
+![](github-copilot-r-settings.png){fig-align="center" width="400"}
+
+Most folks are probably pretty familiar with how Copilot works, and there are lots of great resources, so I'll just throw in a simple R-specific example here.
+
+#### Prompt/response #1:
+
+-   After loading the data, the comment specifies what we want to do next.
+-   I started typing 'data\_' and the greyed-out code was supplied by Copilot.
+-   To accept, I just hit 'tab' and execute.
+
+![](copilot_01.png)
+
+Resulting in a serviceable chart:
+
+![](copilot_01_chart.png){width="300"}
+
+#### Prompt/response #2:
+
+-   Going for some refinement: this time, I type in more detailed intentions, and Copilot provides all the greyed-out code, without me typing any code at all:
+
+![](copilot_02.png)
+
+Result looks good - although 'removal of x-axis ticks' got missed:
+
+![](copilot_02_chart.png){width="300"}
+
+#### Prompt/response #3:
+
+-   One more set of minor refinements, these get incorporated in for a complete set of code to deliver the intended result
+
+![](copilot_03.png)
+
+Result:
+
+![](copilot_03_chart.png){width="300"}
+
+A basic example, but shows the power of having this assistant at hand. Also highlights the way **these tools are particularly helpful to less-experienced programmers**: an experienced pro would be able to do all this as fast as Copilot but this really helps to level-up those who know what they want to do, but don't have all the code nuances at their fingertips.
+
+### chattr
+
+```{r}
+library(chattr)
+```
+
+[chattr](https://mlverse.github.io/chattr/) is a package that enables interacting with LLMs from within the RStudio environment. The intention is to go well beyond the code-focused content of Copilot.
+
+Once you install and load the package, you can use the `chattr` function to interact with the LLM. The `chattr_use` function provides the ability to choose the model to use: *(options may vary over time)*
+
+![](chattr_models.png){width="350"}
+
+The choice of model will effect the quality and form of output that you get. Most examples below were done with gpt-4 - you may see very different results.
+
+After you've made a selection, you can test your connection and confirm which model you are using with `chattr_test` function:
+
+![](chattr_test.png){width="400"}
+
+If you don't have a successful test, best to go to the [chattr Github documentation](https://mlverse.github.io/chattr/) for advice.
+
+There are a couple of ways to interact with chattr:
+
+1.  use '**chattr(prompt = "**\<prompt here\>**")**' inline, directly in a code block to generate code.
+
+2.  use **Addins \> CHATTR \> Open Chat** to open an app in the Viewer window, where you can interact through an interface.
+
+#### Inline chattr
+
+Works best if you want to interact from a Quarto or RMarkdown doc, since you add prompts to your code chunks and get the code built out there for use.
+
+1.  enter **chattr(prompt = "\<prompt here\>")** in your code block - works from Visual mode in Quarto (unlike Copilot).
+2.  move the cursor to somewhere BELOW the prompt text.
+3.  Without having access to your actual dataset, I can't provide the exact code. However, I can provide a general approach using the tidyverse andrun the code block to generate the code to answer your question.
+4.  to get the actual results, comment out the original chattr prompt (only need one '\#' before 'chattr') and run the new code provided.
+5.  fix as necessary
+
+##### Prompt #1:
+
+A basic question along the lines of what we were doing with Copilot (maybe slightly more advanced). Produces basic chart that answers the question. (prompt in commented out in order to show the results from the R code that was provided)
+
+```{r chattr_01}
+#chattr(prompt = "for the data dataframe I have in my session, how can i show the trend in netsales for cat_type 'Beer' by cyr from 2016 to 2022?")
+
+# Load the required libraries
+library(dplyr)
+library(ggplot2)
+
+# Filter the data for cat_type 'Beer' and years 2016 to 2022
+data_beer <- data %>% 
+  filter(cat_type == 'Beer' & cyr >= 2016 & cyr <= 2022)
+
+# Summarize the data to get total net sales by cyr
+data_summarized <- data_beer %>% 
+  group_by(cyr) %>% 
+  summarise(total_netsales = sum(netsales))
+
+# Create the line chart
+ggplot(data_summarized, aes(x = cyr, y = total_netsales)) +
+  geom_line()
+```
+
+##### Prompt #2:
+
+```{r chattr_02}
+#chattr("what is the highest year of total_netsales for Beer?")
+
+# Load the required libraries
+library(dplyr)
+library(tidymodels)
+
+# Filter the data for cat_type 'Beer'
+data_beer <- data %>% 
+  filter(cat_type == 'Beer')
+
+# Summarize the data to get total net sales by cyr
+data_summarized <- data_beer %>% 
+  group_by(cyr) %>% 
+  summarise(total_netsales = sum(netsales))
+
+# Find the year with the highest total_netsales
+highest_year <- data_summarized %>% 
+  filter(total_netsales == max(total_netsales)) %>% 
+  pull(cyr)
+```
+
+Note that for this one, the value in stored in a variable in your session:
+
+```{r}
+print(highest_year)
+```
+
+##### Prompt #3:
+
+A little more complex example, where I have included some hints. Close but some problems...
+
+```{r}
+# commented out to keep the prompt but not re-run:
+#chattr(prompt = "what was the total percentage change in total net sales for Beer over the period 2016 to 2022, and what year had the largest year-over-year percentage change, either positive or negative? my data set is called data_beer, Beer is in cat_type variable, year is in cyr variable, and sales are in netsales variable.")
+
+```
+
+![](chattr_prompt_03_output2_err.png)
+
+Works with minor modifications:
+
+-   set separate lines for loading libraries and add ')'
+-   add '\#' to one of the comment lines
+
+```{r}
+# Load the libraries
+library(tidyverse)
+library(tidymodels)
+
+# Filter the data for the years 2016 to 2022 and for the category type 'Beer'
+data_beer_filtered <- data_beer %>%
+  filter(cyr >= 2016 & cyr <= 2022 & cat_type == 'Beer')
+
+# Calculate the total net sales for each year
+total_sales_per_year <- data_beer_filtered %>%
+  group_by(cyr) %>%
+  summarise(total_netsales = sum(netsales))
+
+# Calculate the percentage change in total net sales for each year
+total_sales_per_year <- total_sales_per_year %>%
+  mutate(percentage_change = (total_netsales/lag(total_netsales) - 1) * 100)
+
+# Calculate the total percentage change in total net sales over the period2016 to 2022
+total_percentage_change <- (total_sales_per_year$total_netsales[nrow(total_sales_per_year)] / total_sales_per_year$total_netsales[1] - 1) * 100
+
+# Find the year with the largest year-over-year percentage
+year_largest_change <- total_sales_per_year %>%
+  filter(percentage_change == max(percentage_change, na.rm = TRUE)) %>%
+  pull(cyr)
+
+# Print the total percentage change and year with the largest change
+total_percentage_change
+year_largest_change
+```
+
+This is pretty minor fix, and a fairly small price to pay for a LOT of free code. But does highlight that **these tools aren't perfect** (surprise, surprise!).
+
+#### Addin \[not working\]
+
+(Addin not working last time it was tried - Apr 2025)
+
+![](addin-chattr.png){width="100"}
+
+The main selling point for chattr is intended to be the **interactive app accessed via the Viewer window**. You can access this through **Addins \> CHATTR \>** '**Open Chat**' option.
+
+With this approach, you can get more running conversation and can copy/paste code as needed into your R file. It is text-based only, so no matter what model you are using, you can't upload files for analysis or have direction interaction between the data in your R session and the LLM.
+
+Overall, maybe keeps things cleaner and is more flexible than accessing in-line, although:
+
+-   a\) you have to jump back and forth to some degree (although having the Viewer window available helps),
+-   b\) you don't have a built-in reference for future (if needed),
+-   c\) you can't interact with your console or run any code while the app is running - it is a Shiny app, so the normal situation applies.
+
+##### Prompt 4 (via chat window):
+
+Here's the results using the same prompt as above. As you can see, very similar results, in this case with the prompt below and then the text + code provided.
+
+![](chattr_prompt_viewer.png){width="800"}
+
+One advantage over something like Copilot is that you have access to a LOT more information that you can use to answer broader questions, beyond just code, that can help with your analysis.
+
+\[provide screenshot from more sophisticated conversation with Viewer window\]
+
+code provided by prompt below - fails on calculating subcategory change: all NA
+
+![](chattr_viewer_prompt.png){width="300"}
+
+```{r}
+
+# Calculate annual total revenue for each subcategory
+annual_revenue <- data_beer %>%
+  group_by(cyr, subcategory) %>%
+  summarise(netsales = sum(netsales, na.rm = TRUE))
+
+# Calculate annual total revenue change for each subcategory
+annual_revenue_change <- annual_revenue %>%
+  arrange(cyr, subcategory) %>%
+  group_by(subcategory) %>%
+  mutate(revenue_change = netsales - lag(netsales))
+
+# View the data
+head(annual_revenue_change)
+
+```
+
+### gptstudio
+
+MAY MOVE THIS TO SEPARATE ARTICLE PART II
+
+```{r}
+#library(gptstudio)
+```
+
+#### Addin
+
+![](gptstudio_addin.png){width="200"}
+
+-   real-time prompting in Viewer pane with text responses
+-   provides code suggestions based on prompts that you can then copy/paste into your R file
+-   doesn't have visibility into your code in your R file
+-   clunky interface in Viewer pane

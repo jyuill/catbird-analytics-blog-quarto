@@ -106,15 +106,6 @@ main.content {
   padding: 0px 0;
 }
 
-/* Portfolio container */
-.portfolio-container-alt {
-  display: flex;
-  flex-wrap: nowrap; /* reduces size to fit avail space, no wrap */
-  justify-content: center;
-  gap: 12px;
-  padding: 0px 0;
-}
-
 /* Individual card */
 /* generic name: may have some inherited effects from bootstrap or other templates */
 .card {
@@ -181,4 +172,13 @@ main.content {
 .card-small p {
   margin: 0.2em 0 0.8em;
   font-size: 0.9em;
+}
+
+/* alternative portfolio container */
+.portfolio-container-alt {
+  display: flex;
+  flex-wrap: nowrap; /* reduces size to fit avail space, no wrap */
+  justify-content: center;
+  gap: 12px;
+  padding: 0px 0;
 }

@@ -9,6 +9,8 @@ website:
       - text: "Home"
         file: index.qmd
       - portfolio.qmd
+      - text: "Tech Blog"
+        file: tech-blog.qmd
       - about.qmd
     right:
       - icon: linkedin
