@@ -2,7 +2,7 @@
 title: "Working with LLM AI inside RStudio, part 1"
 author: John Yuill
 date: '2024-08-25'
-categories: [analysis]
+categories: [Gen-AI, R programming]
 description-meta: Exploring options for integrating LLMs into RStudio workflows.
 draft: true
 image:  dalle2-2024-08-26-llm-data-analysis_sm2.png

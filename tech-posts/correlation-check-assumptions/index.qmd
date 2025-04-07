@@ -2,7 +2,7 @@
 title: "Correlation is NOT Causation...It May Not Even Be Correlation"
 author: John Yuill
 date: '2024-03-24'
-categories: [analysis, r, statistics]
+categories: [Analysis, R programming, Statistics]
 description-meta: Calculating a correlation coefficient aka R value does not guarantee that the number is valid. Correlation calculation are based on key assumptions that should be checked to ensure that the linear correlation is providing relevant indication of relationship between two variables.
 draft: false
 image: img/resid-plot.png 
@@ -17,6 +17,7 @@ execute:
   echo: true
   error: false
   warning: false
+  freeze: true
 ---
 
 ```{r setup, include=FALSE}

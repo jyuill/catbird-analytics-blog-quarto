@@ -2,7 +2,7 @@
 title: "Crypto Currency (BTC) PRices: Any Tradeable Daily Patterns?"
 author: John Yuill
 date: '2022-05-28'
-categories: [R, analysis, crpto-currency]
+categories: [Analysis, Crpto-currency]
 description-meta: Analysis of recent Bitcoin price history to see if there are predictable
   patterns in prices based on day of week that can be leveraged for trading.
 draft: false
@@ -59,11 +59,11 @@ Read on for the details! Of course, there may be flaws, errors, or ommissions in
 
 ### Get Data
 
-* Focus on recent years, due to long-term volatility and evolution of the market focus.
+-   Focus on recent years, due to long-term volatility and evolution of the market focus.
 
-* Looking at **Bitcoin** as the apex crypto currency. Other coins may have entirely different patterns.
+-   Looking at **Bitcoin** as the apex crypto currency. Other coins may have entirely different patterns.
 
-* Using **BTC-CAD** because...well, I'm Canadian and I trade in Canadian \$.
+-   Using **BTC-CAD** because...well, I'm Canadian and I trade in Canadian \$.
 
 ```{r}
 ## get data
@@ -82,8 +82,8 @@ dygraph(BTC_CAD[,"BTC-CAD.Close"])
 
 #### Focus on Recent Trading Range
 
-* recent history is likely to be more representative of future results (?)
-* somewhat arbitrary - picking a point that seems to represent current ranges 
+-   recent history is likely to be more representative of future results (?)
+-   somewhat arbitrary - picking a point that seems to represent current ranges
 
 ```{r}
 rec <- '2022-06-18/'
@@ -93,8 +93,8 @@ dygraph(btc_rec[,"BTC-CAD.Close"])
 
 ### Add Days of Week
 
-* Add weekdays to identify and compare prices by day of week.
-* Add date of each week to identify and compare weeks.
+-   Add weekdays to identify and compare prices by day of week.
+-   Add date of each week to identify and compare weeks.
 
 Easiest - for me, at least - to convert time series to data frame:
 
@@ -130,13 +130,13 @@ btc_rec_df %>% ggplot(aes(x=day, y=BTC.CAD.Close))+geom_boxplot(fill=fill_color)
   labs(title="Distrib. of BTC-CAD Closing Price by Day", y='BTC-CAD Close', x="")
 ```
 
-No strong, obvious pattern over the period.  
+No strong, obvious pattern over the period.
 
-* *Maybe* Tue-Sat?
+-   *Maybe* Tue-Sat?
 
 This data is over a period where there is a lot of variance in the price that may blur the daily patterns. Could still be that there is a consistent pattern *within* weeks.
 
-For more granularity, let's look at week-by-week trends by day: 
+For more granularity, let's look at week-by-week trends by day:
 
 ```{r}
 week_plot <- btc_rec_df %>% ggplot(aes(x=day, y=BTC.CAD.Close, color=as.factor(week_of), group=week_of))+geom_line()+
@@ -147,7 +147,7 @@ week_plot <- btc_rec_df %>% ggplot(aes(x=day, y=BTC.CAD.Close, color=as.factor(w
 ggplotly(week_plot)
 ```
 
-Some weeks with upward trend through the week, others declining or flat: not exactly a consistent pattern to rely on across this date range. 
+Some weeks with upward trend through the week, others declining or flat: not exactly a consistent pattern to rely on across this date range.
 
 ### Specific Day of Weeks Comparisons
 
@@ -171,9 +171,9 @@ ggplotly(dd_plot)
 
 Pretty hard to pick out any obvious/consistent pattern. Let's take a closer look:
 
-* get each week % change for these days.
-* get summary stats on these changes.
-* look at distribution of % change to see if any consistency.
+-   get each week % change for these days.
+-   get summary stats on these changes.
+-   look at distribution of % change to see if any consistency.
 
 ##### Histogram
 
@@ -212,8 +212,8 @@ btc_rec_d_df %>% ggplot(aes(x=wk_chg))+geom_histogram(fill=fill_color)+
 
 Basically a wash:
 
-* median of `r mwkchg` tells us there is 50% chance of being either above or below `r mwkchg` return on the week, with pretty even distribution on each side. Being very close to 0, doesn't give us much hope.
-* Ave. return on the week (`r awkchg`) holds some potential promise but not particularly inspiring.
+-   median of `r mwkchg` tells us there is 50% chance of being either above or below `r mwkchg` return on the week, with pretty even distribution on each side. Being very close to 0, doesn't give us much hope.
+-   Ave. return on the week (`r awkchg`) holds some potential promise but not particularly inspiring.
 
 ##### Side-by-Side Boxplot
 
@@ -231,10 +231,10 @@ Similar conclusion to previous: looks like there might be some difference, not c
 
 **Two potential (major) issues:**
 
-1. Transaction fees, spread, etc. will likely erase this small gains - at least at the level many of us operate.
-2. The gains may *not* be statistically significant enough to rely on.
+1.  Transaction fees, spread, etc. will likely erase this small gains - at least at the level many of us operate.
+2.  The gains may *not* be statistically significant enough to rely on.
 
-We can assume that issue #1 is a deal-breaker, but we can dig deeper on  issue #2 for fun.
+We can assume that issue #1 is a deal-breaker, but we can dig deeper on issue #2 for fun.
 
 ### Hypothesis Test
 
@@ -244,12 +244,12 @@ For this we can use **paired sample t-test**. This is used to compare 'before / 
 
 For **paired t-test** to be valid, we need the following:
 
-1. Calculate difference for each sample.
-2. Normally distributed data: check for normal distribution of differences.
-3. Run t-test with paired = TRUE.
+1.  Calculate difference for each sample.
+2.  Normally distributed data: check for normal distribution of differences.
+3.  Run t-test with paired = TRUE.
 
-* differences have already been calculated.
-* normality check: can be eye-balled in histogram above. For extra measure, check QQ plot and Shapiro-Wilk test. (Not really needed, since well over 30 samples, but what the heck)
+-   differences have already been calculated.
+-   normality check: can be eye-balled in histogram above. For extra measure, check QQ plot and Shapiro-Wilk test. (Not really needed, since well over 30 samples, but what the heck)
 
 ##### QQ Test
 
@@ -267,13 +267,13 @@ QQ plot looks solid in the mid-range, but data points drift off at the extremes 
 shapiro.test(btc_rec_d_df$wk_chg) ## Shapiro-Wilk test for normality
 ```
 
-Low p-value indicates that the data is NOT normally distributed. So that limits the reliability of a paired t-test.  
+Low p-value indicates that the data is NOT normally distributed. So that limits the reliability of a paired t-test.
 
 Nevertheless...we've come this far, might as well check on statistical significance of the differences in prices between the days.
 
 #### Paired t-test
 
-**Paired t.test** to see if the differences in prices from one day to the other are statistically significant, in that they differ from what would be seen with a random collection of prices: 
+**Paired t.test** to see if the differences in prices from one day to the other are statistically significant, in that they differ from what would be seen with a random collection of prices:
 
 ```{r}
 t.test(data=btc_rec_d_df, BTC.CAD.Close ~ day, paired = TRUE)
@@ -281,7 +281,7 @@ t.test(data=btc_rec_d_df, BTC.CAD.Close ~ day, paired = TRUE)
 
 Looks like we do not have statistical significance at all:
 
-* high p-value
-* wide confidence interval straddling 0`
+-   high p-value
+-   wide confidence interval straddling 0\`
 
 So if this info was to be used for investment advice - which it definitely is not - the advice would be: **do not try this at home**. ;(

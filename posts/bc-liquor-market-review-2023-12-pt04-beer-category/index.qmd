@@ -2,7 +2,7 @@
 title: "BC Beer Sales Analysis: Commercial, Regional, Micro Brew  2016-2023"
 author: John Yuill
 date: '2024-06-30'
-categories: [liquor stats, reporting, analysis]
+categories: [Liquor stats, Beer stats, Analysis]
 description-meta: BC Liquor Market Review data exploration and analysis covering the categories of beer producers during years 2016 to 2023, focusing on quarter-level trends, patterns and observations.
 draft: false
 image: beer_src_cat_chg.png 

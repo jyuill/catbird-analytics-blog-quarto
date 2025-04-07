@@ -2,7 +2,7 @@
 title: "BC Liquor Sales Analysis: Annual Trends 2016-2022"
 author: John Yuill
 date: '2023-11-05'
-categories: [liquor stats, reporting, analysis, R]
+categories: [Liquor stats, Analysis]
 description-meta: BC Liquor Market Review data exploration and analysis covering the years 2016 to 2023, with trends and observations.
 draft: false
 image: bc-lmr-yoy-vol-chg.png

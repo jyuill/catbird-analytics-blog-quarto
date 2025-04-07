@@ -2,7 +2,7 @@
 title: 'R Time Series Objects vs Data Frames: Advantages and Limitations'
 author: John Yuill
 date: '2022-01-30'
-categories: [R, time-series]
+categories: [R programming, Time-series]
 draft: false
 image: time-series-thumb.png
 toc: true
@@ -470,7 +470,7 @@ Looks like there may be money to be made riding the seasonal wave! Please: **do 
 
 A primary use case for time series objects is forecasting. This is a whole other, involved topic way beyond the scope of this post.
 
-Here is a quick example to show how easy forecasting can be in R. Note that we need to bring in the **forecast** package for this. (There is also the amazing **[tidyverts eco-system]**(<https://tidyverts.org/>) for working with time series that I have recently discovered - again, a whole other topic for another time.)
+Here is a quick example to show how easy forecasting can be in R. Note that we need to bring in the **forecast** package for this. (There is also the amazing **\[tidyverts eco-system\]**(<https://tidyverts.org/>) for working with time series that I have recently discovered - again, a whole other topic for another time.)
 
 #### Get an ARIMA Model
 

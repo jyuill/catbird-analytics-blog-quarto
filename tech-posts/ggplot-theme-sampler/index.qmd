@@ -2,7 +2,7 @@
 title: "GGplot Theme Sampler: Choosing a Theme"
 author: John Yuill
 date: '2024-10-20'
-categories: [dataviz, r]
+categories: [Data visualization, R programming]
 description-meta: A selection of charts with different ggplot themes to help in choosing which to use.
 draft: false
 image: boxplot-9.png  
@@ -31,7 +31,7 @@ library(ggpubr)
 
 ```
 
-### So Many Themes! Which One to Use? 
+### So Many Themes! Which One to Use?
 
 ![A small selection of themes available for ggplot2](multi-charts-themes.png){style="border: 1px solid purple" fig-align="center"}
 

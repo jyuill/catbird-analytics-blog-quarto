@@ -2,7 +2,7 @@
 title: "BC Liquor Sales Analysis: Quarter-of-Year Patterns 2015-2023"
 author: John Yuill
 date: '2023-11-19'
-categories: [liquor stats, reporting, analysis]
+categories: [Liquor stats, Analysis]
 description-meta: BC Liquor Market Review data exploration and analysis covering the years 2016 to 2023, focusing on quarter-level trends, patterns and observations.
 draft: false
 image: bc-lmr-quarter-pattern.png 

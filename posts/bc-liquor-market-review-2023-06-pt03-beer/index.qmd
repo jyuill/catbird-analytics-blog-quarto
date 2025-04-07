@@ -2,7 +2,7 @@
 title: "BC Liquor Sales Analysis: Beer 2016-2023"
 author: John Yuill
 date: '2024-03-26'
-categories: [liquor stats, beer, reporting, analysis]
+categories: [Liquor stats, Beer stats, Analysis]
 description-meta: BC Liquor Market Review beer sales data exploration and analysis covering the years 2016 to 2023 with trends, patterns and observations.
 draft: false
 image: bc-ldb-beer.png 

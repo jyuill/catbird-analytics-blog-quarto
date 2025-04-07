@@ -2,7 +2,7 @@
 title: "Quarto Shinylive Experiment: Promising for Limited Use"
 author: John Yuill
 date: '2024-01-27'
-categories: [R, quarto, shiny]
+categories: [R programming, Quarto, Shiny]
 description-meta: An experiment in shiny app embedding in quarto document that shows functionality and identifies some limitations.
 draft: false
 toc: true
