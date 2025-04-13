@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Embedding BC LMR shiny app.">
 
-<title>Catbird Analytics - Portfolio</title>
+<title>Catbird Analytics - BC Liquor Market Statistics: Interactive Dashboard</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,24 +24,24 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/cookie-consent/cookie-consent.js"></script>
-<link href="site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -95,28 +96,23 @@ cookieconsent.run({
 });
 </script> 
   
-<style>
-
-      .quarto-title-block .quarto-title-banner {
-        background: #446e9b;;
-      }
-</style>
 
 
 <link rel="stylesheet" href="styles.css, /products/styles-prod.css">
-<meta property="og:title" content="Catbird Analytics - Portfolio">
-<meta property="og:description" content="A sampling of Catbird Analytics projects">
+<link rel="stylesheet" href="styles-prod.css">
+<meta property="og:title" content="Catbird Analytics - BC Liquor Market Statistics: Interactive Dashboard">
+<meta property="og:description" content="">
 <meta property="og:site_name" content="Catbird Analytics">
 </head>
 
 <body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Catbird Analytics</span>
     </a>
   </div>
@@ -127,7 +123,7 @@ cookieconsent.run({
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -136,25 +132,25 @@ cookieconsent.run({
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-products">    
         <li>
-    <a class="dropdown-item" href="./products/bc-lmr-dashboard.html">
+    <a class="dropdown-item" href="../products/bc-lmr-dashboard.html">
  <span class="dropdown-text">BC Liquor Market Dashboard</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./portfolio-test.html">
+    <a class="dropdown-item" href="../portfolio-test.html">
  <span class="dropdown-text">Portfolio test</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link active" href="./portfolio.html" aria-current="page"> 
+    <a class="nav-link" href="../portfolio.html"> 
 <span class="menu-text">Portfolio</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./tech-blog.html"> 
+    <a class="nav-link" href="../tech-blog.html"> 
 <span class="menu-text">Tech Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -182,82 +178,35 @@ cookieconsent.run({
     </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
-  <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page">
-      <h1 class="title">Portfolio</h1>
-            <p class="subtitle lead">A sampling of Catbird Analytics projects</p>
-                      </div>
-  </div>
-    
-  
-  <div class="quarto-title-meta column-page">
-
-      
-    
-      
-    </div>
-    
-  
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     
 <!-- main -->
-<main class="content quarto-banner-title-block column-page" id="quarto-document-content">
+<main class="content column-page" id="quarto-document-content">
 
-
-
-
-
-<p class="porto">
-Data products and other projects from Catbird Analytics.
-</p>
-<h2 class="anchored">
-R Shiny apps
-</h2>
-<div class="portfolio-container">
-<a href="https://catbird.shinyapps.io/BC-Liquor-Market-Review/" class="card"> <img src="images/bc-liquor-stats.png" alt="BC Liquor Market Statistics" class="card-img">
-<h3 class="anchored">
-BC Liquor Market Statistics
-</h3>
-<p>
-Interactive multi-faceted dashboard for exploring trends and patterns in British Columbia liquor sales.
-</p>
-</a><p><a href="https://catbird.shinyapps.io/BC-Liquor-Market-Review/" class="card"></a></p>
-<a href="https://www.bcbeer.ca" class="card"> <img src="images/bc-beer-sales.png" alt="BC Beer Sales" class="card-img">
-<h3 class="anchored">
-BC Beer Sales
-</h3>
-<p>
-Website with BC beer sales interactive dashboard.
-</p>
-</a><p><a href="https://www.bcbeer.ca" class="card"></a></p>
-<a href="https://catbird.shinyapps.io/burndown-sim-app-v2/" class="card"> <img src="images/savings-burndown-sim.png" alt="Savings Burndown Calculator" class="card-img">
-<h3 class="anchored">
-Savings Burndown Calculator
-</h3>
-<p>
-How long will your savings last if you quit your job!? Interactive app for entering various parameters and simulating various potential outcomes to understand probabilities of savings lasting for different periods.
-</p>
-</a><p><a href="https://catbird.shinyapps.io/burndown-sim-app-v2/" class="card"></a></p>
-<a href="https://catbird.shinyapps.io/stock-comparisons/" class="card"> <img src="images/stock-comparisons.png" alt="Stock Comparison App" class="card-img">
-<h3 class="anchored">
-Stock Market Comparisons
-</h3>
-<p>
-Make better investment decisions: get stock market performance comparisons for companies of interest on various dimensions.
-</p>
-</a><p><a href="https://catbird.shinyapps.io/stock-comparisons/" class="card"></a></p>
-<a href="https://www.bcbeer.ca" class="card"> <img src="images/placeholder-01-dalle2.png" alt="Coming Soon" class="card-img">
-<h3 class="anchored">
-Coming Soon
-</h3>
-<p>
-More coming soon.
-</p>
-</a><p><a href="https://www.bcbeer.ca" class="card"></a></p>
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">BC Liquor Market Statistics: Interactive Dashboard</h1>
 </div>
+
+
+
+<div class="quarto-title-meta column-page">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><a href="https://catbird.shinyapps.io/BC-Liquor-Market-Review/">original version on shinyapps.io</a></p>
+<iframe src="https://catbird.shinyapps.io/BC-Liquor-Market-Review/" width="100%" height="1200px" frameborder="0">
+</iframe>
 
 
 

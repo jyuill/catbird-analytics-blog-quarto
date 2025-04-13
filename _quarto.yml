@@ -8,6 +8,12 @@ website:
     left: 
       - text: "Home"
         file: index.qmd
+      - text: "Products"
+        menu:
+          - text: "BC Liquor Market Dashboard"
+            file: products/bc-lmr-dashboard.qmd
+          - text: "Portfolio test"
+            file: portfolio-test.qmd
       - portfolio.qmd
       - text: "Tech Blog"
         file: tech-blog.qmd
@@ -27,7 +33,7 @@ format:
     theme: 
     - spacelab
     - custom-style.scss
-    css: styles.css
+    css: styles.css, /products/styles-prod.css
     include-after-body: "footer.html"
 editor: visual
 
