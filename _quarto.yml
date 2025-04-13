@@ -12,8 +12,8 @@ website:
         menu:
           - text: "BC Liquor Market Dashboard"
             file: products/bc-lmr-dashboard.qmd
-          - text: "Portfolio test"
-            file: portfolio-test.qmd
+          - text: "More to Come"
+            file: portfolio.qmd
       - portfolio.qmd
       - text: "Tech Blog"
         file: tech-blog.qmd
@@ -33,7 +33,7 @@ format:
     theme: 
     - spacelab
     - custom-style.scss
-    css: styles.css, /products/styles-prod.css
+    css: styles.css
     include-after-body: "footer.html"
 editor: visual
 

@@ -1,5 +1,5 @@
 ---
-title: "Catbird Analytics"
+title: "Catbird Analytics Tech Blog"
 subtitle: "Tech Behind Analytics from the Catbird Seat"
 listing:
   contents: tech-posts
