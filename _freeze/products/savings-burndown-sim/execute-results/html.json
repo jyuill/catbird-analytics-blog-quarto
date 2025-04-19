@@ -1,0 +1,15 @@
+{
+  "hash": "9d39598d6ae9edc10dc62e7cb87f562b",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"How Long Will Your Savings Last?\"\ndescription-meta: Embedding Savings Burndown simulation shiny app.\nformat:\n  html:\n    page-layout: full\n    css: styles-prod.css\ndraft: false\nexecute:\n  echo: false\n  error: false\n  warning: false\n  freeze: true\n---\n\n\n\n\n[original version on shinyapps.io](https://catbird.shinyapps.io/BC-Liquor-Market-Review/)\n\n\n```{=html}\n<iframe src=\"https://catbird.shinyapps.io/burndown-sim-app-v2/\"\nwidth=\"100%\" height=\"1200px\" frameborder=\"0\">\n</iframe>\n```\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

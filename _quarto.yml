@@ -8,10 +8,12 @@ website:
     left: 
       - text: "Home"
         file: index.qmd
-      - text: "Products"
+      - text: "Data Products"
         menu:
           - text: "BC Liquor Market Dashboard"
             file: products/bc-lmr-dashboard.qmd
+          - text: "Savings Burndown Simulator"
+            file: products/savings-burndown-sim.qmd
           - text: "More to Come"
             file: portfolio.qmd
       - portfolio.qmd
