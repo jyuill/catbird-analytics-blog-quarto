@@ -1,0 +1,42 @@
+---
+title: "Stock Comparisons"
+description-meta: Stock comparison and analysis shiny app.
+format:
+  html:
+    page-layout: full
+    css: styles-prod.css
+draft: false
+execute:
+  echo: false
+  error: false
+  warning: false
+  freeze: true
+---
+
+```{r setup, include=FALSE}
+#| echo: FALSE
+#| warning: FALSE
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(glue)
+library(ggrepel)
+library(readr) ## for easy conversion of $ characters to numeric
+library(RColorBrewer)
+library(here)
+library(plotly)
+library(gridExtra)
+library(gganimate)
+library(ggpubr)
+library(lmtest)
+library(gt)
+
+```
+
+[original version on shinyapps.io](https://catbird.shinyapps.io/stock-comparisons)
+
+```{=html}
+<iframe src="https://catbird.shinyapps.io/stock-comparisons/"
+width="100%" height="1200px" frameborder="0">
+</iframe>
+```
