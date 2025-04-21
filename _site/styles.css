@@ -134,20 +134,23 @@ main.content {
 
 /* Image styling */
 .card-img {
-  width: 100%;
+  width: 96%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
+  margin-top: 4px;
   margin-bottom: 0px;
   padding: 6px; /* padding around image */
   border-radius: 12px; /* needs to be after padding or gets over-written */
+  /*border: 1px solid #446e9b; */ /* spacelab theme primary color */
 }
 
 .card h4 {
-  margin: 0em 0 0.2em;
+  margin: 0.5em 0.2em 0.2em;
   font-weight: bold;
+  color: #446e9b; /* spacelab theme primary color */
 }
 .card p {
-  margin: 0.2em 0 0.8em;
+  margin: 0em 0.2em 0.8em;
   font-size: 0.9em;
 }
 
