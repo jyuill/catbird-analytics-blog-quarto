@@ -7,9 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="John Yuill">
-<meta name="description" content=".">
+<meta name="dcterms.date" content="2024-01-27">
+<meta name="description" content="An experiment in shiny app embedding in quarto document that shows functionality and identifies some limitations.">
 
-<title>Catbird Analytics - For new blog post: SAVE AS index.qmd in New Folder in posts folder</title>
+<title>Catbird Analytics - Quarto Shinylive Experiment: Promising for Limited Use</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -59,24 +60,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/cookie-consent/cookie-consent.js"></script>
-<link href="site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<meta name="shinylive:serviceworker_dir" content="../..">
+<script src="../../site_libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script>
+<link href="../../site_libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -133,8 +139,8 @@ cookieconsent.run({
   
 
 
-<link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="Catbird Analytics - For new blog post: SAVE AS index.qmd in New Folder in posts folder">
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Catbird Analytics - Quarto Shinylive Experiment: Promising for Limited Use">
 <meta property="og:description" content="">
 <meta property="og:site_name" content="Catbird Analytics">
 </head>
@@ -146,7 +152,7 @@ cookieconsent.run({
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Catbird Analytics</span>
     </a>
   </div>
@@ -157,7 +163,7 @@ cookieconsent.run({
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -166,29 +172,29 @@ cookieconsent.run({
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-data-products">    
         <li>
-    <a class="dropdown-item" href="./products/bc-lmr-dashboard.html">
+    <a class="dropdown-item" href="../../products/bc-lmr-dashboard.html">
  <span class="dropdown-text">BC Liquor Market Dashboard</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./products/savings-burndown-sim.html">
+    <a class="dropdown-item" href="../../products/savings-burndown-sim.html">
  <span class="dropdown-text">Savings Burndown Simulator</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./portfolio.html">
+    <a class="dropdown-item" href="../../portfolio.html">
  <span class="dropdown-text">More to Come</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="./portfolio.html"> 
+    <a class="nav-link" href="../../portfolio.html"> 
 <span class="menu-text">Portfolio</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./tech-blog.html"> 
+    <a class="nav-link" href="../../tech-blog.html"> 
 <span class="menu-text">Tech Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -223,7 +229,16 @@ cookieconsent.run({
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">Intro</a></li>
+  <li><a href="#quarto-shinylive" id="toc-quarto-shinylive" class="nav-link active" data-scroll-target="#quarto-shinylive">Quarto + Shinylive!</a></li>
+  <li><a href="#swiss-dataset" id="toc-swiss-dataset" class="nav-link" data-scroll-target="#swiss-dataset">Swiss dataset</a></li>
+  <li><a href="#visualize" id="toc-visualize" class="nav-link" data-scroll-target="#visualize">Visualize</a></li>
+  <li><a href="#now-with-shinylive" id="toc-now-with-shinylive" class="nav-link" data-scroll-target="#now-with-shinylive">Now with Shiny<em>live</em>!</a></li>
+  <li><a href="#but-not-so-fast" id="toc-but-not-so-fast" class="nav-link" data-scroll-target="#but-not-so-fast">But: Not So Fast…</a>
+  <ul>
+  <li><a href="#working-with-data" id="toc-working-with-data" class="nav-link" data-scroll-target="#working-with-data">Working with data</a></li>
+  <li><a href="#other-limitations" id="toc-other-limitations" class="nav-link" data-scroll-target="#other-limitations">Other limitations:</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
 </nav>
@@ -236,8 +251,13 @@ cookieconsent.run({
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">For new blog post: SAVE AS index.qmd in New Folder in posts folder</h1>
-</div>
+<h1 class="title">Quarto Shinylive Experiment: Promising for Limited Use</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">R</div>
+    <div class="quarto-category">quarto</div>
+    <div class="quarto-category">shiny</div>
+  </div>
+  </div>
 
 
 
@@ -253,14 +273,14 @@ cookieconsent.run({
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Invalid Date</p>
+      <p class="date">January 27, 2024</p>
     </div>
   </div>
   
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">April 20, 2025</p>
+      <p class="date-modified">April 6, 2025</p>
     </div>
   </div>
     
@@ -271,21 +291,257 @@ cookieconsent.run({
 </header>
 
 
-<section id="intro" class="level3">
-<h3 class="anchored" data-anchor-id="intro">Intro</h3>
-<p>Intro text</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Summary
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Simple example demonstrates the benefits of embedding Shiny apps in Quarto documents. This technology has some great potential for expanding the use of Shiny apps, although use cases currently limited by lack of ability to pass data in/out of the shiny app.</p>
+</div>
+</div>
+<section id="quarto-shinylive" class="level2">
+<h2 class="anchored" data-anchor-id="quarto-shinylive">Quarto + Shinylive!</h2>
+<p>Taking Quarto docs to the next level by embedding live, fully interactive Shiny apps! An experiment inspired by Joe Cheng’s presentation ‘<a href="https://www.youtube.com/watch?v=j1M6YyU2ZX8">Running R-Shiny without a Server</a>’ at <strong>posit::conf(2023)</strong>. <em>(20 min video)</em></p>
+<p>Turn out that:</p>
+<ul>
+<li>It is fairly straightforward to implement</li>
+</ul>
+<p>Additional reference:</p>
+<ul>
+<li>To learn more about Shinylive see <a href="https://github.com/posit-dev/r-shinylive" class="uri">github.com/posit-dev/r-shinylive</a>.</li>
+<li>Try online version of Shinylive for R and see examples at <a href="https://shinylive.io/r/examples/">shinylive.io/r/examples/</a></li>
+<li>To learn more about Quarto see <a href="https://quarto.org" class="uri">quarto.org</a>.</li>
+</ul>
+<p><em><strong>Note:</strong> this project set up using ‘.renv’ which is good for reproducibility, but may cause complications for package management on different machines over time.</em></p>
+</section>
+<section id="swiss-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="swiss-dataset">Swiss dataset</h2>
+<p>R built-in swiss dataset with fertility and socio-economic indicators by province, from 1888.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">## put functions here</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>swiss <span class="ot">&lt;-</span> swiss</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>swiss<span class="sc">$</span>prov <span class="ot">&lt;-</span> <span class="fu">rownames</span>(swiss)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>swiss_top <span class="ot">&lt;-</span> swiss <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="sc">-</span>Fertility) <span class="sc">%&gt;%</span> <span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">10</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># save with relative location for importing to shiny app below -&gt; doesn't help</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(swiss_top, <span class="st">'data/swiss_top.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div>
-
+</section>
+<section id="visualize" class="level2">
+<h2 class="anchored" data-anchor-id="visualize">Visualize</h2>
+<p>Typical static plot produced with ggplot2: useful, but limited:</p>
+<div class="cell" data-layout-align="left">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>swiss_top <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(prov,Fertility), <span class="at">y=</span>Fertility))<span class="sc">+</span><span class="fu">geom_col</span>()<span class="sc">+</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="fu">mean</span>(swiss_top<span class="sc">$</span>Fertility), <span class="at">linetype=</span><span class="st">'dashed'</span>, <span class="at">color=</span><span class="st">'green'</span>)<span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()<span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand=</span><span class="fu">expansion</span>(<span class="at">mult=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.02</span>)))<span class="sc">+</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Top 10 Swiss Provinces by Fertility'</span>, <span class="at">x=</span><span class="st">""</span>, </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">'(births per 1,000 women; dotted line = average)'</span>)<span class="sc">+</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>()<span class="sc">+</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">11</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-swiss" class="quarto-figure quarto-figure-left quarto-float anchored" data-fig-align="left">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-swiss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-swiss-1.png" class="img-fluid quarto-figure quarto-figure-left figure-img" width="768">
 </div>
-<div class="cell quarto-layout-panel" data-layout-ncol="2">
-
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-swiss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: from Swiss Fertility &amp; Socioeconomic Indicators (1888); built-in R dataset.
+</figcaption>
+</figure>
 </div>
+</div>
+</div>
+</section>
+<section id="now-with-shinylive" class="level2">
+<h2 class="anchored" data-anchor-id="now-with-shinylive">Now with Shiny<em>live</em>!</h2>
+<p>Interactive, filterable version of the chart that leverages R shiny plus webR technology to display in browser…<strong><em>without</em></strong> the need for <strong>shiny server</strong>!</p>
+<p>May take a while to load…</p>
+<p><em>(apologies if the ‘sidebar’ filters are stacked above the chart - appears to be result of narrow width of the theme I’m using and not improved by setting widths of side/main panels; worked as expected in other experiments)</em></p>
+<pre class="shinylive-r" data-engine="r"><code>#| standalone: true
+#| viewerHeight: 700
+
+# load packages
+library(shiny)
+library(datasets)
+library(tidyverse)
+library(scales)
+library(here)
+
+# get data - import saved file with relative location
+#swiss_top &lt;- read_csv('data/swiss_top.csv') # failed attempt at reading data
+swiss &lt;- datasets::swiss
+swiss$prov &lt;- rownames(swiss)
+swiss &lt;- swiss %&gt;% arrange(-Fertility)
+
+# Define shiny ui
+ui &lt;- fluidPage(
+  # shiny UI components here
+  # Application title
+  titlePanel("Swiss Fertility Data by Province"),
+  
+  # Sidebar layout with input and output definitions
+  sidebarLayout(
+    # Sidebar panel for inputs
+    sidebarPanel(
+      width=3, ## setting worked nicely in other quarto docs - no respond here
+      # Input: number of provinces to show (since 47 total)
+      numericInput(inputId='num_prov', 
+                   label='No. of Provs. to show',
+                   value=10, min=1, max=50, step=1),
+      # Input: checkbox for the regions to plot - dynamic based on num_prov
+      uiOutput('dynamicCheckbox'),
+      p('note: 47 provinces in total')
+      ), # end sidebarPanel
+    
+    # Main panel for displaying outputs
+    mainPanel(
+      width=9,
+      h3('Swiss Fertility'),
+      # Output: Column chart rendered with ggplot2
+      plotOutput(outputId = "fert", height="540px")
+    ) # end mainPanel
+  )
+)
+
+# Define shiny server logic here  
+server &lt;- function(input, output, session) {
+  # shiny server code
+  output$dynamicCheckbox &lt;- renderUI({
+     num_provinces &lt;- input$num_prov
+     checkboxGroupInput(inputId="prov", "Select Provinces (desc order of fertility)", 
+                        choices = head(swiss$prov, num_provinces),
+                        select=swiss$prov)
+   })
+  # Reactive expression to generate the plot based on the inputs
+  output$fert &lt;- renderPlot({
+    # filter provinces using checklist and num_prov selector
+    swiss_top &lt;- swiss %&gt;% filter(prov %in% input$prov)
+    # Generate ggplot2 column chart
+    swiss_top |&gt; ggplot(aes(x=reorder(prov, Fertility), y=Fertility))+
+      geom_col()+
+      geom_hline(yintercept=mean(swiss_top$Fertility), 
+                 linetype='dashed', color='green')+
+      coord_flip()+
+      scale_y_continuous(expand=expansion(mult=c(0,0.05)))+
+      labs(title='Swiss Provinces by Fertility (1888)', 
+           subtitle = '(births per 1,000 women; dotted line = average)',
+           x="")+
+      theme_light()+
+      theme(axis.ticks.y = element_blank(),
+            axis.text.y = element_text(size=12))
+   })
+}
+
+# create and launch shiny app
+shinyApp(ui = ui, server = server)</code></pre>
+<p>This is implemented in just a few steps:</p>
+<ol type="1">
+<li><p>Add the Quarto <strong>shinylive extension</strong> to your project.</p>
+<ul>
+<li><code>terminal: quarto add quarto-ext/shinylive</code></li>
+</ul></li>
+<li><p>Get the <strong>shinylive</strong> package.</p></li>
+<li><p>Add filter to document yaml header</p>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="yaml-filter.png" class="img-fluid quarto-figure quarto-figure-left figure-img" alt="add filters: shinylive to yaml header" width="120"></p>
+</figure>
+</div></li>
+<li><p><strong>{shinylive-r}</strong> code block to hold the shiny code:</p>
+<ul>
+<li><strong>#| standalone: true</strong></li>
+<li><strong>#| viewerHeight: 600</strong> - ensures app window is large enough; adjust to pref</li>
+<li>library(shiny)</li>
+<li>standard shiny code for a single-file app within the code block (ui, server)</li>
+</ul></li>
+</ol>
+<p>That’s it! Render the page and enjoy the view - and the interaction possibilities. (Will need to use ‘<strong>show in new window</strong>’ option, as it won’t display correctly in the Viewer panel.)</p>
+<p>Code display doesn’t work with the {shinylive-r} code block, so showing the skeleton code below, with key components. (actual code is long for this page - you can see similar examples in my <a href="https://github.com/jyuill/quarto-shiny-live-examples">quarto-shiny-live-examples Github repo</a>.)</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>{shinylive<span class="sc">-</span>r}</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| standalone: true</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| viewerHeight: 600</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">fluidPage</span>(</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">titlePanel</span>(<span class="st">"Swiss Fertility Data by Province"</span>),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sidebarLayout</span>(</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sidebarPanel</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>      inputs</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mainPanel</span>(</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">plotOutput</span>(<span class="at">outputId =</span> <span class="st">"fert"</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Define shiny server logic here  </span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>fert <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>   })</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co"># create and launch shiny app</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="fu">shinyApp</span>(<span class="at">ui =</span> ui, <span class="at">server =</span> server)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="but-not-so-fast" class="level2">
+<h2 class="anchored" data-anchor-id="but-not-so-fast">But: Not So Fast…</h2>
+<p>There are some significant limitations.</p>
+<section id="working-with-data" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-data">Working with data</h3>
+<p>By far the most significant, as I’m as I’m concerned:</p>
+<ul>
+<li><strong>not able to load external data from outside the shiny app</strong> (as far as I can tell)
+<ul>
+<li>no import csv (even local to the quarto project)</li>
+<li>no database connection</li>
+<li>no read googlesheet</li>
+</ul></li>
+<li>I can only use data generated within the app OR built-in R datasets
+<ul>
+<li>(<em>hence the use of the swiss dataset here)</em></li>
+</ul></li>
+</ul>
+<p>I haven’t been able to figure a way to import data to the app, despite attempting many approaches. So this is a <strong>deal-breaker</strong> for a lot applications - pretty much all of the use cases I would have.</p>
+</section>
+<section id="other-limitations" class="level3">
+<h3 class="anchored" data-anchor-id="other-limitations">Other limitations:</h3>
+<ul>
+<li>single file app, so limited complexity can be developed</li>
+<li>hard to debug - no error messages or other clues when app fails
+<ul>
+<li>can use <a href="https://shinylive.io/r/examples/">shinylive.io</a> for testing</li>
+</ul></li>
+<li>not all R packages available - but most, so shouldn’t be major blocker</li>
+<li>slow loading time - a nuisance, but generally not unbearable</li>
+<li>restricted size: limited by format of quarto document (since embedded within Quarto doc layout)</li>
+</ul>
+<p>Note that these limitations apply specifically to using Shinylive for embedding into Quarto documents. This is only one use case. Others include:</p>
+<ul>
+<li><a href="https://shinylive.io/r/examples/">shinylive.io</a>: for prototyping, potentially sharing apps.</li>
+<li><a href="https://www.youtube.com/watch?v=B3Nggr9X4rY&amp;t=803s">shiny app conversion</a>: from regular shiny app that needs a server to serverless app that can be shared more easily.</li>
+</ul>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p><strong>Shinylive is a</strong> <strong>powerful new technology</strong> that holds lots of potential for embedding Shiny apps into Quarto documents for interactive data exploration. Currently, though, it has limited application. This will likely be further developed and become even more valuable over time. Maybe <strong>not ready for primetime</strong> now, but will have to <strong>keep an eye on this</strong>!</p>
 
 
 </section>
