@@ -1,5 +1,35 @@
 /* css styles */
-/* these don't always apply well with themes -> use custom-style.scss
+/* these don't always apply well with themes -> use custom-style.scss */
+
+.quarto-title-banner h1.title {
+  /* color: #daa420;
+  color: #FF7F50;
+  color: #F4A460;
+  color: #FF6347;
+  color: #F58422; */
+  color: #FF6F61;
+  color: #FFC857;
+  color: #FFB300;
+  color: #F4C430;
+  color: #D99058;
+  color: #FFF;
+  color: #FFA500;
+  color: #FF8C00;
+  color: #FF6347;
+  color: #F5F5F5;
+  color: #DCDCDC;
+  color: #F0F8FF; */
+  color: #FFFAF0;
+  color: #1E90FF;
+  color: #CCCCFF;
+  color: #87CEEB;
+  color: #B0C4DE;
+  font-weight: 600;
+  /*border-bottom: 3px solid #FF6347; */ /* Tomato accent */
+  /* suggested by ChatGPT but doesn't seem to do much */
+  letter-spacing: 1.5px;
+  text-shadow: 0 0px 2px rgba(0,0,0,0.2);
+  } 
 
 /* original colors from bootstrap theme */
 /* top nav background-color: */
@@ -12,11 +42,30 @@
   padding-top: 9px; */
 }
 
-/* style titles of blog posts: works sometimes; doesn't override theme */
+/* subtitle text in title banner */
 .quarto-title { 
-  /* color: #f58422; */
+  /*color: #F58422; */
+  /*color: #FF6347;*/
+  color: #FF6F61;
+  color: #FFC857;
+  color: #FFB300;
+  color: #F4C430;
+  color: #D99058;
+  color: #FFF;
+  color: #FFA500;
+  color: #FF8C00;
+  color: #FF6347;
+  color: #F5F5F5;
+  color: #DCDCDC;
+  color: #F0F8FF;
+  color: #FFFAF0;
+  color: #1E90FF;
+  color: #CCCCFF;
+  color: #87CEEB;
+  color: #B0C4DE;
   /* color: navy; */ /* will override .quarto-title-banner color */
   font-size: 1.5em;
+  /*border: 1px solid red;*/
 }
 
 .quarto-title-block .quarto-title-banner {
@@ -30,11 +79,12 @@
   /*padding-bottom: 40px;*/ /* does nothing */
   /*margin-bottom: 4px; */ /* does nothing */
   /* background-origin: content-box; */ /* ? */
-  /* background-color: #446e9b; */ /* spacelab theme primary color */
+  background-color: #1146C2; /* overrides #446e9b spacelab theme primary color */
   /* border-bottom: solid 3px black; */ /* works */
   /* prefer tighter heading */
   height: 120px; /* works */
-  /* color: white; */ /* affects subtitle only */
+  /*color: white; *//* can be used for subtitle if not set elsewhere */
+  /*border: 1px solid red;*/
 }
 
 /* does nothing: https://quarto.org/docs/authoring/title-blocks.html#foreground-color */
