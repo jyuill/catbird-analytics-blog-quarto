@@ -51,4 +51,6 @@ CSS:
 
 **Background color:** set in \_quarto.yml
 
-CSS
+**CSS**
+
+-   **.navbar:** height
