@@ -65,8 +65,9 @@ ul.task-list li input[type="checkbox"] {
 <ol type="1">
 <li>In RStudio, running ‘Build’ &gt; ‘Render Website’ will build the website locally.</li>
 <li>Push changes to this repo.</li>
-<li>The website is automatically published to <a href="https://www.catbird-analytics.com">www.catbird-analytics.com</a> via GitHub Actions.</li>
-<li>The website is hosted on HostPapa.</li>
+<li>Hosted on <strong>Netlify:</strong> <a href="https://www.catbird-analytics.com">www.catbird-analytics.com</a></li>
+<li><strong>Continuous deployment via Netlify</strong> setup (see my google docs on ‘Web Dev General’ and ‘CATBIRD BLOGGING’ for details. (note, all the setup is in Netlify - nothing set in GitHub)</li>
+<li>Domain is managed via Rebel.ca.</li>
 </ol>
 </section>
 <section id="design-elements" class="level2">
@@ -76,10 +77,34 @@ ul.task-list li input[type="checkbox"] {
 <li><a href="https://getbootstrap.com/docs/5.3/getting-started/introduction/">Bootstrap</a></li>
 <li><a href="https://quarto.org/docs/websites/">Quarto</a></li>
 <li>_quarto.yml: the main configuration file</li>
-<li>CSS: styles.css file</li>
+<li>CSS: <strong>styles.css</strong> file</li>
 </ul>
 <section id="top-banner" class="level3">
 <h3 class="anchored" data-anchor-id="top-banner">Top Banner</h3>
+<p>Top banner design is controlled in several areas:</p>
+<ul>
+<li>_quarto.yml: theme &gt; spacelab for baseline formatting (I think)</li>
+<li>yaml header for each page: title, subtitle text content</li>
+<li>css: custom styles</li>
+</ul>
+<p>CSS:</p>
+<ul>
+<li><strong>.quarto-title:</strong> text block area, holding title and subtitle
+<ul>
+<li>text color -&gt; but only for subtitle</li>
+</ul></li>
+<li><strong>.quarto-title-block</strong> <strong>.quarto-title-banner</strong>: defined together
+<ul>
+<li>entire title block/banner area</li>
+<li>background-color: overrides bootstrap theme</li>
+</ul></li>
+<li><strong>.quarto-title-banner h1.title</strong>: styles for title in banner, won’t affect other h1.title, such as article titles</li>
+</ul>
+</section>
+<section id="navigation-bar" class="level3">
+<h3 class="anchored" data-anchor-id="navigation-bar">Navigation Bar</h3>
+<p><strong>Background color:</strong> set in _quarto.yml</p>
+<p>CSS</p>
 </section>
 </section>
 </section>

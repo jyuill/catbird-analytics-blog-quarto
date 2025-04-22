@@ -36,8 +36,7 @@
 
 /* styling navigation bar */
 .navbar {
-  /* background-color: "#1E53FA"; */
-  /* background-color: navy; */
+  background-color: "#000"; /* black */ /* set in _quarto.yml */
   /* height: 50px;
   padding-top: 9px; */
 }

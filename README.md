@@ -45,5 +45,10 @@ CSS:
 -   **.quarto-title-block** **.quarto-title-banner**: defined together
     -   entire title block/banner area
     -   background-color: overrides bootstrap theme
+-   **.quarto-title-banner h1.title**: styles for title in banner, won't affect other h1.title, such as article titles
 
 ### Navigation Bar
+
+**Background color:** set in \_quarto.yml
+
+CSS
