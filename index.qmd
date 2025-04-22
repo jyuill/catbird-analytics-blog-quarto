@@ -9,5 +9,5 @@ listing:
   sort-ui: false
   filter-ui: false
 page-layout: full
-title-block-banner: "#446e9b;" #spacelab #446e9b
+title-block-banner: "#446e9b;" #spacelab #446e9b - overridden by css
 ---
