@@ -4,7 +4,7 @@ project:
 website:
   title: "Catbird Analytics"
   navbar:
-    background: "#14213D"
+    background: "#0B2B75" # Dark Blue 14213D
     left: 
       - text: "Home"
         file: index.qmd
