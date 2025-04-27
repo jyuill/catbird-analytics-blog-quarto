@@ -14,6 +14,8 @@ website:
             file: products/bc-lmr-dashboard.qmd
           - text: "Savings Burndown Simulator"
             file: products/savings-burndown-sim.qmd
+          - text: "Stock Market Comparisons"
+            file: products/stock-market-comparisons.qmd
           - text: "More to Come"
             file: portfolio.qmd
       - portfolio.qmd

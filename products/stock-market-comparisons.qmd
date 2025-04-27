@@ -1,6 +1,6 @@
 ---
-title: "Stock Comparisons"
-description-meta: Stock comparison and analysis shiny app.
+title: "Stock Market Comparisons"
+description-meta: Stock market comparisons and analysis shiny app.
 format:
   html:
     page-layout: full
